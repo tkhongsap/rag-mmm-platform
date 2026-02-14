@@ -4,198 +4,104 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-An enterprise platform combining RAG (Retrieval-Augmented Generation) with Marketing Mix Modeling (MMM). Built with LlamaIndex and OpenAI for the RAG pipeline, and statsmodels/scikit-learn for MMM. English-first, general enterprise use case.
+Enterprise platform combining RAG (Retrieval-Augmented Generation) with Marketing Mix Modeling (MMM). Built with LlamaIndex and OpenAI for the RAG pipeline, statsmodels/scikit-learn for MMM. Connected through a shared Streamlit UI and platform config layer.
 
-**Two main modules:**
-1. **RAG (`src/rag/`)**: 4-stage pipeline — data processing → embeddings → index loading → retrieval with 7 strategies
-2. **MMM (`src/mmm/`)**: Marketing mix modeling — data ingestion → modeling → optimization/attribution
+**Current state**: The `src/` modules are **architectural scaffolding** (docstring stubs in `__init__.py` only — no implementation yet). The **synthetic data generators** in `data/generators/` are fully implemented and production-ready. Reference docs and LlamaIndex guides are complete.
 
-Connected through a shared Streamlit UI (`src/ui/`) and platform layer (`src/platform/`).
+## Commands
+
+```bash
+# Install
+make install                    # pip install -r requirements.txt
+cp .env.example .env            # Then set OPENAI_API_KEY
+
+# Test
+make test                       # python -m pytest tests/ -v
+make test-rag                   # pytest tests/rag/ -v
+make test-mmm                   # pytest tests/mmm/ -v
+make test-cov                   # pytest with --cov=src --cov-report=term-missing
+python -m pytest tests/rag/test_foo.py -v   # Single test file
+python -m pytest tests/ -k "test_name" -v   # Single test by name
+
+# Run
+make run-app                    # streamlit run src/ui/app.py --server.port 8501
+make run-rag-cli                # python -m src.rag.retrieval.cli --interactive
+
+# Other
+make lint                       # py_compile checks on src/rag and src/mmm
+make clean                      # Remove __pycache__, .pytest_cache, coverage artifacts
+make help                       # List all make targets
+
+# Synthetic data generation
+python data/generators/generate_all.py              # Generate all data (~63K rows)
+python data/generators/generate_all.py --validate-only  # Validate existing data only
+```
 
 ## Architecture
 
 ```
 src/
-├── rag/                          # RAG pipeline
-│   ├── data_processing/          # Stage 1: CSV/document → structured docs
-│   ├── embeddings/               # Stage 2: Embedding generation (batch)
+├── rag/                          # RAG pipeline (all stubs, not yet implemented)
+│   ├── data_processing/          # Stage 1: Document → structured LlamaIndex docs
+│   ├── embeddings/               # Stage 2: Batch embedding generation
 │   ├── retrieval/                # Stage 3+4: Index loading + retrieval
-│   │   └── retrievers/           # 7 strategy adapters
+│   │   └── retrievers/           # 7 strategy adapters (vector, summary, recursive,
+│   │                             #   metadata, chunk_decoupling, hybrid, planner)
 │   └── common/                   # Shared RAG utilities
-├── mmm/                          # Marketing Mix Modeling
+├── mmm/                          # Marketing Mix Modeling (all stubs)
 │   ├── data_ingestion/           # Media spend, sales data loading
-│   ├── modeling/                 # Bayesian/regression MMM models
+│   ├── modeling/                 # Adstock, saturation curves, Bayesian/OLS regression
 │   ├── optimization/             # Budget allocation, ROI analysis
-│   └── common/                   # Shared MMM utilities
-├── platform/                     # Shared platform layer
-│   ├── api/                      # REST API (if needed)
-│   └── config/                   # Centralized configuration
-└── ui/                           # Streamlit multi-page app
-    ├── pages/                    # RAG chat, MMM dashboard, data management
-    └── components/               # Reusable UI components
+│   └── common/
+├── platform/
+│   ├── api/                      # REST API (stub)
+│   └── config/                   # Centralized configuration (stub)
+└── ui/                           # Streamlit app (minimal boilerplate + 3 placeholder pages)
+
+data/generators/                  # FULLY IMPLEMENTED synthetic data pipeline
+├── config.py                     # Master config (seed, budgets, channels, benchmarks)
+├── digital_media.py              # 6 CSVs: meta, google, dv360, tiktok, youtube, linkedin
+├── traditional_media.py          # 4 CSVs: tv, ooh, print, radio
+├── sales_pipeline.py             # 5 CSVs: vehicle_sales, website, configurator, leads, test_drives
+├── contracts.py                  # 7 markdown vendor contracts
+├── events.py                     # Events calendar
+├── external_data.py              # Competitor spend, economic indicators
+├── validators.py                 # 10 validation checks + MMM weekly aggregation
+└── generate_all.py               # 7-step orchestrator entry point
+
+data/raw/                         # Generated output: ~19 CSVs + 7 contracts
+data/mmm/                         # MMM-ready: weekly_channel_spend, weekly_sales, model_ready
+references/rag-llamaindex/        # LlamaIndex framework reference docs (9 guides)
+references/rag-methodology/       # RAG methodology docs (10 files)
+docs/llamaindex-framework/        # LlamaIndex tutorial series (15 files)
+docs/prd/                         # Product requirements (Word docs)
+prompts/                          # Agent team prompt for synthetic data generation
 ```
 
-### RAG Retrieval Strategies
-1. **Vector** (`retrieval/retrievers/vector.py`): Semantic similarity search
-2. **Summary** (`retrieval/retrievers/summary.py`): Document summary-first retrieval
-3. **Recursive** (`retrieval/retrievers/recursive.py`): Hierarchical multi-level retrieval
-4. **Metadata** (`retrieval/retrievers/metadata.py`): Fast filtering by attributes
-5. **Chunk Decoupling** (`retrieval/retrievers/chunk_decoupling.py`): Separates embedding from content storage
-6. **Hybrid** (`retrieval/retrievers/hybrid.py`): Combines vector + keyword (BM25) search
-7. **Planner** (`retrieval/retrievers/planner.py`): Multi-step query planning agent
+## Data Generator Details
 
-### MMM Components
-- **Data Ingestion**: Load media spend (TV, digital, print), sales/KPI data, external factors
-- **Modeling**: Adstock transformation, saturation curves, Bayesian regression or OLS
-- **Optimization**: Budget allocation across channels, ROI analysis, scenario simulation
+The generators produce synthetic marketing data for a UK automotive launch (DEEPAL/AVATR brands, 2025). Key design:
 
-## Common Commands
+- **config.py** is the single source of truth: seed (42), date range, £20M annual budget, 50 UK dealers, channel benchmarks (CPM/CTR/CPC), seasonal multipliers, campaign naming templates
+- **Causal chain**: media spend → website sessions → configurator → leads → test drives → sales (sales_pipeline.py reads generated media CSVs)
+- **Validation**: 10 checks (file existence, row counts, date ranges, spend ±5% of budget, KPI ranges, no negatives, no NaN in critical columns)
+- **MMM aggregation**: validators.py also produces 3 weekly datasets for modeling (52 weeks × 11 channels)
+- Helper functions: `apply_adstock()` (geometric decay), `apply_saturation()` (Hill function), seasonal multipliers
 
-### Installation
-```bash
-make install                    # Install all dependencies
-cp .env.example .env            # Configure environment
-```
+## Environment Variables
 
-### RAG Pipeline
-```bash
-# Data processing
-python -m src.rag.data_processing.run
+Required in `.env` (see `.env.example` for all defaults):
+- `OPENAI_API_KEY` — required for RAG pipeline
+- RAG: `CHUNK_SIZE=1024`, `CHUNK_OVERLAP=50`, `EMBED_MODEL=text-embedding-3-small`, `LLM_MODEL=gpt-4o-mini`
+- MMM: `MMM_DATE_COLUMN=date`, `MMM_TARGET_COLUMN=sales`, `MMM_ADSTOCK_MAX_LAG=8`
 
-# Generate embeddings
-python -m src.rag.embeddings.batch_embedding
+## Development Rules
 
-# Interactive retrieval CLI
-python -m src.rag.retrieval.cli --interactive
-
-# Single query
-python -m src.rag.retrieval.cli --query "your question here"
-```
-
-### MMM Pipeline
-```bash
-# Data ingestion
-python -m src.mmm.data_ingestion.run
-
-# Run model
-python -m src.mmm.modeling.run
-
-# Optimization analysis
-python -m src.mmm.optimization.run
-```
-
-### Streamlit App
-```bash
-make run-app                    # Launch multi-page app on port 8501
-```
-
-### Testing
-```bash
-make test                       # Run all tests
-make test-rag                   # RAG tests only
-make test-mmm                   # MMM tests only
-make test-cov                   # Tests with coverage report
-python -m pytest tests/ -v      # Verbose output
-```
-
-## Environment Setup
-
-Required environment variables in `.env`:
-```bash
-# Required
-OPENAI_API_KEY=your_openai_api_key_here
-
-# RAG Configuration (with defaults)
-CHUNK_SIZE=1024
-CHUNK_OVERLAP=50
-EMBED_MODEL=text-embedding-3-small
-LLM_MODEL=gpt-4o-mini
-BATCH_SIZE=10
-MAX_WORKERS=4
-REQUEST_DELAY=0.1
-MAX_RETRIES=3
-CLASSIFIER_MODE=llm
-
-# MMM Configuration
-MMM_DATE_COLUMN=date
-MMM_TARGET_COLUMN=sales
-MMM_ADSTOCK_MAX_LAG=8
-MMM_CONFIDENCE_LEVEL=0.95
-```
-
-## Development Guidelines
-
-### Code Organization
-- Single `src/` with subpackages — avoid code duplication across modules
+- Iterate on existing patterns before introducing new ones; don't change proven patterns without exhausting alternatives
 - Prefer editing existing files over creating new ones
-- Follow modular architecture: processing → embedding/modeling → output
-- Keep files under 200-300 lines; refactor if exceeding
-- Check for existing similar functionality before adding new code
-
-### Pattern Consistency
-- Iterate on existing patterns before introducing new approaches
-- Don't drastically change proven patterns without exhausting alternatives
+- Keep files under 200-300 lines; refactor at that threshold
 - Focus on relevant code areas only; don't touch unrelated code
-- Use simple solutions and avoid unnecessary complexity
-
-### File Structure
-- `src/rag/`: RAG pipeline modules
-- `src/mmm/`: Marketing mix model modules
-- `src/platform/`: Shared config, API layer
-- `src/ui/`: Streamlit pages and components
-- `tests/`: pytest suites mirroring `src/` structure
-- `references/`: Carried-over methodology docs and guides
-- `docs/`: New project documentation
-- `data/`: Gitignored data directories
-
-### Performance Optimization
-- Use batch processing for large datasets (default: 10 files per batch)
-- Enable fast metadata filtering for attribute-heavy queries
-- Monitor API rate limits and implement delays
-- Adjust `MAX_WORKERS` based on CPU cores
-- Choose appropriate retrieval strategy:
-  - **Vector**: Fast, simple queries
-  - **Hybrid**: Best overall for mixed content
-  - **Metadata**: Structured queries with filtering
-  - **Planner**: Complex multi-step questions
-
-### Testing Strategy
-- Write thorough tests for all major functionality
-- Use pytest for unit and integration tests
-- Name test files `test_*.py`, keep fixtures colocated
-- Test with realistic data samples
-- Validate embedding quality and retrieval accuracy
-- Validate MMM model outputs against known baselines
-
-### Server Management
-- Always kill existing related servers before starting new ones
-- Start up a new server after making changes for testing
-
-### Configuration Management
-- Never overwrite `.env` files without confirming first
-- Use YAML for dataset-specific configurations
-- Keep configurations in version control (except secrets)
-- Avoid stubbing/fake data in dev or prod environments
-
-## Troubleshooting
-
-### Common Issues
-
-**API Key Errors**: Verify `OPENAI_API_KEY` is set in `.env`
-
-**Memory Issues**: Reduce `BATCH_SIZE`, process smaller datasets, monitor system memory
-
-**Import Errors**: Run from project root, verify dependencies installed (`make install`)
-
-**Missing Embeddings**: Generate embeddings before retrieval (`python -m src.rag.embeddings.batch_embedding`)
-
-**Empty Retrieval Results**: Check embedding quality, try different strategies, verify input data
-
-**Slow Performance**: Use vector strategy for simple queries, enable fast metadata filtering, reduce `top_k`
-
-### Debug Mode
-Enable verbose logging:
-```python
-import logging
-logging.basicConfig(level=logging.DEBUG)
-```
+- Never overwrite `.env` without confirming first
+- No stubbing/fake data in dev or prod (tests only)
+- Kill existing servers before starting new ones; start a new server after changes
+- All modules run from project root (`python -m src.rag.data_processing.run`, not relative imports)

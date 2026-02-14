@@ -50,6 +50,8 @@ def resolve_raw_path(reference: str) -> Path:
 
 
 def _to_python_value(value: Any) -> Any:
+    if isinstance(value, (np.bool_,)):
+        return bool(value)
     if isinstance(value, (np.integer, np.int64)):
         return int(value)
     if isinstance(value, (np.floating, np.float64)):
@@ -260,6 +262,8 @@ def _safe_json_value(value: Any) -> Any:
         return {k: _safe_json_value(v) for k, v in value.items()}
     if isinstance(value, (list, tuple, set)):
         return [_safe_json_value(v) for v in value]
+    if isinstance(value, (np.bool_,)):
+        return bool(value)
     if isinstance(value, (np.integer, np.int64)):
         return int(value)
     if isinstance(value, (np.floating, np.float64)):
