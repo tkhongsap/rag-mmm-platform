@@ -454,6 +454,21 @@ tbody tr.selected:nth-child(even) {
   cursor: default;
 }
 
+/* Cross-file badge */
+.cross-file-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
 /* File preview panel */
 .preview-panel {
   margin-top: 16px;
@@ -473,6 +488,40 @@ tbody tr.selected:nth-child(even) {
 .preview-source {
   color: var(--text-muted);
   font-size: 0.82rem;
+}
+
+/* Row-count selector */
+.row-count-label {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.row-count-select {
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  transition: border-color 0.15s ease;
+}
+
+.row-count-select:hover,
+.row-count-select:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.row-count-select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .preview-loading {

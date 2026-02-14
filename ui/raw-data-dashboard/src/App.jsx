@@ -75,6 +75,7 @@ function App() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [checkFilter, setCheckFilter] = useState('all');
   const [expandedFiles, setExpandedFiles] = useState(new Set());
+  const [previewRows, setPreviewRows] = useState(20);
 
   const toggleExpand = (fileName, e) => {
     e.stopPropagation();
@@ -119,7 +120,7 @@ function App() {
     const run = async () => {
       setPreviewLoading(true);
       try {
-        const next = await getFilePreview(selectedFile, 20);
+        const next = await getFilePreview(selectedFile, previewRows);
         if (!cancelled) {
           setPreview(next);
         }
@@ -138,7 +139,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [selectedFile]);
+  }, [selectedFile, previewRows]);
 
   const summary = payload?.summary || {};
   const files = payload?.files || [];
@@ -333,7 +334,10 @@ function App() {
                           className={check.status === 'fail' ? 'fail-row' : ''}
                         >
                           <td><StatusPill status={check.status} /></td>
-                          <td>{check.title}</td>
+                          <td>
+                            {check.title}
+                            {!check.file && <span className="cross-file-badge">cross-file</span>}
+                          </td>
                           <td className="file-name">{check.file}</td>
                           <td className="check-value">
                             <pre title={JSON.stringify(check.observed, null, 2)}>
@@ -360,6 +364,21 @@ function App() {
               <h2>File Preview</h2>
               {selectedFile && (
                 <span className="preview-source file-name">{selectedFile}</span>
+              )}
+              {selectedFile && (
+                <label className="row-count-label">
+                  Rows
+                  <select
+                    className="row-count-select"
+                    value={previewRows}
+                    onChange={(e) => setPreviewRows(Number(e.target.value))}
+                  >
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                </label>
               )}
             </div>
             {selectedFile ? (
