@@ -201,12 +201,12 @@ function App() {
                             className={selected ? 'selected' : ''}
                             onClick={() => setSelectedFile(file.file_name)}
                           >
-                            <td>{file.file_name}</td>
-                            <td>{file.rows ?? 'n/a'}</td>
-                            <td>{file.columns ?? 'n/a'}</td>
+                            <td className="file-name">{file.file_name}</td>
+                            <td>{file.is_csv ? file.rows : <span className="na-value">n/a</span>}</td>
+                            <td>{file.is_csv ? file.columns : <span className="na-value">n/a</span>}</td>
                             <td>{formatBytes(file.file_size_bytes)}</td>
                             <td>{formatDate(file.last_modified)}</td>
-                            <td>{file.overall_missing_ratio != null ? `${(file.overall_missing_ratio * 100).toFixed(2)}%` : 'n/a'}</td>
+                            <td>{file.overall_missing_ratio != null ? `${(file.overall_missing_ratio * 100).toFixed(2)}%` : <span className="na-value">n/a</span>}</td>
                             <td>{file.is_csv ? 'CSV' : 'Other'}</td>
                           </tr>
                         );

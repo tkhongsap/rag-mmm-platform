@@ -194,6 +194,11 @@ td {
 
 tbody tr {
   cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(51, 65, 85, 0.3);
 }
 
 tbody tr:hover {
@@ -203,6 +208,21 @@ tbody tr:hover {
 tbody tr.selected {
   background: rgba(99, 102, 241, 0.1);
   border-left: 3px solid var(--accent);
+}
+
+tbody tr.selected:nth-child(even) {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+/* File inventory specific */
+.file-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+}
+
+.na-value {
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* Status pills */
