@@ -253,6 +253,76 @@ tbody tr.selected:nth-child(even) {
   color: var(--fail);
 }
 
+/* Check filter controls */
+.checks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.check-filters {
+  display: flex;
+  gap: 6px;
+}
+
+.check-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 12px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.check-filter-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.check-filter-btn.active {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.check-filter-btn.check-filter-pass.active {
+  background: var(--pass-bg);
+  border-color: var(--pass);
+  color: var(--pass);
+}
+
+.check-filter-btn.check-filter-warn.active {
+  background: var(--warn-bg);
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+.check-filter-btn.check-filter-fail.active {
+  background: var(--fail-bg);
+  border-color: var(--fail);
+  color: var(--fail);
+}
+
+.check-filter-count {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.check-filter-btn.active .check-filter-count {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 /* PRD conformance table */
 .checks-table .file-name {
   font-family: 'JetBrains Mono', monospace;

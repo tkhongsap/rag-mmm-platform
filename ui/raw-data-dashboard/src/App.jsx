@@ -73,6 +73,7 @@ function App() {
   const [selectedFile, setSelectedFile] = useState('');
   const [preview, setPreview] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [checkFilter, setCheckFilter] = useState('all');
 
   const refresh = async () => {
     setLoading(true);
@@ -133,6 +134,11 @@ function App() {
   const warn = useMemo(() => checks.filter((c) => c.status === 'warn').length, [checks]);
   const fail = useMemo(() => checks.filter((c) => c.status === 'fail').length, [checks]);
   const checkRate = checks.length === 0 ? 0 : Math.round((passing / checks.length) * 100);
+
+  const filteredChecks = useMemo(
+    () => (checkFilter === 'all' ? checks : checks.filter((c) => c.status === checkFilter)),
+    [checks, checkFilter],
+  );
 
   return (
     <main className="container">
@@ -218,9 +224,31 @@ function App() {
             </article>
 
             <article className="card">
-              <h2>PRD Conformance</h2>
+              <div className="checks-header">
+                <h2>PRD Conformance</h2>
+                {checks.length > 0 && (
+                  <div className="check-filters">
+                    {[
+                      { key: 'all', label: 'All', count: checks.length },
+                      { key: 'pass', label: 'Pass', count: passing },
+                      { key: 'warn', label: 'Warn', count: warn },
+                      { key: 'fail', label: 'Fail', count: fail },
+                    ].map((f) => (
+                      <button
+                        key={f.key}
+                        className={`check-filter-btn${checkFilter === f.key ? ' active' : ''}${f.key !== 'all' ? ` check-filter-${f.key}` : ''}`}
+                        onClick={() => setCheckFilter(f.key)}
+                      >
+                        {f.label} <span className="check-filter-count">{f.count}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               {checks.length === 0 ? (
                 <EmptyState message="No conformance checks available" />
+              ) : filteredChecks.length === 0 ? (
+                <EmptyState message={`No ${checkFilter} checks found`} />
               ) : (
                 <div className="table-wrap">
                   <table className="checks-table">
@@ -235,7 +263,7 @@ function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {checks.map((check) => (
+                      {filteredChecks.map((check) => (
                         <tr
                           key={`${check.file}-${check.id}`}
                           className={check.status === 'fail' ? 'fail-row' : ''}
