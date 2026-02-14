@@ -57,6 +57,51 @@ make test
 make run-app
 ```
 
+## Raw Data Inventory Dashboard (React)
+
+Start the FastAPI backend:
+
+```bash
+python -m uvicorn src.platform.api.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Start the React dashboard:
+
+```bash
+cd ui/raw-data-dashboard
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` while the API is running on `http://localhost:8000`.
+
+The dashboard surfaces:
+
+- inventory and row/column volume from `data/raw`
+- PRD check results from `docs/prd/dashboard_checks.yml`
+- file previews for quick sampling
+
+PRD for this dashboard is in `docs/prd/raw-data-dashboard-prd.md`.
+
+## Data Storage Policy
+
+The repository intentionally keeps data artifacts out of Git history:
+
+- `data/raw/*`
+- `data/processed/*`
+- `data/embeddings/*`
+- `data/mmm/*`
+
+Only `.gitkeep` files are tracked to preserve directory structure.
+
+This means files you place in `data/raw/` will not show up in `git status`,
+cannot be committed, and therefore cannot be pushed to GitHub.
+
+Use external storage for shared raw datasets (for example: S3, GCS, or an
+internal shared drive), then sync data into `data/raw/` locally as needed.
+
+See `docs/data-management.md` for validation commands and workflow details.
+
 ## RAG Retrieval Strategies
 
 The platform supports 7 retrieval strategies, automatically selected by an LLM-based router:

@@ -1,0 +1,626 @@
+version: 1
+metadata:
+  title: "Raw Data Inventory PRD Checks"
+  description: "Validation rules for synthesized raw dataset readiness checks in data/raw"
+  expected_year: 2025
+
+files:
+  - file: meta_ads.csv
+    title: "Meta Ads"
+    checks:
+      - id: meta_ads_rows
+        title: "Meta Ads row count"
+        type: row_count_between
+        min: 7000
+        max: 9000
+      - id: meta_ads_required_columns
+        title: "Meta Ads required columns"
+        type: required_columns
+        columns:
+          - date
+          - campaign_name
+          - campaign_id
+          - platform
+          - objective
+          - market
+          - model
+          - impressions
+          - clicks
+          - spend
+      - id: meta_ads_date_range
+        title: "Meta Ads date range"
+        type: date_range
+        column: date
+        min: "2025-01-01"
+        max: "2025-12-31"
+      - id: meta_ads_spend_completeness
+        title: "Meta Ads spend completeness"
+        type: min_non_null_ratio
+        column: spend
+        min_ratio: 0.98
+
+  - file: google_ads.csv
+    title: "Google Ads"
+    checks:
+      - id: google_ads_rows
+        title: "Google Ads row count"
+        type: row_count_between
+        min: 3000
+        max: 7000
+      - id: google_ads_required_columns
+        title: "Google Ads required columns"
+        type: required_columns
+        columns:
+          - date
+          - campaign_name
+          - campaign_id
+          - campaign_type
+          - market
+          - model
+          - impressions
+          - clicks
+          - spend
+      - id: google_ads_date_range
+        title: "Google Ads date range"
+        type: date_range
+        column: date
+        min: "2025-01-01"
+        max: "2025-12-31"
+      - id: google_ads_spend_non_null
+        title: "Google Ads spend completeness"
+        type: min_non_null_ratio
+        column: spend
+        min_ratio: 0.98
+
+  - file: dv360.csv
+    title: "DV360"
+    checks:
+      - id: dv360_rows
+        title: "DV360 row count"
+        type: row_count_between
+        min: 2500
+        max: 5500
+      - id: dv360_required_columns
+        title: "DV360 required columns"
+        type: required_columns
+        columns:
+          - date
+          - insertion_order
+          - line_item_name
+          - line_item_id
+          - market
+          - model
+          - impressions
+          - clicks
+          - spend
+      - id: dv360_date_range
+        title: "DV360 date range"
+        type: date_range
+        column: date
+        min: "2025-01-01"
+        max: "2025-12-31"
+
+  - file: tiktok_ads.csv
+    title: "TikTok Ads"
+    checks:
+      - id: tiktok_ads_rows
+        title: "TikTok Ads row count"
+        type: row_count_between
+        min: 2500
+        max: 3800
+      - id: tiktok_ads_required_columns
+        title: "TikTok Ads required columns"
+        type: required_columns
+        columns:
+          - date
+          - campaign_name
+          - campaign_id
+          - objective
+          - market
+          - model
+          - impressions
+          - clicks
+          - spend
+      - id: tiktok_ads_date_range
+        title: "TikTok Ads date range"
+        type: date_range
+        column: date
+        min: "2025-01-01"
+        max: "2025-12-31"
+
+  - file: youtube_ads.csv
+    title: "YouTube Ads"
+    checks:
+      - id: youtube_ads_rows
+        title: "YouTube Ads row count"
+        type: row_count_between
+        min: 2800
+        max: 5200
+      - id: youtube_ads_required_columns
+        title: "YouTube Ads required columns"
+        type: required_columns
+        columns:
+          - date
+          - campaign_name
+          - campaign_id
+          - format
+          - market
+          - model
+          - impressions
+          - views
+          - spend
+      - id: youtube_ads_date_range
+        title: "YouTube Ads date range"
+        type: date_range
+        column: date
+        min: "2025-01-01"
+        max: "2025-12-31"
+
+  - file: linkedin_ads.csv
+    title: "LinkedIn Ads"
+    checks:
+      - id: linkedin_ads_rows
+        title: "LinkedIn Ads row count"
+        type: row_count_between
+        min: 1200
+        max: 2200
+      - id: linkedin_ads_required_columns
+        title: "LinkedIn Ads required columns"
+        type: required_columns
+        columns:
+          - date
+          - campaign_name
+          - campaign_id
+          - objective
+          - market
+          - model
+          - impressions
+          - clicks
+          - spend
+      - id: linkedin_ads_date_range
+        title: "LinkedIn Ads date range"
+        type: date_range
+        column: date
+        min: "2025-01-01"
+        max: "2025-12-31"
+
+  - file: tv_performance.csv
+    title: "TV Performance"
+    checks:
+      - id: tv_rows
+        title: "TV performance row count"
+        type: row_count_between
+        min: 240
+        max: 420
+      - id: tv_required_columns
+        title: "TV required columns"
+        type: required_columns
+        columns:
+          - date_week_start
+          - broadcaster
+          - market
+          - spots_aired
+          - spend
+      - id: tv_date_range
+        title: "TV date range"
+        type: date_range
+        column: date_week_start
+        min: "2025-07-01"
+        max: "2025-12-22"
+      - id: tv_market_coverage
+        title: "TV market coverage"
+        type: required_values
+        column: market
+        values: ["GB"]
+        min_ratio: 0.9
+
+  - file: ooh_performance.csv
+    title: "OOH Performance"
+    checks:
+      - id: ooh_rows
+        title: "OOH row count"
+        type: row_count_between
+        min: 100
+        max: 240
+      - id: ooh_required_columns
+        title: "OOH required columns"
+        type: required_columns
+        columns:
+          - campaign_name
+          - campaign_id
+          - start_date
+          - end_date
+          - market
+          - spend
+      - id: ooh_start_range
+        title: "OOH start date range"
+        type: date_range
+        column: start_date
+        min: "2025-01-01"
+        max: "2025-12-31"
+
+  - file: print_performance.csv
+    title: "Print Performance"
+    checks:
+      - id: print_rows
+        title: "Print row count"
+        type: row_count_between
+        min: 60
+        max: 180
+      - id: print_required_columns
+        title: "Print required columns"
+        type: required_columns
+        columns:
+          - date
+          - publication
+          - market
+          - model
+          - spend
+      - id: print_date_range
+        title: "Print date range"
+        type: date_range
+        column: date
+        min: "2025-01-01"
+        max: "2025-12-31"
+
+  - file: radio_performance.csv
+    title: "Radio Performance"
+    checks:
+      - id: radio_rows
+        title: "Radio row count"
+        type: row_count_between
+        min: 40
+        max: 90
+      - id: radio_required_columns
+        title: "Radio required columns"
+        type: required_columns
+        columns:
+          - campaign_name
+          - start_date
+          - station
+          - market
+          - spend
+      - id: radio_start_range
+        title: "Radio start date range"
+        type: date_range
+        column: start_date
+        min: "2025-01-01"
+        max: "2025-12-31"
+
+  - file: competitor_spend.csv
+    title: "Competitor Spend"
+    checks:
+      - id: competitor_rows
+        title: "Competitor spend row count"
+        type: row_count_between
+        min: 300
+        max: 500
+      - id: competitor_required_columns
+        title: "Competitor spend required columns"
+        type: required_columns
+        columns:
+          - year_month
+          - competitor
+          - channel
+          - estimated_spend_gbp
+      - id: competitor_date_range
+        title: "Competitor date range"
+        type: date_range
+        column: year_month
+        min: "2025-01"
+        max: "2025-12"
+
+  - file: economic_indicators.csv
+    title: "Economic Indicators"
+    checks:
+      - id: econ_rows
+        title: "Economic indicators row count"
+        type: row_count_between
+        min: 24
+        max: 60
+      - id: econ_required_columns
+        title: "Economic required columns"
+        type: required_columns
+        columns:
+          - year_month
+          - country
+          - smmt_total_registrations
+          - consumer_confidence_index
+          - bank_rate_pct
+      - id: econ_date_range
+        title: "Economic date range"
+        type: date_range
+        column: year_month
+        min: "2025-01"
+        max: "2025-12"
+      - id: econ_country_coverage
+        title: "Economic country coverage"
+        type: required_values
+        column: country
+        values: ["GB", "DE", "FR"]
+
+  - file: events.csv
+    title: "Events"
+    checks:
+      - id: events_rows
+        title: "Events row count"
+        type: row_count_between
+        min: 12
+        max: 30
+      - id: events_required_columns
+        title: "Events required columns"
+        type: required_columns
+        columns:
+          - event_name
+          - event_type
+          - start_date
+          - end_date
+          - market
+          - spend
+      - id: events_date_range
+        title: "Events date range"
+        type: date_range
+        column: start_date
+        min: "2025-01-01"
+        max: "2025-12-31"
+      - id: events_market_coverage
+        title: "Events market coverage"
+        type: required_values
+        column: market
+        values: ["GB", "DE", "FR"]
+
+  - file: sla_tracking.csv
+    title: "SLA Tracking"
+    checks:
+      - id: sla_rows
+        title: "SLA row count"
+        type: row_count_between
+        min: 40
+        max: 100
+      - id: sla_required_columns
+        title: "SLA required columns"
+        type: required_columns
+        columns:
+          - year_month
+          - vendor
+          - contract_type
+          - metric_name
+          - contracted_value
+          - actual_value
+          - in_compliance
+      - id: sla_date_range
+        title: "SLA date range"
+        type: date_range
+        column: year_month
+        min: "2025-01"
+        max: "2025-12"
+
+  - file: leads.csv
+    title: "Leads"
+    checks:
+      - id: leads_rows
+        title: "Leads row count"
+        type: row_count_between
+        min: 9000
+        max: 11000
+      - id: leads_required_columns
+        title: "Leads required columns"
+        type: required_columns
+        columns:
+          - lead_id
+          - created_date
+          - model
+          - dealer_id
+          - stage
+          - market
+          - is_qualified
+      - id: leads_created_date_range
+        title: "Leads date range"
+        type: date_range
+        column: created_date
+        min: "2025-01-01"
+        max: "2025-12-31"
+      - id: leads_market_coverage
+        title: "Leads market coverage"
+        type: required_values
+        column: market
+        values: ["GB", "DE", "FR"]
+
+  - file: test_drives.csv
+    title: "Test Drives"
+    checks:
+      - id: test_drives_rows
+        title: "Test drives row count"
+        type: row_count_between
+        min: 7000
+        max: 9000
+      - id: test_drives_required_columns
+        title: "Test drives required columns"
+        type: required_columns
+        columns:
+          - booking_id
+          - lead_id
+          - booking_date
+          - test_drive_date
+          - model
+          - outcome
+          - dealer_id
+          - market
+      - id: test_drives_booking_date_range
+        title: "Test drives booking date range"
+        type: date_range
+        column: booking_date
+        min: "2025-01-01"
+        max: "2025-12-31"
+      - id: test_drives_market_coverage
+        title: "Test drives market coverage"
+        type: required_values
+        column: market
+        values: ["GB", "DE", "FR"]
+
+  - file: vehicle_sales.csv
+    title: "Vehicle Sales"
+    checks:
+      - id: sales_rows
+        title: "Vehicle sales row count"
+        type: row_count_between
+        min: 3800
+        max: 5200
+      - id: sales_required_columns
+        title: "Vehicle sales required columns"
+        type: required_columns
+        columns:
+          - sale_id
+          - date
+          - model
+          - trim
+          - dealer_id
+          - market
+          - price_gbp
+      - id: sales_date_range
+        title: "Vehicle sales date range"
+        type: date_range
+        column: date
+        min: "2025-09-01"
+        max: "2025-12-31"
+      - id: sales_market_coverage
+        title: "Vehicle sales market coverage"
+        type: required_values
+        column: market
+        values: ["GB", "DE", "FR"]
+      - id: sales_price
+        title: "Vehicle sales price positive"
+        type: numeric_range
+        column: price_gbp
+        min: 20000
+        max: 120000
+
+  - file: website_analytics.csv
+    title: "Website Analytics"
+    checks:
+      - id: analytics_rows
+        title: "Website analytics row count"
+        type: row_count_between
+        min: 4500
+        max: 6500
+      - id: analytics_required_columns
+        title: "Website analytics required columns"
+        type: required_columns
+        columns:
+          - date
+          - channel
+          - device
+          - sessions
+          - users
+          - new_users
+          - bounce_rate
+          - configurator_starts
+      - id: analytics_date_range
+        title: "Website analytics date range"
+        type: date_range
+        column: date
+        min: "2025-01-01"
+        max: "2025-12-31"
+
+  - file: configurator_sessions.csv
+    title: "Configurator Sessions"
+    checks:
+      - id: sessions_rows
+        title: "Configurator sessions row count"
+        type: row_count_between
+        min: 9000
+        max: 13000
+      - id: sessions_required_columns
+        title: "Configurator sessions required columns"
+        type: required_columns
+        columns:
+          - session_id
+          - date
+          - model
+          - device
+          - steps_completed
+          - completed
+          - lead_submitted
+          - market
+      - id: sessions_date_range
+        title: "Configurator sessions date range"
+        type: date_range
+        column: date
+        min: "2025-01-01"
+        max: "2025-12-31"
+      - id: sessions_market_coverage
+        title: "Configurator market coverage"
+        type: required_values
+        column: market
+        values: ["GB", "DE", "FR"]
+
+  - file: contracts/ITV_Airtime_Agreement.md
+    title: "ITV contract"
+    checks:
+      - id: itv_contract_exists
+        title: "ITV airtime contract exists"
+        type: exists
+
+  - file: contracts/Sky_Airtime_Agreement.md
+    title: "Sky contract"
+    checks:
+      - id: sky_contract_exists
+        title: "Sky airtime contract exists"
+        type: exists
+
+  - file: contracts/Sky_BVOD_Addendum.md
+    title: "Sky BVOD contract"
+    checks:
+      - id: sky_bvod_contract_exists
+        title: "Sky BVOD contract exists"
+        type: exists
+
+  - file: contracts/JCDecaux_OOH_Contract.md
+    title: "JCDecaux contract"
+    checks:
+      - id: jcdecaux_contract_exists
+        title: "JCDecaux contract exists"
+        type: exists
+
+  - file: contracts/ClearChannel_DOOH_Agreement.md
+    title: "ClearChannel contract"
+    checks:
+      - id: clearchannel_contract_exists
+        title: "ClearChannel contract exists"
+        type: exists
+
+  - file: contracts/MediaAgency_Terms_of_Business.md
+    title: "Media agency contract"
+    checks:
+      - id: mediaagency_terms_exists
+        title: "Media agency terms exists"
+        type: exists
+
+cross_file_checks:
+  - id: test_drives_references_existing_leads
+    title: "Test drives reference valid leads"
+    type: foreign_key_reference
+    source_file: leads.csv
+    source_column: lead_id
+    target_file: test_drives.csv
+    target_column: lead_id
+    min_match_ratio: 1.0
+    ignore_nulls: true
+
+  - id: sales_references_existing_leads_when_present
+    title: "Vehicle sales reference valid leads where available"
+    type: foreign_key_reference
+    source_file: leads.csv
+    source_column: lead_id
+    target_file: vehicle_sales.csv
+    target_column: lead_id
+    min_match_ratio: 1.0
+    ignore_nulls: true
+
+  - id: vehicle_sales_reach_after_launch
+    title: "Vehicle sales constrained to post-launch window"
+    type: date_range
+    file: vehicle_sales.csv
+    column: date
+    min: "2025-09-01"
+    max: "2025-12-31"

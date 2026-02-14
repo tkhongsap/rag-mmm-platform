@@ -1,4 +1,11 @@
-"""REST API layer for programmatic access to RAG retrieval and MMM analysis endpoints.
+"""REST API layer for programmatic access to RAG retrieval and MMM analysis endpoints."""
 
-Serves as the backend for non-Streamlit integrations.
-"""
+
+def __getattr__(name):
+    if name == "app":
+        from .main import app
+        return app
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+__all__ = ["app"]
