@@ -263,21 +263,62 @@ function App() {
             </article>
           </section>
 
-          <article className="card">
-            <h2>File Preview</h2>
+          <article className="card preview-panel">
+            <div className="preview-header">
+              <h2>File Preview</h2>
+              {selectedFile && (
+                <span className="preview-source file-name">{selectedFile}</span>
+              )}
+            </div>
             {selectedFile ? (
-              <>
-                <p className="muted">Source: {selectedFile}</p>
-                {previewLoading ? (
-                  <p className="muted">Loading preview...</p>
-                ) : preview?.error ? (
-                  <p className="error">{preview.error}</p>
-                ) : (
-                  <pre>{JSON.stringify(preview?.preview_rows ?? [], null, 2)}</pre>
-                )}
-              </>
+              previewLoading ? (
+                <div className="preview-loading">
+                  <div className="skeleton skeleton-preview-line" />
+                  <div className="skeleton skeleton-preview-line" style={{ width: '85%' }} />
+                  <div className="skeleton skeleton-preview-line" style={{ width: '70%' }} />
+                  <div className="skeleton skeleton-preview-line" style={{ width: '90%' }} />
+                  <div className="skeleton skeleton-preview-line" style={{ width: '60%' }} />
+                </div>
+              ) : preview?.error ? (
+                <div className="preview-error">
+                  <span>&#9888;</span>
+                  <span>{preview.error}</span>
+                </div>
+              ) : preview?.preview_rows?.length > 0 ? (
+                <div className="preview-code-block">
+                  <table className="preview-table">
+                    <thead>
+                      <tr>
+                        {Object.keys(preview.preview_rows[0]).map((col) => (
+                          <th key={col}>{col}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {preview.preview_rows.map((row, i) => (
+                        <tr key={i}>
+                          {Object.values(row).map((val, j) => (
+                            <td key={j}>{val == null ? '' : String(val)}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : preview?.content != null ? (
+                <div className="preview-code-block">
+                  <pre>{preview.content}</pre>
+                </div>
+              ) : (
+                <div className="preview-code-block">
+                  <pre>{JSON.stringify(preview, null, 2)}</pre>
+                </div>
+              )
             ) : (
-              <p className="muted">Select a file from the table to view a preview.</p>
+              <div className="empty-state">
+                <div className="empty-state-icon">&#128196;</div>
+                <p>Select a file from the table to view a preview</p>
+              </div>
             )}
           </article>
         </>
