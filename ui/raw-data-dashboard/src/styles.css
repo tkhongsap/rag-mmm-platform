@@ -531,6 +531,13 @@ tbody tr.selected:nth-child(even) {
   gap: 10px;
 }
 
+.preview-loading-text {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
 .skeleton-preview-line {
   height: 14px;
   width: 100%;

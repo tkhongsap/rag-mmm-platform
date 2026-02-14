@@ -66,6 +66,17 @@ function EmptyState({ message }) {
   );
 }
 
+function isCrossFileCheck(check) {
+  const fileRef = check.file;
+  const checkId = String(check.id || '').toLowerCase();
+
+  if (!fileRef) return true;
+  if (checkId.startsWith('cross')) return true;
+
+  const separator = /\s(?:\-\>|\u2192|with|&)\s|,|;/;
+  return typeof fileRef === 'string' ? separator.test(fileRef) : false;
+}
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -336,7 +347,7 @@ function App() {
                           <td><StatusPill status={check.status} /></td>
                           <td>
                             {check.title}
-                            {!check.file && <span className="cross-file-badge">cross-file</span>}
+                            {isCrossFileCheck(check) && <span className="cross-file-badge">cross-file</span>}
                           </td>
                           <td className="file-name">{check.file}</td>
                           <td className="check-value">
@@ -384,6 +395,7 @@ function App() {
             {selectedFile ? (
               previewLoading ? (
                 <div className="preview-loading">
+                  <span className="preview-loading-text">Loading preview...</span>
                   <div className="skeleton skeleton-preview-line" />
                   <div className="skeleton skeleton-preview-line" style={{ width: '85%' }} />
                   <div className="skeleton skeleton-preview-line" style={{ width: '70%' }} />
