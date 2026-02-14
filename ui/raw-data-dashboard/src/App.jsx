@@ -223,7 +223,7 @@ function App() {
                 <EmptyState message="No conformance checks available" />
               ) : (
                 <div className="table-wrap">
-                  <table>
+                  <table className="checks-table">
                     <thead>
                       <tr>
                         <th>Status</th>
@@ -236,15 +236,22 @@ function App() {
                     </thead>
                     <tbody>
                       {checks.map((check) => (
-                        <tr key={`${check.file}-${check.id}`}>
+                        <tr
+                          key={`${check.file}-${check.id}`}
+                          className={check.status === 'fail' ? 'fail-row' : ''}
+                        >
                           <td><StatusPill status={check.status} /></td>
                           <td>{check.title}</td>
-                          <td>{check.file}</td>
-                          <td>
-                            <pre>{JSON.stringify(check.observed, null, 2)}</pre>
+                          <td className="file-name">{check.file}</td>
+                          <td className="check-value">
+                            <pre title={JSON.stringify(check.observed, null, 2)}>
+                              {JSON.stringify(check.observed, null, 2)}
+                            </pre>
                           </td>
-                          <td>
-                            <pre>{JSON.stringify(check.expected, null, 2)}</pre>
+                          <td className="check-value">
+                            <pre title={JSON.stringify(check.expected, null, 2)}>
+                              {JSON.stringify(check.expected, null, 2)}
+                            </pre>
                           </td>
                           <td>{check.details}</td>
                         </tr>

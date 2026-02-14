@@ -234,6 +234,8 @@ tbody tr.selected:nth-child(even) {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  min-width: 56px;
+  text-align: center;
 }
 
 .pill-pass {
@@ -249,6 +251,44 @@ tbody tr.selected:nth-child(even) {
 .pill-fail {
   background: var(--fail-bg);
   color: var(--fail);
+}
+
+/* PRD conformance table */
+.checks-table .file-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+}
+
+.checks-table .check-value {
+  max-width: 180px;
+  overflow: hidden;
+}
+
+.checks-table .check-value pre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+  cursor: default;
+}
+
+.checks-table .check-value pre:hover {
+  white-space: pre-wrap;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+.checks-table tr.fail-row {
+  background: var(--fail-bg);
+}
+
+.checks-table tr.fail-row:nth-child(even) {
+  background: var(--fail-bg);
+}
+
+.checks-table tbody tr:not(.fail-row) {
+  cursor: default;
 }
 
 /* Pre / code */
