@@ -24,11 +24,14 @@ function StatusPill({ status }) {
   return <span className={`pill pill-${text}`}>{text.toUpperCase()}</span>;
 }
 
-function SummaryCard({ label, value }) {
+function SummaryCard({ label, value, accent }) {
   return (
-    <article className="card">
-      <p className="label">{label}</p>
-      <p className="value">{value}</p>
+    <article className="summary-card" style={accent ? { '--card-accent': accent } : undefined}>
+      <div className="summary-card-accent" />
+      <div className="summary-card-content">
+        <p className="label">{label}</p>
+        <p className="value">{value}</p>
+      </div>
     </article>
   );
 }
@@ -161,13 +164,13 @@ function App() {
       ) : (
         <>
           <section className="summary-grid">
-            <SummaryCard label="Total Files" value={summary.total_files || 0} />
-            <SummaryCard label="CSV Files" value={summary.csv_files || 0} />
-            <SummaryCard label="Total Rows" value={(summary.total_rows || 0).toLocaleString()} />
-            <SummaryCard label="Total Size" value={formatBytes(summary.total_size_bytes || 0)} />
-            <SummaryCard label="Checks Passing" value={`${passing}/${checks.length} (${checkRate}%)`} />
-            <SummaryCard label="Checks Warn/Fail" value={`${warn} / ${fail}`} />
-            <SummaryCard label="Last Scan" value={formatDate(summary.scanned_at)} />
+            <SummaryCard label="Total Files" value={summary.total_files || 0} accent="var(--accent)" />
+            <SummaryCard label="CSV Files" value={summary.csv_files || 0} accent="var(--accent)" />
+            <SummaryCard label="Total Rows" value={(summary.total_rows || 0).toLocaleString()} accent="var(--text-secondary)" />
+            <SummaryCard label="Total Size" value={formatBytes(summary.total_size_bytes || 0)} accent="var(--text-secondary)" />
+            <SummaryCard label="Checks Passing" value={`${passing}/${checks.length} (${checkRate}%)`} accent="var(--pass)" />
+            <SummaryCard label="Checks Warn/Fail" value={`${warn} / ${fail}`} accent="var(--warn)" />
+            <SummaryCard label="Last Scan" value={formatDate(summary.scanned_at)} accent="var(--text-muted)" />
           </section>
 
           <section className="grid">
