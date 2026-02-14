@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { getSummary, getFilePreview } from './api';
 
 function formatBytes(bytes) {
@@ -74,6 +74,20 @@ function App() {
   const [preview, setPreview] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [checkFilter, setCheckFilter] = useState('all');
+  const [expandedFiles, setExpandedFiles] = useState(new Set());
+
+  const toggleExpand = (fileName, e) => {
+    e.stopPropagation();
+    setExpandedFiles((prev) => {
+      const next = new Set(prev);
+      if (next.has(fileName)) {
+        next.delete(fileName);
+      } else {
+        next.add(fileName);
+      }
+      return next;
+    });
+  };
 
   const refresh = async () => {
     setLoading(true);
@@ -189,6 +203,7 @@ function App() {
                   <table>
                     <thead>
                       <tr>
+                        <th style={{ width: '36px' }} />
                         <th>File</th>
                         <th>Rows</th>
                         <th>Columns</th>
@@ -201,20 +216,69 @@ function App() {
                     <tbody>
                       {files.map((file) => {
                         const selected = file.file_name === selectedFile;
+                        const expanded = expandedFiles.has(file.file_name);
                         return (
-                          <tr
-                            key={file.file_name}
-                            className={selected ? 'selected' : ''}
-                            onClick={() => setSelectedFile(file.file_name)}
-                          >
-                            <td className="file-name">{file.file_name}</td>
-                            <td>{file.is_csv ? file.rows : <span className="na-value">n/a</span>}</td>
-                            <td>{file.is_csv ? file.columns : <span className="na-value">n/a</span>}</td>
-                            <td>{formatBytes(file.file_size_bytes)}</td>
-                            <td>{formatDate(file.last_modified)}</td>
-                            <td>{file.overall_missing_ratio != null ? `${(file.overall_missing_ratio * 100).toFixed(2)}%` : <span className="na-value">n/a</span>}</td>
-                            <td>{file.is_csv ? 'CSV' : 'Other'}</td>
-                          </tr>
+                          <React.Fragment key={file.file_name}>
+                            <tr
+                              className={selected ? 'selected' : ''}
+                              onClick={() => setSelectedFile(file.file_name)}
+                            >
+                              <td className="expand-cell">
+                                {file.is_csv ? (
+                                  <button
+                                    className={`expand-toggle${expanded ? ' expanded' : ''}`}
+                                    onClick={(e) => toggleExpand(file.file_name, e)}
+                                    aria-label={expanded ? 'Collapse profiles' : 'Expand profiles'}
+                                  >
+                                    &#9654;
+                                  </button>
+                                ) : null}
+                              </td>
+                              <td className="file-name">{file.file_name}</td>
+                              <td>{file.is_csv ? file.rows : <span className="na-value">n/a</span>}</td>
+                              <td>{file.is_csv ? file.columns : <span className="na-value">n/a</span>}</td>
+                              <td>{formatBytes(file.file_size_bytes)}</td>
+                              <td>{formatDate(file.last_modified)}</td>
+                              <td>{file.overall_missing_ratio != null ? `${(file.overall_missing_ratio * 100).toFixed(2)}%` : <span className="na-value">n/a</span>}</td>
+                              <td>{file.is_csv ? 'CSV' : 'Other'}</td>
+                            </tr>
+                            {expanded && file.column_profiles?.length > 0 && (
+                              <tr className="profiles-row">
+                                <td colSpan={8}>
+                                  <div className="profiles-wrap">
+                                    <table className="profiles-table">
+                                      <thead>
+                                        <tr>
+                                          <th>Column</th>
+                                          <th>Dtype</th>
+                                          <th>Null Count</th>
+                                          <th>Null %</th>
+                                          <th>Distinct</th>
+                                          <th>Min</th>
+                                          <th>Max</th>
+                                          <th>Sample</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {file.column_profiles.map((col) => (
+                                          <tr key={col.column_name}>
+                                            <td className="file-name">{col.column_name}</td>
+                                            <td>{col.dtype}</td>
+                                            <td>{col.null_count}</td>
+                                            <td>{col.null_ratio != null ? `${(col.null_ratio * 100).toFixed(1)}%` : '—'}</td>
+                                            <td>{col.distinct_count}</td>
+                                            <td className="profile-value" title={col.min != null ? String(col.min) : ''}>{col.min != null ? String(col.min) : '—'}</td>
+                                            <td className="profile-value" title={col.max != null ? String(col.max) : ''}>{col.max != null ? String(col.max) : '—'}</td>
+                                            <td className="profile-value" title={Array.isArray(col.sample_values) ? col.sample_values.join(', ') : String(col.sample_values ?? '')}>{Array.isArray(col.sample_values) ? col.sample_values.join(', ') : String(col.sample_values ?? '')}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
                         );
                       })}
                     </tbody>

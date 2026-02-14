@@ -225,6 +225,99 @@ tbody tr.selected:nth-child(even) {
   font-style: italic;
 }
 
+/* Expand toggle */
+.expand-cell {
+  width: 36px;
+  padding: 10px 6px 10px 12px;
+  text-align: center;
+}
+
+.expand-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.expand-toggle:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.expand-toggle.expanded {
+  transform: rotate(90deg);
+  color: var(--accent);
+}
+
+/* Column profiles sub-row */
+.profiles-row > td {
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.profiles-row:hover > td {
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.profiles-wrap {
+  padding: 8px 12px 8px 48px;
+  overflow-x: auto;
+}
+
+.profiles-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.profiles-table th {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+
+.profiles-table td {
+  padding: 4px 8px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.2);
+  font-size: 0.76rem;
+}
+
+.profiles-table tbody tr {
+  cursor: default;
+}
+
+.profiles-table tbody tr:hover {
+  background: rgba(51, 65, 85, 0.2);
+}
+
+.profiles-table tbody tr:nth-child(even) {
+  background: rgba(51, 65, 85, 0.15);
+}
+
+.profile-value {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Status pills */
 .pill {
   display: inline-block;
