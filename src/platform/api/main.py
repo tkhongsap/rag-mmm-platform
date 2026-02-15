@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -16,6 +18,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/")
+def root() -> dict:
+    return {
+        "status": "online",
+        "service": "rag-mmm-platform-api",
+        "message": "Service is running",
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 @app.get("/health")
