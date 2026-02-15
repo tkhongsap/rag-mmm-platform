@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { getSummary, getFilePreview } from './api';
 
+const THEME_KEY = 'raw-data-dashboard-theme';
+
 function formatBytes(bytes) {
   const units = ['B', 'KB', 'MB', 'GB'];
   let value = Number(bytes || 0);
@@ -83,6 +85,18 @@ function isCrossFileCheck(check) {
 }
 
 function App() {
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === 'undefined') return 'dark';
+    const storedTheme = window.localStorage.getItem(THEME_KEY);
+    if (storedTheme === 'light' || storedTheme === 'dark') return storedTheme;
+
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+
+    return 'light';
+  });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [payload, setPayload] = useState(null);
@@ -92,6 +106,15 @@ function App() {
   const [checkFilter, setCheckFilter] = useState('all');
   const [expandedFiles, setExpandedFiles] = useState(new Set());
   const [previewRows, setPreviewRows] = useState(20);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      window.localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      // Ignore storage errors when browsing in private mode or restricted environments.
+    }
+  }, [theme]);
 
   const toggleExpand = (fileName, e) => {
     e.stopPropagation();
@@ -120,6 +143,10 @@ function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === 'dark' ? 'light' : 'dark'));
   };
 
   useEffect(() => {
@@ -205,7 +232,10 @@ function App() {
           <p className="subtitle">Synthetic data readiness against PRD checks</p>
         </div>
         <div className="topbar-actions">
-          <button onClick={refresh} className="primary" disabled={loading}>
+          <button type="button" onClick={toggleTheme} className="secondary">
+            {theme === 'dark' ? '☀️ Light mode' : '🌙 Dark mode'}
+          </button>
+          <button type="button" onClick={refresh} className="primary" disabled={loading}>
             {loading ? 'Refreshing...' : 'Refresh'}
           </button>
         </div>
