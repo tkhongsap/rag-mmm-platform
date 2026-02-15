@@ -108,3 +108,6 @@ ui/*/dist/
 
 # Git rewrite temporary files
 .git-rewrite/
+
+# Local-only clone of helper repo (kept outside version control)
+ralph/

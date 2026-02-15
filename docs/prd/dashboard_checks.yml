@@ -367,7 +367,7 @@ files:
         title: "Events market coverage"
         type: required_values
         column: market
-        values: ["GB", "DE", "FR"]
+        values: ["GB"]
 
   - file: sla_tracking.csv
     title: "SLA Tracking"

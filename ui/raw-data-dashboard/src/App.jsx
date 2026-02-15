@@ -20,17 +20,22 @@ function formatDate(value) {
 }
 
 function StatusPill({ status }) {
-  const text = status || 'unknown';
-  return <span className={`pill pill-${text}`}>{text.toUpperCase()}</span>;
+  const normalized = ['pass', 'warn', 'fail'].includes(status) ? status : 'unknown';
+  return <span className={`pill pill-${normalized}`}>{normalized.toUpperCase()}</span>;
 }
 
-function SummaryCard({ label, value, accent }) {
+function SummaryCard({ label, value, accent, icon }) {
   return (
     <article className="summary-card" style={accent ? { '--card-accent': accent } : undefined}>
-      <div className="summary-card-accent" />
-      <div className="summary-card-content">
-        <p className="label">{label}</p>
-        <p className="value">{value}</p>
+      <div className="summary-card-edge" />
+      <div className="summary-card-body">
+        <span className="summary-card-icon" aria-hidden="true">
+          {icon}
+        </span>
+        <div className="summary-card-text">
+          <p className="label">{label}</p>
+          <p className="value">{value}</p>
+        </div>
       </div>
     </article>
   );
@@ -57,10 +62,10 @@ function SkeletonRow() {
   );
 }
 
-function EmptyState({ message }) {
+function EmptyState({ message, icon = '[ ]' }) {
   return (
     <div className="empty-state">
-      <div className="empty-state-icon">&#128193;</div>
+      <div className="empty-state-icon">{icon}</div>
       <p>{message || 'No data available'}</p>
     </div>
   );
@@ -73,7 +78,7 @@ function isCrossFileCheck(check) {
   if (!fileRef) return true;
   if (checkId.startsWith('cross')) return true;
 
-  const separator = /\s(?:\-\>|\u2192|with|&)\s|,|;/;
+  const separator = /\s(?:->|\u2192|with|&)\s|,|;/;
   return typeof fileRef === 'string' ? separator.test(fileRef) : false;
 }
 
@@ -166,21 +171,49 @@ function App() {
     [checks, checkFilter],
   );
 
+  const summaryCards = [
+    { label: 'Total Files', value: summary.total_files || 0, accent: 'var(--accent)', icon: 'FL' },
+    { label: 'CSV Files', value: summary.csv_files || 0, accent: 'var(--accent)', icon: 'CSV' },
+    {
+      label: 'Total Rows',
+      value: (summary.total_rows || 0).toLocaleString(),
+      accent: 'var(--text-secondary)',
+      icon: 'ROW',
+    },
+    {
+      label: 'Total Size',
+      value: formatBytes(summary.total_size_bytes || 0),
+      accent: 'var(--text-secondary)',
+      icon: 'MB',
+    },
+    {
+      label: 'Checks Passing',
+      value: `${passing}/${checks.length} (${checkRate}%)`,
+      accent: 'var(--pass)',
+      icon: 'OK',
+    },
+    { label: 'Checks Warn/Fail', value: `${warn} / ${fail}`, accent: 'var(--warn)', icon: 'WF' },
+    { label: 'Last Scan', value: formatDate(summary.scanned_at), accent: 'var(--text-muted)', icon: 'TS' },
+  ];
+
   return (
     <main className="container">
       <header className="topbar">
-        <div>
+        <div className="topbar-copy">
+          <p className="eyebrow">Raw Data Console</p>
           <h1>Raw Data Inventory</h1>
-          <p>Synthetic data readiness against PRD checks</p>
+          <p className="subtitle">Synthetic data readiness against PRD checks</p>
         </div>
-        <button onClick={refresh} className="primary" disabled={loading}>
-          {loading ? 'Refreshing\u2026' : 'Refresh'}
-        </button>
+        <div className="topbar-actions">
+          <button onClick={refresh} className="primary" disabled={loading}>
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </button>
+        </div>
       </header>
 
       {error && (
         <div className="error-banner">
-          <span>&#9888;</span>
+          <span>!</span>
           <span>{error}</span>
         </div>
       )}
@@ -192,30 +225,37 @@ function App() {
           ))}
         </section>
       ) : !payload ? (
-        <EmptyState message="No data available. Check that the API server is running." />
+        <EmptyState message="No data available. Check that the API server is running." icon="?" />
       ) : (
         <>
           <section className="summary-grid">
-            <SummaryCard label="Total Files" value={summary.total_files || 0} accent="var(--accent)" />
-            <SummaryCard label="CSV Files" value={summary.csv_files || 0} accent="var(--accent)" />
-            <SummaryCard label="Total Rows" value={(summary.total_rows || 0).toLocaleString()} accent="var(--text-secondary)" />
-            <SummaryCard label="Total Size" value={formatBytes(summary.total_size_bytes || 0)} accent="var(--text-secondary)" />
-            <SummaryCard label="Checks Passing" value={`${passing}/${checks.length} (${checkRate}%)`} accent="var(--pass)" />
-            <SummaryCard label="Checks Warn/Fail" value={`${warn} / ${fail}`} accent="var(--warn)" />
-            <SummaryCard label="Last Scan" value={formatDate(summary.scanned_at)} accent="var(--text-muted)" />
+            {summaryCards.map((card) => (
+              <SummaryCard
+                key={card.label}
+                label={card.label}
+                value={card.value}
+                accent={card.accent}
+                icon={card.icon}
+              />
+            ))}
           </section>
 
           <section className="grid">
             <article className="card wide">
-              <h2>Data Files</h2>
+              <div className="section-head">
+                <h2>Data Files</h2>
+                <span className="section-meta">
+                  {files.length} file{files.length === 1 ? '' : 's'}
+                </span>
+              </div>
               {files.length === 0 ? (
-                <EmptyState message="No files found in data/raw/" />
+                <EmptyState message="No files found in data/raw/" icon="[]" />
               ) : (
-                <div className="table-wrap">
+                <div className="table-wrap inventory-wrap">
                   <table>
                     <thead>
                       <tr>
-                        <th style={{ width: '36px' }} />
+                        <th className="expand-col" />
                         <th>File</th>
                         <th>Rows</th>
                         <th>Columns</th>
@@ -229,12 +269,10 @@ function App() {
                       {files.map((file) => {
                         const selected = file.file_name === selectedFile;
                         const expanded = expandedFiles.has(file.file_name);
+
                         return (
                           <React.Fragment key={file.file_name}>
-                            <tr
-                              className={selected ? 'selected' : ''}
-                              onClick={() => setSelectedFile(file.file_name)}
-                            >
+                            <tr className={selected ? 'selected' : ''} onClick={() => setSelectedFile(file.file_name)}>
                               <td className="expand-cell">
                                 {file.is_csv ? (
                                   <button
@@ -242,51 +280,76 @@ function App() {
                                     onClick={(e) => toggleExpand(file.file_name, e)}
                                     aria-label={expanded ? 'Collapse profiles' : 'Expand profiles'}
                                   >
-                                    &#9654;
+                                    &gt;
                                   </button>
                                 ) : null}
                               </td>
                               <td className="file-name">{file.file_name}</td>
-                              <td>{file.is_csv ? file.rows : <span className="na-value">n/a</span>}</td>
-                              <td>{file.is_csv ? file.columns : <span className="na-value">n/a</span>}</td>
+                              <td>{file.is_csv ? file.rows ?? 0 : <span className="na-value">n/a</span>}</td>
+                              <td>{file.is_csv ? file.columns ?? 0 : <span className="na-value">n/a</span>}</td>
                               <td>{formatBytes(file.file_size_bytes)}</td>
                               <td>{formatDate(file.last_modified)}</td>
-                              <td>{file.overall_missing_ratio != null ? `${(file.overall_missing_ratio * 100).toFixed(2)}%` : <span className="na-value">n/a</span>}</td>
+                              <td>
+                                {file.overall_missing_ratio != null ? (
+                                  `${(file.overall_missing_ratio * 100).toFixed(2)}%`
+                                ) : (
+                                  <span className="na-value">n/a</span>
+                                )}
+                              </td>
                               <td>{file.is_csv ? 'CSV' : 'Other'}</td>
                             </tr>
-                            {expanded && file.column_profiles?.length > 0 && (
+                            {expanded && (
                               <tr className="profiles-row">
                                 <td colSpan={8}>
-                                  <div className="profiles-wrap">
-                                    <table className="profiles-table">
-                                      <thead>
-                                        <tr>
-                                          <th>Column</th>
-                                          <th>Dtype</th>
-                                          <th>Null Count</th>
-                                          <th>Null %</th>
-                                          <th>Distinct</th>
-                                          <th>Min</th>
-                                          <th>Max</th>
-                                          <th>Sample</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {file.column_profiles.map((col) => (
-                                          <tr key={col.column_name}>
-                                            <td className="file-name">{col.column_name}</td>
-                                            <td>{col.dtype}</td>
-                                            <td>{col.null_count}</td>
-                                            <td>{col.null_ratio != null ? `${(col.null_ratio * 100).toFixed(1)}%` : '—'}</td>
-                                            <td>{col.distinct_count}</td>
-                                            <td className="profile-value" title={col.min != null ? String(col.min) : ''}>{col.min != null ? String(col.min) : '—'}</td>
-                                            <td className="profile-value" title={col.max != null ? String(col.max) : ''}>{col.max != null ? String(col.max) : '—'}</td>
-                                            <td className="profile-value" title={Array.isArray(col.sample_values) ? col.sample_values.join(', ') : String(col.sample_values ?? '')}>{Array.isArray(col.sample_values) ? col.sample_values.join(', ') : String(col.sample_values ?? '')}</td>
+                                  {file.column_profiles?.length ? (
+                                    <div className="profiles-wrap">
+                                      <table className="profiles-table">
+                                        <thead>
+                                          <tr>
+                                            <th>Column</th>
+                                            <th>Dtype</th>
+                                            <th>Null Count</th>
+                                            <th>Null %</th>
+                                            <th>Distinct</th>
+                                            <th>Min</th>
+                                            <th>Max</th>
+                                            <th>Sample</th>
                                           </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
-                                  </div>
+                                        </thead>
+                                        <tbody>
+                                          {file.column_profiles.map((col) => (
+                                            <tr key={col.column_name}>
+                                              <td className="file-name">{col.column_name}</td>
+                                              <td>{col.dtype}</td>
+                                              <td>{col.null_count}</td>
+                                              <td>{col.null_ratio != null ? `${(col.null_ratio * 100).toFixed(1)}%` : 'n/a'}</td>
+                                              <td>{col.distinct_count}</td>
+                                              <td className="profile-value" title={col.min != null ? String(col.min) : ''}>
+                                                {col.min != null ? String(col.min) : 'n/a'}
+                                              </td>
+                                              <td className="profile-value" title={col.max != null ? String(col.max) : ''}>
+                                                {col.max != null ? String(col.max) : 'n/a'}
+                                              </td>
+                                              <td
+                                                className="profile-value"
+                                                title={
+                                                  Array.isArray(col.sample_values)
+                                                    ? col.sample_values.join(', ')
+                                                    : String(col.sample_values ?? '')
+                                                }
+                                              >
+                                                {Array.isArray(col.sample_values)
+                                                  ? col.sample_values.join(', ')
+                                                  : String(col.sample_values ?? '')}
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  ) : (
+                                    <div className="profiles-empty muted">No column profile data available.</div>
+                                  )}
                                 </td>
                               </tr>
                             )}
@@ -301,7 +364,12 @@ function App() {
 
             <article className="card">
               <div className="checks-header">
-                <h2>PRD Conformance</h2>
+                <div className="section-head">
+                  <h2>PRD Conformance</h2>
+                  <span className="section-meta">
+                    {filteredChecks.length}/{checks.length} visible
+                  </span>
+                </div>
                 {checks.length > 0 && (
                   <div className="check-filters">
                     {[
@@ -322,11 +390,11 @@ function App() {
                 )}
               </div>
               {checks.length === 0 ? (
-                <EmptyState message="No conformance checks available" />
+                <EmptyState message="No conformance checks available" icon="{}" />
               ) : filteredChecks.length === 0 ? (
-                <EmptyState message={`No ${checkFilter} checks found`} />
+                <EmptyState message={`No ${checkFilter} checks found`} icon="{}" />
               ) : (
-                <div className="table-wrap">
+                <div className="table-wrap checks-wrap">
                   <table className="checks-table">
                     <thead>
                       <tr>
@@ -339,30 +407,30 @@ function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredChecks.map((check) => (
-                        <tr
-                          key={`${check.file}-${check.id}`}
-                          className={check.status === 'fail' ? 'fail-row' : ''}
-                        >
-                          <td><StatusPill status={check.status} /></td>
-                          <td>
-                            {check.title}
-                            {isCrossFileCheck(check) && <span className="cross-file-badge">cross-file</span>}
-                          </td>
-                          <td className="file-name">{check.file}</td>
-                          <td className="check-value">
-                            <pre title={JSON.stringify(check.observed, null, 2)}>
-                              {JSON.stringify(check.observed, null, 2)}
-                            </pre>
-                          </td>
-                          <td className="check-value">
-                            <pre title={JSON.stringify(check.expected, null, 2)}>
-                              {JSON.stringify(check.expected, null, 2)}
-                            </pre>
-                          </td>
-                          <td>{check.details}</td>
-                        </tr>
-                      ))}
+                      {filteredChecks.map((check, index) => {
+                        const observedText = JSON.stringify(check.observed, null, 2) ?? 'null';
+                        const expectedText = JSON.stringify(check.expected, null, 2) ?? 'null';
+
+                        return (
+                          <tr key={`${check.file}-${check.id}-${index}`} className={check.status === 'fail' ? 'fail-row' : ''}>
+                            <td>
+                              <StatusPill status={check.status} />
+                            </td>
+                            <td className="check-title-cell">
+                              <span className="check-title-text">{check.title}</span>
+                              {isCrossFileCheck(check) && <span className="cross-file-badge">cross-file</span>}
+                            </td>
+                            <td className="file-name">{check.file}</td>
+                            <td className="check-value">
+                              <pre title={observedText}>{observedText}</pre>
+                            </td>
+                            <td className="check-value">
+                              <pre title={expectedText}>{expectedText}</pre>
+                            </td>
+                            <td>{check.details}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -372,10 +440,14 @@ function App() {
 
           <article className="card preview-panel">
             <div className="preview-header">
-              <h2>File Preview</h2>
-              {selectedFile && (
-                <span className="preview-source file-name">{selectedFile}</span>
-              )}
+              <div className="preview-title-wrap">
+                <h2>File Preview</h2>
+                {selectedFile ? (
+                  <span className="preview-source file-name">{selectedFile}</span>
+                ) : (
+                  <span className="preview-source muted">No file selected</span>
+                )}
+              </div>
               {selectedFile && (
                 <label className="row-count-label">
                   Rows
@@ -404,7 +476,7 @@ function App() {
                 </div>
               ) : preview?.error ? (
                 <div className="preview-error">
-                  <span>&#9888;</span>
+                  <span>!</span>
                   <span>{preview.error}</span>
                 </div>
               ) : preview?.preview_rows?.length > 0 ? (
@@ -412,7 +484,7 @@ function App() {
                   <table className="preview-table">
                     <thead>
                       <tr>
-                        {Object.keys(preview.preview_rows[0]).map((col) => (
+                        {Object.keys(preview.preview_rows[0] || {}).map((col) => (
                           <th key={col}>{col}</th>
                         ))}
                       </tr>
@@ -438,28 +510,29 @@ function App() {
                 </div>
               )
             ) : (
-              <div className="empty-state">
-                <div className="empty-state-icon">&#128196;</div>
-                <p>Select a file from the table to view a preview</p>
-              </div>
+              <EmptyState message="Select a file from the table to view a preview" icon="::" />
             )}
           </article>
         </>
       )}
 
       {loading && payload === null && (
-        <section className="grid" style={{ marginTop: '14px' }}>
+        <section className="grid panel-loading">
           <article className="card wide">
-            <h2>Data Files</h2>
-            <div style={{ padding: '8px 0' }}>
+            <div className="section-head">
+              <h2>Data Files</h2>
+            </div>
+            <div>
               <SkeletonRow />
               <SkeletonRow />
               <SkeletonRow />
             </div>
           </article>
           <article className="card">
-            <h2>PRD Conformance</h2>
-            <div style={{ padding: '8px 0' }}>
+            <div className="section-head">
+              <h2>PRD Conformance</h2>
+            </div>
+            <div>
               <SkeletonRow />
               <SkeletonRow />
               <SkeletonRow />
