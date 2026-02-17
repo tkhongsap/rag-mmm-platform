@@ -22,8 +22,8 @@ lint: ## Run linting checks
 	python -m py_compile src/rag/__init__.py
 	python -m py_compile src/mmm/__init__.py
 
-run-app: ## Launch Streamlit multi-page app
-	streamlit run src/ui/app.py --server.port 8501
+run-app: ## Launch React platform app (http://localhost:3001)
+	cd ui/platform && npm run dev
 
 run-rag-cli: ## Run RAG retrieval CLI in interactive mode
 	python -m src.rag.retrieval.cli --interactive

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Enterprise platform combining RAG (Retrieval-Augmented Generation) with Marketing Mix Modeling (MMM). Built with LlamaIndex and OpenAI for the RAG pipeline, statsmodels/scikit-learn for MMM. Connected through a shared Streamlit UI and platform config layer.
+Enterprise platform combining RAG (Retrieval-Augmented Generation) with Marketing Mix Modeling (MMM). Built with LlamaIndex and OpenAI for the RAG pipeline, statsmodels/scikit-learn for MMM. Frontend is a React + Vite app (`ui/platform/`) with sidebar navigation and three pages: RAG Chat, MMM Dashboard, Data Management.
 
 **Current state**: The `src/` modules are **architectural scaffolding** (docstring stubs in `__init__.py` only — no implementation yet). The **synthetic data generators** in `data/generators/` are fully implemented and production-ready. Reference docs and LlamaIndex guides are complete.
 
@@ -24,7 +24,7 @@ python -m pytest tests/rag/test_foo.py -v   # Single test file
 python -m pytest tests/ -k "test_name" -v   # Single test by name
 
 # Run
-make run-app                    # streamlit run src/ui/app.py --server.port 8501
+make run-app                    # cd ui/platform && npm run dev  (http://localhost:3001)
 make run-rag-cli                # python -m src.rag.retrieval.cli --interactive
 
 # Other
@@ -56,7 +56,14 @@ src/
 ├── platform/
 │   ├── api/                      # REST API (stub)
 │   └── config/                   # Centralized configuration (stub)
-└── ui/                           # Streamlit app (minimal boilerplate + 3 placeholder pages)
+
+ui/
+├── platform/                     # React + Vite platform app (port 3001)
+│   └── src/
+│       ├── App.jsx               # Sidebar layout + React Router
+│       ├── api.js                # API client (VITE_API_BASE → http://localhost:8000)
+│       └── pages/                # RagChat, MmmDashboard, DataManagement
+└── raw-data-dashboard/           # Vite React data inventory viewer (port 3000)
 
 data/generators/                  # FULLY IMPLEMENTED synthetic data pipeline
 ├── config.py                     # Master config (seed, budgets, channels, benchmarks)
@@ -92,7 +99,7 @@ The generators produce synthetic marketing data for a UK automotive launch (DEEP
 
 Required in `.env` (see `.env.example` for all defaults):
 - `OPENAI_API_KEY` — required for RAG pipeline
-- RAG: `CHUNK_SIZE=1024`, `CHUNK_OVERLAP=50`, `EMBED_MODEL=text-embedding-3-small`, `LLM_MODEL=gpt-4o-mini`
+- RAG: `CHUNK_SIZE=1024`, `CHUNK_OVERLAP=50`, `EMBED_MODEL=text-embedding-3-small`, `LLM_MODEL=claude-opus-4-6`
 - MMM: `MMM_DATE_COLUMN=date`, `MMM_TARGET_COLUMN=sales`, `MMM_ADSTOCK_MAX_LAG=8`
 
 ## Development Rules
