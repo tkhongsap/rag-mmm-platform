@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from 'react'
 import { sendChatMessage } from '../api'
 
 const SUGGESTED_QUERIES = [
-  'What were the top-performing channels last quarter?',
-  'Summarise the DEEPAL brand positioning strategy.',
-  'Which markets have the highest configurator conversion rate?',
-  'What does the LinkedIn campaign performance look like?',
+  'What are our CPM benchmarks for Meta vs YouTube?',
+  'Summarise the ITV airtime contract.',
+  "What's our budget split by channel?",
+  'Which month had the highest TV spend?',
 ]
 
 function UserBubble({ text }) {

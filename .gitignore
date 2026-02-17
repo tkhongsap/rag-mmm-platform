@@ -109,5 +109,9 @@ ui/*/dist/
 # Git rewrite temporary files
 .git-rewrite/
 
+# RAG evaluation reports (generated, potentially large)
+tests/evaluation/reports/*
+!tests/evaluation/reports/.gitkeep
+
 # Local-only clone of helper repo (kept outside version control)
 ralph/

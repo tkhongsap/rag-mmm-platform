@@ -8,6 +8,7 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from .data_profiles import build_overview, load_preview, ProfileError
 
@@ -319,3 +320,26 @@ def raw_file_preview(file_name: str, rows: int = 20) -> dict:
     except ProfileError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     return payload
+
+
+# ---------------------------------------------------------------------------
+# RAG Chat (Agent SDK)
+# ---------------------------------------------------------------------------
+
+class ChatRequest(BaseModel):
+    message: str
+    history: list = []
+
+
+@app.post("/api/rag/chat")
+async def rag_chat(req: ChatRequest) -> dict:
+    """Answer a marketing question by reading project data files via Agent SDK."""
+    if not req.message.strip():
+        raise HTTPException(status_code=400, detail="message is required")
+    try:
+        from .rag_agent import ask_marketing_question
+
+        reply = await ask_marketing_question(req.message)
+        return {"reply": reply}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
