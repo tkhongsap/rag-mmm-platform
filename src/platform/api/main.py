@@ -323,6 +323,56 @@ def raw_file_preview(file_name: str, rows: int = 20) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Dataset list (consumed by Data Management page)
+# ---------------------------------------------------------------------------
+
+_CATEGORY_MAP: dict[str, str] = {
+    # Digital media
+    "meta_ads.csv": "Digital Media",
+    "google_ads.csv": "Digital Media",
+    "dv360.csv": "Digital Media",
+    "tiktok_ads.csv": "Digital Media",
+    "youtube_ads.csv": "Digital Media",
+    "linkedin_ads.csv": "Digital Media",
+    # Traditional media
+    "tv_performance.csv": "Traditional Media",
+    "ooh_performance.csv": "Traditional Media",
+    "print_performance.csv": "Traditional Media",
+    "radio_performance.csv": "Traditional Media",
+    # Sales pipeline
+    "vehicle_sales.csv": "Sales Pipeline",
+    "website_analytics.csv": "Sales Pipeline",
+    "configurator_sessions.csv": "Sales Pipeline",
+    "leads.csv": "Sales Pipeline",
+    "test_drives.csv": "Sales Pipeline",
+    # External / context
+    "competitor_spend.csv": "External",
+    "economic_indicators.csv": "External",
+    "events.csv": "External",
+    "sla_tracking.csv": "External",
+}
+
+
+@app.get("/api/data/datasets")
+def data_datasets() -> list:
+    """Return a dataset catalogue entry for each raw CSV file."""
+    payload = build_overview()
+    datasets = []
+    for f in payload["files"]:
+        if not f.get("is_csv"):
+            continue
+        name = f["file_name"]
+        datasets.append({
+            "name": name,
+            "category": _CATEGORY_MAP.get(name, "Other"),
+            "rows": f.get("rows") or 0,
+            "updated": (f.get("last_modified") or "")[:10],
+            "status": "ready",
+        })
+    return datasets
+
+
+# ---------------------------------------------------------------------------
 # RAG Chat (Agent SDK)
 # ---------------------------------------------------------------------------
 
