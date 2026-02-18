@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "description": "RAG evaluation dataset — 10 questions with verifiable ground truth from project data",
+  "items": [
+    {
+      "id": "q01",
+      "category": "budget",
+      "question": "What is the total annual UK marketing budget?",
+      "ground_truth": "The total annual UK marketing budget is £20,000,000 (£20M).",
+      "required_facts": ["20,000,000", "20M", "20 million", "£20M", "£20,000,000"],
+      "match_mode": "any"
+    },
+    {
+      "id": "q02",
+      "category": "budget",
+      "question": "Which marketing channel has the largest budget and how much is it?",
+      "ground_truth": "TV has the largest budget at £6,000,000 (£6M), which is 30% of the total.",
+      "required_facts": ["tv", "6,000,000", "6M", "6 million"],
+      "match_mode": "all_groups",
+      "fact_groups": [["tv", "TV", "television"], ["6,000,000", "6M", "6 million", "£6M", "£6,000,000"]]
+    },
+    {
+      "id": "q03",
+      "category": "product",
+      "question": "What vehicle models are available and what are their starting prices?",
+      "ground_truth": "DEEPAL S07 from £27,990; DEEPAL S05 from £24,990; AVATR 12 from £54,990; AVATR 11 from £59,990.",
+      "required_facts": ["27,990", "24,990", "54,990", "59,990"],
+      "match_mode": "all"
+    },
+    {
+      "id": "q04",
+      "category": "contracts",
+      "question": "What is the total value of the ITV airtime purchase agreement?",
+      "ground_truth": "The ITV airtime agreement is worth £3,300,000 (£3.3M), covering July to December 2025.",
+      "required_facts": ["3,300,000", "3.3M", "3.3 million", "£3,300,000", "£3.3M"],
+      "match_mode": "any"
+    },
+    {
+      "id": "q05",
+      "category": "distribution",
+      "question": "How many dealers are in the UK network and how many are launch dealers?",
+      "ground_truth": "There are 50 dealers total in the UK network, with approximately 15 launch dealers.",
+      "required_facts": ["50"],
+      "match_mode": "all"
+    },
+    {
+      "id": "q06",
+      "category": "timeline",
+      "question": "When is the DEEPAL S07 UK launch date?",
+      "ground_truth": "The DEEPAL S07 UK launch date is September 1, 2025.",
+      "required_facts": ["September", "2025-09-01", "Sep 2025", "September 2025", "September 1", "1 September"],
+      "match_mode": "any"
+    },
+    {
+      "id": "q07",
+      "category": "channels",
+      "question": "How many marketing channels are there and what are they?",
+      "ground_truth": "There are 11 channels: 6 digital (YouTube, Meta, Google, DV360, TikTok, LinkedIn), 4 traditional (TV, OOH, print, radio), and events.",
+      "required_facts": ["11"],
+      "match_mode": "all"
+    },
+    {
+      "id": "q08",
+      "category": "contracts",
+      "question": "What is the total value of the JCDecaux OOH advertising contract?",
+      "ground_truth": "The JCDecaux OOH contract is worth £1,800,000 (£1.8M).",
+      "required_facts": ["1,800,000", "1.8M", "1.8 million", "£1,800,000", "£1.8M"],
+      "match_mode": "any"
+    },
+    {
+      "id": "q09",
+      "category": "budget",
+      "question": "What is the annual budget for the radio channel?",
+      "ground_truth": "The radio channel has an annual budget of £400,000 (£400K), which is 2% of the total.",
+      "required_facts": ["400,000", "400K", "400k", "£400,000", "£400K"],
+      "match_mode": "any"
+    },
+    {
+      "id": "q10",
+      "category": "data",
+      "question": "How many weeks of data are in the MMM weekly channel spend dataset?",
+      "ground_truth": "The MMM weekly channel spend dataset contains 52 weeks of data.",
+      "required_facts": ["52"],
+      "match_mode": "all"
+    }
+  ]
+}
