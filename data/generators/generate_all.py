@@ -69,7 +69,7 @@ def run_generation() -> bool:
         RAW_DIR, CONTRACTS_DIR, MMM_DIR, CHANNEL_BUDGETS_GBP, UK_TOTAL_ANNUAL_BUDGET
     )
 
-    total_steps = 7
+    total_steps = 8
     success = True
     start_time = time.time()
 
@@ -153,6 +153,18 @@ def run_generation() -> bool:
     try:
         contracts_mod = _import_generator("contracts")
         contracts_mod.generate()
+        print(f"    OK")
+    except ImportError:
+        print(f"    SKIPPED — module not yet implemented")
+    except Exception as e:
+        print(f"    ERROR: {e}")
+        success = False
+
+    # Step 8: Campaign asset images (~50 PNGs + manifest)
+    _print_step(8, total_steps, "Generating campaign asset images")
+    try:
+        assets_mod = _import_generator("assets")
+        assets_mod.generate()
         print(f"    OK")
     except ImportError:
         print(f"    SKIPPED — module not yet implemented")
