@@ -4,14 +4,23 @@ Local reference for the Claude Agent SDK (formerly Claude Code SDK). These files
 
 ## Files
 
-| File | Topic | Key content |
-|------|-------|-------------|
-| [`00_overview.md`](00_overview.md) | Overview | Capabilities, built-in tools table, SDK vs Client SDK vs CLI comparison |
-| [`01_quickstart.md`](01_quickstart.md) | Quickstart | Bug-fixing agent walkthrough, `query()` loop, permission modes primer |
-| [`02_python-reference.md`](02_python-reference.md) | Python API | `query()`, `ClaudeSDKClient`, `ClaudeAgentOptions` full table, all types, errors, hooks, tool schemas |
-| [`03_hooks.md`](03_hooks.md) | Hooks | `PreToolUse`/`PostToolUse` patterns, `HookMatcher`, block/allow/modify/redirect, security patterns |
-| [`04_subagents.md`](04_subagents.md) | Subagents | `AgentDefinition`, parallel delegation, tool restrictions, dynamic factory pattern |
-| [`05_sessions.md`](05_sessions.md) | Sessions | Session IDs, `resume`, `fork_session`, multi-turn workflows |
+| # | File | Topic | Key content |
+|---|------|-------|-------------|
+| 00 | [`00_overview.md`](00_overview.md) | Overview | Capabilities, built-in tools table, SDK vs Client SDK vs CLI comparison |
+| 01 | [`01_quickstart.md`](01_quickstart.md) | Quickstart | Bug-fixing agent walkthrough, `query()` loop, permission modes primer |
+| 02 | [`02_typescript-reference.md`](02_typescript-reference.md) | TypeScript API | Full TypeScript API reference, types, interfaces, options |
+| 03 | [`03_python-reference.md`](03_python-reference.md) | Python API | `query()`, `ClaudeSDKClient`, `ClaudeAgentOptions` full table, all types, errors, hooks, tool schemas |
+| 04 | [`04_hooks.md`](04_hooks.md) | Hooks | `PreToolUse`/`PostToolUse` patterns, `HookMatcher`, block/allow/modify/redirect, security patterns |
+| 05 | [`05_subagents.md`](05_subagents.md) | Subagents | `AgentDefinition`, parallel delegation, tool restrictions, dynamic factory pattern |
+| 06 | [`06_sessions.md`](06_sessions.md) | Sessions | Session IDs, `resume`, `fork_session`, multi-turn workflows |
+| 07 | [`07_mcp.md`](07_mcp.md) | MCP | MCP server integration, transport types, tool naming, authentication, examples |
+| 08 | [`08_permissions.md`](08_permissions.md) | Permissions | Permission modes (`default`, `acceptEdits`, `bypassPermissions`, `plan`), evaluation order |
+| 09 | [`09_skills.md`](09_skills.md) | Skills | SKILL.md format, auto-discovery, model-invoked skills, tool restrictions |
+| 10 | [`10_slash-commands.md`](10_slash-commands.md) | Slash Commands | Built-in commands, custom commands, frontmatter, arguments, subdirectory namespacing |
+| 11 | [`11_system-prompts.md`](11_system-prompts.md) | System Prompts | CLAUDE.md files, output styles, `systemPrompt` append, custom system prompts |
+| 12 | [`12_plugins.md`](12_plugins.md) | Plugins | Loading plugins, plugin structure, commands/agents/skills/hooks via plugins |
+| 13 | [`13_user-input.md`](13_user-input.md) | User Input | `AskUserQuestion`, tool approval flows, approve/reject/modify responses |
+| 14 | [`14_migration-guide.md`](14_migration-guide.md) | Migration | Claude Code SDK → Agent SDK rename, breaking changes, step-by-step migration |
 
 ## Quick Reference
 
@@ -65,11 +74,3 @@ asyncio.run(main())
 ### Hook events (Python SDK)
 
 `PreToolUse` · `PostToolUse` · `UserPromptSubmit` · `Stop` · `SubagentStop` · `PreCompact`
-
-## Not yet fetched
-
-- `/docs/en/agent-sdk/mcp` — MCP server integration
-- `/docs/en/agent-sdk/permissions` — Permission modes in depth
-- `/docs/en/agent-sdk/typescript` — TypeScript API reference
-- `/docs/en/agent-sdk/user-input` — `AskUserQuestion` / approval flows
-- `/docs/en/agent-sdk/migration-guide` — Claude Code SDK → Agent SDK migration
