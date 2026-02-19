@@ -228,7 +228,7 @@ print(search_assets('DEEPAL S07 launch creative'))      # asset retrieval
 
 ## Phase 2: Agent SDK Orchestration
 
-**Goal**: Multi-agent routing via Agent SDK. RAG subagent queries Qdrant via MCP tool. Session continuity via `ClaudeSDKClient`.
+**Goal**: RAG-first orchestration via Agent SDK. RAG subagent queries Qdrant via MCP tool, exposes asset endpoints, and supports session continuity via `ClaudeSDKClient`. MMM subagent routing is added in Phase 3.
 
 ### 2.1 MCP tools (LlamaIndex + Qdrant bridge)
 
@@ -284,18 +284,18 @@ Domain-specific prompts with exact file names and column names from `data/genera
 ```python
 from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions, AgentDefinition
 
-# Subagent definitions
+# Subagent definition (RAG-first in Phase 2; MMM agent added in Phase 3)
 AGENTS = {
     "rag-analyst": AgentDefinition(
-        description="Search and retrieve marketing data, contracts, and sales pipeline",
+        description="Search and retrieve marketing data, contracts, and campaign assets",
         prompt=RAG_AGENT_PROMPT,
-        tools=["mcp__rag__search_data", "mcp__rag__filter_by_channel", "Read", "Glob"],
-        model="sonnet",
-    ),
-    "mmm-analyst": AgentDefinition(
-        description="Run marketing mix models, analyze ROI, optimize budgets",
-        prompt=MMM_AGENT_PROMPT,
-        tools=["Read", "Bash", "Glob", "Grep"],
+        tools=[
+            "mcp__rag__search_data",
+            "mcp__rag__search_assets",
+            "mcp__rag__filter_by_channel",
+            "Read",
+            "Glob",
+        ],
         model="sonnet",
     ),
 }
@@ -331,6 +331,8 @@ async def ask_with_routing(question: str, session_id: str | None = None) -> dict
 - Update `ChatRequest` model: add `session_id: str | None = None`
 - Update `POST /api/rag/chat` to call `agents.rag_router.ask_with_routing`
 - Return `{"reply": str, "sources": list, "session_id": str, "agent_used": str}`
+- Add `GET /api/assets/search?q=...&channel=...` -> `search_assets()` results with image URLs
+- Add `GET /api/assets/image/{path}` -> serve image file from `data/assets/` with path normalization; reject traversal patterns (`..`, absolute paths)
 
 ### Phase 2 verification
 
@@ -346,13 +348,17 @@ curl -s -X POST http://localhost:8000/api/rag/chat \
 curl -s -X POST http://localhost:8000/api/rag/chat \
   -H 'Content-Type: application/json' \
   -d '{"message":"Compare that to Google","session_id":"<from-above>"}' | python -m json.tool
+
+# Asset search + image serving hardening
+curl -s "http://localhost:8000/api/assets/search?q=DEEPAL+launch" | python -m json.tool
+curl -i "http://localhost:8000/api/assets/image/../.env"  # expect 400/404
 ```
 
 ---
 
 ## Phase 3: MMM Pipeline
 
-**Goal**: Statistical modeling scripts + MMM agent + dashboard summary endpoint.
+**Goal**: Statistical modeling scripts + MMM agent + dashboard summary endpoint, then extend orchestrator routing to delegate MMM intents.
 
 ### 3.1 Analysis scripts
 
@@ -362,7 +368,7 @@ Standalone Python scripts reading `data/mmm/model_ready.csv`, printing JSON to s
 
 | Script | What it does | Key output |
 |--------|-------------|------------|
-| `regression.py` | Ridge regression (units_sold ~ adstock channels + controls), post-launch weeks only (36-52) | `{r_squared, coefficients, n_observations, p_values}` |
+| `regression.py` | Ridge regression (units_sold ~ adstock channels + controls), post-launch weeks only (36-52) | `{r_squared, coefficients, standardized_coefficients, n_observations, ridge_alpha}` |
 | `roi_analysis.py` | ROI per channel = (coef x total_spend) / total_revenue | `{channels: [{name, spend, roi, marginal_roi}]}` |
 | `budget_optimizer.py` | Shift budget from low-->high marginal ROI (+/-30% constraint per channel) | `{current, optimal, projected_lift_pct}` |
 | `adstock_curves.py` | Adstock decay + Hill saturation curves per channel | `{channels: [{name, raw, adstocked, saturated}]}` |
@@ -385,6 +391,8 @@ Pure Python, no agent. Reads `data/mmm/` and returns:
 
 **`src/platform/api/agents/mmm_agent.py`** (~120 lines)
 
+Also update `src/platform/api/agents/rag_router.py` to register `mmm-analyst` and route MMM intents (`optimize`, `model`, `ROI`) to that subagent.
+
 ```python
 async def ask_mmm_question(question: str) -> dict:
     options = ClaudeAgentOptions(
@@ -404,6 +412,7 @@ async def ask_mmm_question(question: str) -> dict:
 ```python
 GET  /api/mmm/summary   -> mmm_summary.build_mmm_summary()
 POST /api/mmm/chat       -> agents.mmm_agent.ask_mmm_question(question)
+# /api/rag/chat now supports MMM intent delegation via updated rag_router
 ```
 
 ### Phase 3 verification
@@ -455,14 +464,7 @@ curl -s -X POST http://localhost:8000/api/mmm/chat \
 
 ### 4.4 Asset gallery API + serving
 
-**`src/platform/api/main.py`** (add)
-
-```python
-GET /api/assets/search?q=...&channel=...  -> search_assets() results with image URLs
-GET /api/assets/image/{path}              -> serve image file from data/assets/
-```
-
-Frontend can render asset search results as an image grid with metadata labels.
+Asset endpoints are implemented in Phase 2 and consumed here by the frontend image grid.
 
 ### Phase 4 verification
 
@@ -562,7 +564,7 @@ cd ui/platform && npm run dev
 
 ## File Summary
 
-### New files (23)
+### Planned files (23; new or major refactor)
 
 ```
 # RAG Pipeline (Phase 1)
@@ -601,7 +603,7 @@ data/qdrant_db/                                  binary    Qdrant embedded stora
 data/index/bm25/                                 binary    BM25 index files
 ```
 
-### Modified files (5)
+### Modified files (7)
 
 ```
 requirements.txt                                 ADD: qdrant-client, llama-index-vector-stores-qdrant, Pillow
@@ -646,6 +648,7 @@ ui/platform/src/pages/MmmDashboard.jsx          REWRITE: live data + Ask MMM cha
 | Qdrant embedded mode limitations at scale | Can switch to Docker mode (`QdrantClient(host="localhost")`) with 1 line change |
 | `create_sdk_mcp_server` API mismatch | Verified against `docs/agent-sdk/03_python-reference.md` -- API confirmed |
 | Only ~17 post-launch rows for MMM | Ridge regression with regularization; reduce features if needed |
+| Asset image endpoint path traversal | Normalize requested paths under `data/assets/` and reject `..` / absolute paths with 400 |
 | Agent response time 15-30s | `model="sonnet"` for subagents; loading indicator in UI |
 | Below 95% retrieval accuracy | 5 tuning levers: top_k, overlap, query expansion, metadata filter, two-stage retrieval |
 | `ClaudeSDKClient` session management | Fallback to `query()` with `resume=session_id` if client mode has issues |
