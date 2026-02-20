@@ -52,3 +52,15 @@ Started: Fri Feb 20 18:36:59 +07 2026
   - Asset manifest at `data/assets/asset_manifest.csv` has 50 entries with image_path, channel, vehicle_model, etc.
   - `load_asset_documents()` creates one Document per row with description as text
 ---
+
+## 2026-02-20 - US-005
+- query_engine.py already existed with `search_text(query, top_k=5, category=None)`
+- Uses QueryFusionRetriever over Qdrant dense + BM25 lexical with reciprocal reranking
+- Updated default embedding model from text-embedding-3-large to text-embedding-3-small (consistency with PRD)
+- Files changed: src/rag/retrieval/query_engine.py (default model fix only)
+- **Learnings for future iterations:**
+  - QueryFusionRetriever uses `MockLLM()` with `num_queries=1` to avoid OpenAI LLM dependency for retrieval
+  - `_bm25_top_k()` clamps BM25 top-k to corpus size to prevent out-of-bounds
+  - Post-retrieval category filtering via `_matches_category()` for client-side filtering
+  - `_serialize_node()` converts NodeWithScore to dict with {score, text, metadata}
+---
