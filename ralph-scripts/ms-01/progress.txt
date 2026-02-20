@@ -1,6 +1,7 @@
 ## Codebase Patterns
 - For dependency and lint workflows in this repo, activate the project virtualenv first (`source .venv/bin/activate`) because system Python may enforce PEP 668 and block global `pip install`.
 - For new generated `data/` outputs, add ignore rules in `.gitignore` but keep `!data/**/.gitkeep` so placeholder files remain tracked.
+- `data/generators/generate_all.py` expects module `data.generators.aggregate_mmm` with `aggregate_mmm_data`; keep that import path stable even if aggregation logic is implemented in `validators.py`.
 
 ## 2026-02-20 09:58:07 +0700 - US-001
 - Implemented missing dependency declarations in `requirements.txt`: `Pillow>=10.0.0`, `qdrant-client>=1.9.0`, and `llama-index-vector-stores-qdrant>=0.3.0`.
@@ -17,4 +18,13 @@
   - Patterns discovered: when adding ignored generated data folders, keep ignore entries grouped under the data section and retain the shared `.gitkeep` exception.
   - Gotchas encountered: `.gitignore` does not remove already tracked files; it only prevents new untracked artifacts from appearing in status.
   - Useful context: `source .venv/bin/activate && make lint` remains the required quality gate in this repo and passed for this update.
+---
+## 2026-02-20 10:08:35 +0700 - US-003
+- Implemented `data/generators/aggregate_mmm.py` as a compatibility module that re-exports `aggregate_mmm_data` from `data/generators/validators.py`, so `generate_all.py` can import and run the MMM aggregation step.
+- Verified `importlib.import_module('data.generators.aggregate_mmm')` succeeds, ran `python3 data/generators/generate_all.py` (aggregation step now reports `OK`, all validators pass), and confirmed `data/mmm/model_ready.csv`, `data/mmm/weekly_channel_spend.csv`, and `data/mmm/weekly_sales.csv` each contain 52 rows.
+- Files changed: `data/generators/aggregate_mmm.py`, `CLAUDE.md`, `ralph-scripts/ms-01/prd.json`, `ralph-scripts/ms-01/progress.txt`.
+- **Learnings for future iterations:**
+  - Patterns discovered: keep the orchestrator-facing import path (`data.generators.aggregate_mmm`) separate from implementation files to avoid runtime import skips.
+  - Gotchas encountered: `python3 data/generators/generate_all.py` is CPU-intensive and may run for several minutes before output flushes in non-interactive execution.
+  - Useful context: after this fix, MMM aggregation completes and writes 52-week outputs to `data/mmm/` as expected.
 ---
