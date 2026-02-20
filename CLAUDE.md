@@ -106,7 +106,8 @@ The generators produce synthetic marketing data for a UK automotive launch (DEEP
 
 Required in `.env` (see `.env.example` for all defaults):
 - `OPENAI_API_KEY` — required for RAG pipeline
-- RAG: `CHUNK_SIZE=1024`, `CHUNK_OVERLAP=50`, `EMBED_MODEL=text-embedding-3-small`, `LLM_MODEL=claude-opus-4-6`
+- RAG: `CHUNK_SIZE=1024`, `CHUNK_OVERLAP=50`, `EMBEDDING_MODEL=text-embedding-3-large`, `QDRANT_PATH=data/qdrant_db`, `LLM_MODEL=claude-opus-4-6`
+- Legacy alias: `EMBED_MODEL` remains supported for older modules and should match `EMBEDDING_MODEL`
 - MMM: `MMM_DATE_COLUMN=date`, `MMM_TARGET_COLUMN=sales`, `MMM_ADSTOCK_MAX_LAG=8`
 
 ## Development Rules

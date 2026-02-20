@@ -1,0 +1,15 @@
+## Codebase Patterns
+- Keep both `EMBEDDING_MODEL` and legacy `EMBED_MODEL` env vars aligned in `.env.example` to support newer MS-2 code and older modules simultaneously.
+- When adding ignored generated folders under `data/`, preserve `!data/**/.gitkeep` so placeholder directories remain trackable.
+
+## 2026-02-20 15:18:12 +07 - US-001
+- Added MS-2 env configuration defaults in `.env.example` for `EMBEDDING_MODEL=text-embedding-3-large` and `QDRANT_PATH=data/qdrant_db`, while keeping legacy `EMBED_MODEL` aligned.
+- Verified `requirements.txt` already contains `llama-index-retrievers-bm25`, `qdrant-client`, and `llama-index-vector-stores-qdrant` (no dependency changes required).
+- Added explicit `data/index/bm25/` ignore entry in `.gitignore` (with existing `data/qdrant_db/` already present).
+- Ran typecheck-equivalent compile checks with `python3 -m py_compile` for RAG/MMM modules.
+- Files changed: `.env.example`, `.gitignore`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+- **Learnings for future iterations:**
+  - RAG MS-2 setup now standardizes on `EMBEDDING_MODEL` + `QDRANT_PATH`; preserve `EMBED_MODEL` as compatibility alias until older modules migrate.
+  - `make lint` may fail in environments missing `python` symlink; use `python3` equivalent commands when validating locally.
+  - Root `CLAUDE.md` environment section should stay in sync with `.env.example` when config keys change.
+---
