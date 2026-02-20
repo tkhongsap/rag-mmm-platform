@@ -83,7 +83,7 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Sample files: meta_ads.csv (digital), tv_performance.csv (traditional), vehicle_sales.csv (sales), MediaAgency_Terms_of_Business.md (contract), config.py (config), asset_manifest.csv (assets)."
     },
     {

@@ -4,6 +4,7 @@
 - For text indexing, pass `transformations=[]` to `VectorStoreIndex.from_documents` so ingest.py pre-chunked docs are not re-split by default parsers.
 - For BM25 lexical retrieval, persist artifacts to `data/index/bm25/` and reload with `BM25Retriever.from_persist_dir(...)` when files already exist to avoid unnecessary rebuilds.
 - For asset retrieval, normalize docs so every metadata payload includes `image_path` before indexing into `campaign_assets`; downstream UI/search assumes that key always exists.
+- Close local `QdrantClient` instances in short-lived checks/tests to release `.lock` files before opening the same storage path again.
 
 ## 2026-02-20 15:18:12 +07 - US-001
 - Added MS-2 env configuration defaults in `.env.example` for `EMBEDDING_MODEL=text-embedding-3-large` and `QDRANT_PATH=data/qdrant_db`, while keeping legacy `EMBED_MODEL` aligned.
@@ -51,4 +52,18 @@
   - Keep asset indexing isolated in `campaign_assets` so text and creative retrieval can evolve independently.
   - Normalize missing `image_path` metadata at indexing time to avoid defensive checks in downstream retrieval/UI code.
   - Use a local heuristic token estimator (`~4 chars/token`) for dry-run spend guards; avoid embedding API calls during planning.
+---
+## 2026-02-20 15:36:31 +0700 - US-005
+- Added `src/rag/data_processing/build_index.py` CLI runnable via `python -m src.rag.data_processing.build_index` with flags: `--dry-run`, `--max-cost-usd`, `--text`, `--assets`, `--check`, and `--sample`.
+- Implemented sample mode with the exact six-file dry-run subset (`meta_ads.csv`, `tv_performance.csv`, `vehicle_sales.csv`, `MediaAgency_Terms_of_Business.md`, `config.py`, `asset_manifest.csv`) and default full-build behavior for text + assets when no target flags are passed.
+- Added cost estimation output (`doc_count`, `chunk_count`, `estimated_tokens`, `estimated_cost_usd`) and a cost cap guard that aborts before any index mutation when estimates exceed `--max-cost-usd`.
+- Implemented non-mutating `--check` status output for `text_documents`, `campaign_assets`, and BM25 artifacts; closes `QdrantClient` after checks to avoid lock contention.
+- Added `tests/rag/test_build_index_cli.py` covering help text, dry-run/no-build behavior, cost guard abort, `--text` and `--assets` target scoping, sample-file routing, and `--check` status reporting.
+- Updated root `CLAUDE.md` with the reusable Qdrant local-lock cleanup rule.
+- Ran quality checks: `.venv/bin/python -m py_compile src/rag/data_processing/build_index.py tests/rag/test_build_index_cli.py`, `.venv/bin/pytest tests/rag/test_build_index_cli.py -v`, `.venv/bin/pytest tests/rag/ -v`, and `.venv/bin/python -m src.rag.data_processing.build_index --help` (all pass).
+- Files changed: `src/rag/data_processing/build_index.py`, `tests/rag/test_build_index_cli.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+- **Learnings for future iterations:**
+  - Keep CLI control flow in this order for safe runs: load docs -> estimate -> enforce cost cap -> build (or exit on `--dry-run`), so spend guards always run before index mutation.
+  - Treat `--sample` assets as the same manifest source (`data/assets/asset_manifest.csv`); sample reduction applies to text categories only.
+  - In Qdrant local mode, open/close clients inside the same function scope for health checks to prevent lock collisions across sequential operations.
 ---
