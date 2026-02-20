@@ -60,7 +60,7 @@ def _import_generator(module_name: str):
     return importlib.import_module(f"data.generators.{module_name}")
 
 
-def run_generation() -> bool:
+def run_generation(*, use_ai: bool = False) -> bool:
     """
     Run all generators in dependency order.
     Returns True if all steps succeeded.
@@ -164,7 +164,7 @@ def run_generation() -> bool:
     _print_step(8, total_steps, "Generating campaign asset images")
     try:
         assets_mod = _import_generator("assets")
-        assets_mod.generate()
+        assets_mod.generate(use_ai=use_ai or None)
         print(f"    OK")
     except ImportError:
         print(f"    SKIPPED — module not yet implemented")
@@ -267,20 +267,20 @@ def print_summary() -> None:
         total_expected = sum(CHANNEL_BUDGETS_GBP.values())
         total_actual = 0.0
 
-        for directory in [RAW_DIR, MMM_DIR]:
-            for root, _, files in os.walk(directory):
-                for f in files:
-                    if f.endswith(".csv"):
-                        path = os.path.join(root, f)
-                        try:
-                            df = pd.read_csv(path)
-                            spend_cols = [c for c in df.columns if "spend" in c.lower() and "gbp" in c.lower()]
-                            for col in spend_cols:
-                                channel_spend = df[col].sum()
-                                if channel_spend > 0:
-                                    total_actual += channel_spend
-                        except Exception:
-                            pass
+        for root, _, files in os.walk(RAW_DIR):
+            for f in files:
+                if not f.endswith(".csv") or f == "competitor_spend.csv":
+                    continue
+                path = os.path.join(root, f)
+                try:
+                    df = pd.read_csv(path)
+                    spend_cols = [c for c in df.columns if c.lower() == "spend"]
+                    for col in spend_cols:
+                        channel_spend = df[col].sum()
+                        if channel_spend > 0:
+                            total_actual += channel_spend
+                except Exception:
+                    pass
 
         if total_actual > 0:
             print(f"    Expected total UK spend: £{total_expected:>14,.2f}")
@@ -304,6 +304,11 @@ def main():
         action="store_true",
         help="Skip generation and only run validators",
     )
+    parser.add_argument(
+        "--ai",
+        action="store_true",
+        help="Use OpenAI gpt-image-1.5 for campaign asset images",
+    )
     args = parser.parse_args()
 
     overall_start = time.time()
@@ -313,7 +318,7 @@ def main():
         valid = run_validation()
         print_summary()
     else:
-        gen_ok = run_generation()
+        gen_ok = run_generation(use_ai=args.ai)
         agg_ok = run_aggregation()
         valid = run_validation()
         print_summary()
