@@ -13,7 +13,7 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": "Bug fix: rank-bm25 is incorrect — the correct LlamaIndex BM25 integration is llama-index-retrievers-bm25"
     },
     {
@@ -29,7 +29,7 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": "Bug fix: SentenceSplitter conflicts with ingest.py pre-chunking (20 rows/doc for CSVs). Pass docs directly to VectorStoreIndex."
     },
     {
@@ -44,7 +44,7 @@
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -59,7 +59,7 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -75,7 +75,7 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -91,7 +91,7 @@
         "Typecheck passes"
       ],
       "priority": 6,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
@@ -109,7 +109,7 @@
         "Tests pass"
       ],
       "priority": 7,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
