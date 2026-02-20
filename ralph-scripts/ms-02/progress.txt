@@ -31,3 +31,14 @@ Started: Fri Feb 20 18:36:59 +07 2026
   - `_reset_collection()` provides idempotent re-indexing (drop + recreate)
   - RAGIndexer resolves QDRANT_PATH relative to project root via `_resolve_project_path()`
 ---
+
+## 2026-02-20 - US-003
+- BM25 build/load was already implemented in `build_bm25_index(docs)` method
+- Persists to `data/index/bm25/` and loads via `BM25Retriever.from_persist_dir()`
+- Added `.gitkeep` to `data/index/bm25/` so directory is tracked in git
+- Files changed: data/index/bm25/.gitkeep (new)
+- **Learnings for future iterations:**
+  - `_has_bm25_artifacts()` checks for non-empty dir before deciding load vs build
+  - BM25 requires clearing `data/index/bm25/` contents to force rebuild (it loads if artifacts exist)
+  - `.gitignore` has `!data/**/.gitkeep` exception to preserve empty directory sentinels
+---
