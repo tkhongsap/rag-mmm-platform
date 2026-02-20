@@ -2,6 +2,7 @@
 - For dependency and lint workflows in this repo, activate the project virtualenv first (`source .venv/bin/activate`) because system Python may enforce PEP 668 and block global `pip install`.
 - For new generated `data/` outputs, add ignore rules in `.gitignore` but keep `!data/**/.gitkeep` so placeholder files remain tracked.
 - `data/generators/generate_all.py` expects module `data.generators.aggregate_mmm` with `aggregate_mmm_data`; keep that import path stable even if aggregation logic is implemented in `validators.py`.
+- In `generate_all.py` summary spend verification, aggregate only `data/raw` CSVs, skip `competitor_spend.csv`, and use exact column match `c.lower() == "spend"` to avoid inflated totals from non-channel spend fields.
 
 ## 2026-02-20 09:58:07 +0700 - US-001
 - Implemented missing dependency declarations in `requirements.txt`: `Pillow>=10.0.0`, `qdrant-client>=1.9.0`, and `llama-index-vector-stores-qdrant>=0.3.0`.
@@ -27,4 +28,13 @@
   - Patterns discovered: keep the orchestrator-facing import path (`data.generators.aggregate_mmm`) separate from implementation files to avoid runtime import skips.
   - Gotchas encountered: `python3 data/generators/generate_all.py` is CPU-intensive and may run for several minutes before output flushes in non-interactive execution.
   - Useful context: after this fix, MMM aggregation completes and writes 52-week outputs to `data/mmm/` as expected.
+---
+## 2026-02-20 10:15:46 +0700 - US-004
+- Implemented spend verification fixes in `data/generators/generate_all.py`: scan only `data/raw`, skip `competitor_spend.csv`, and match spend columns with exact filter `c.lower() == "spend"`.
+- Verified with `python3 data/generators/generate_all.py` that spend verification reports `Deviation: 0.0% [OK]` and validator output reports `ALL VALIDATIONS PASSED`; quality gate `source .venv/bin/activate && make lint` also passed.
+- Files changed: `data/generators/generate_all.py`, `CLAUDE.md`, `ralph-scripts/ms-01/prd.json`, `ralph-scripts/ms-01/progress.txt`.
+- **Learnings for future iterations:**
+  - Patterns discovered: spend verification should intentionally avoid scanning aggregated MMM outputs to prevent double counting the same channel spend.
+  - Gotchas encountered: broad substring filters (e.g., matching both `spend` and `gbp`) can capture non-channel spend fields and distort budget deviation checks.
+  - Useful context: full generator runtime is around 4 minutes in this environment, and output may appear only at process completion due buffering.
 ---

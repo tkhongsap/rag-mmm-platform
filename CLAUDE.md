@@ -99,6 +99,7 @@ The generators produce synthetic marketing data for a UK automotive launch (DEEP
 - **Validation**: 10 checks (file existence, row counts, date ranges, spend ±5% of budget, KPI ranges, no negatives, no NaN in critical columns)
 - **MMM aggregation**: validators.py also produces 3 weekly datasets for modeling (52 weeks × 11 channels)
 - **Orchestrator import contract**: `generate_all.py` imports MMM aggregation from `data.generators.aggregate_mmm`; keep a module at that path exposing `aggregate_mmm_data` even if implementation lives in `validators.py`.
+- **Summary spend verification rule**: `generate_all.py` spend verification should scan only `data/raw/`, ignore `competitor_spend.csv`, and sum only columns named exactly `spend` to avoid double counting and non-channel spend fields.
 - Helper functions: `apply_adstock()` (geometric decay), `apply_saturation()` (Hill function), seasonal multipliers
 
 ## Environment Variables

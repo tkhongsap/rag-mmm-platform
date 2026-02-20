@@ -267,20 +267,20 @@ def print_summary() -> None:
         total_expected = sum(CHANNEL_BUDGETS_GBP.values())
         total_actual = 0.0
 
-        for directory in [RAW_DIR, MMM_DIR]:
-            for root, _, files in os.walk(directory):
-                for f in files:
-                    if f.endswith(".csv"):
-                        path = os.path.join(root, f)
-                        try:
-                            df = pd.read_csv(path)
-                            spend_cols = [c for c in df.columns if "spend" in c.lower() and "gbp" in c.lower()]
-                            for col in spend_cols:
-                                channel_spend = df[col].sum()
-                                if channel_spend > 0:
-                                    total_actual += channel_spend
-                        except Exception:
-                            pass
+        for root, _, files in os.walk(RAW_DIR):
+            for f in files:
+                if not f.endswith(".csv") or f == "competitor_spend.csv":
+                    continue
+                path = os.path.join(root, f)
+                try:
+                    df = pd.read_csv(path)
+                    spend_cols = [c for c in df.columns if c.lower() == "spend"]
+                    for col in spend_cols:
+                        channel_spend = df[col].sum()
+                        if channel_spend > 0:
+                            total_actual += channel_spend
+                except Exception:
+                    pass
 
         if total_actual > 0:
             print(f"    Expected total UK spend: £{total_expected:>14,.2f}")
