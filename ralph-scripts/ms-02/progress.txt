@@ -7,6 +7,10 @@ Started: Fri Feb 20 18:36:59 +07 2026
 - Venv at `.venv/`; activate with `source .venv/bin/activate` or call `.venv/bin/python` directly
 - Lint = `py_compile` on `src/rag/__init__.py` and `src/mmm/__init__.py`
 - Run all modules from project root: `python -m src.rag.data_processing.run`
+- Default embedding model is `text-embedding-3-small` — keep consistent across indexer.py, query_engine.py, .env.example
+- `_resolve_project_path()` is a shared pattern: resolves relative paths against project root (the dir with requirements.txt)
+- `transformations=[]` in VectorStoreIndex.from_documents() prevents implicit SentenceSplitter on pre-chunked docs
+- Qdrant client must be closed in short-lived scripts (`client.close()`) to release .lock files
 ---
 
 ## 2026-02-20 - US-001
@@ -75,4 +79,15 @@ Started: Fri Feb 20 18:36:59 +07 2026
   - `_serialize_asset_node()` wraps `_serialize_node()` and adds `image_path` default
   - `_read_collection_status()` safely handles missing collections (returns "missing")
   - `check_indexes()` also reports BM25 status by checking `data/index/bm25/` for files
+---
+
+## 2026-02-20 - US-007
+- build_index.py CLI already existed with all required flags: --text, --assets, --check
+- Also has --dry-run, --max-cost-usd, --sample for additional workflows
+- All 100 tests pass including dedicated build_index CLI tests
+- Files changed: none (already existed)
+- **Learnings for future iterations:**
+  - CLI tests in `tests/rag/test_build_index_cli.py` cover all flags
+  - `tests/rag/test_query_engine.py` has smoke tests for search_text, search_assets, check_indexes
+  - Full test suite: 100 tests, 3.5s, all passing
 ---
