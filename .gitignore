@@ -90,14 +90,8 @@ data/assets/*
 data/processed/*
 data/embeddings/*
 data/mmm/*
-data/qdrant_db/
-data/index/
-data/index/bm25/
+# data/qdrant_db/ and data/index/bm25/ are tracked (needed for cloud runs)
 !data/**/.gitkeep
-
-# Embedding artifacts
-*.npy
-*.pkl
 
 # MMM model outputs
 *.joblib
