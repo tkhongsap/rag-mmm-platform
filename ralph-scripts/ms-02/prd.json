@@ -13,7 +13,7 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Bug fix: rank-bm25 is incorrect — the correct LlamaIndex BM25 integration is llama-index-retrievers-bm25"
     },
     {
