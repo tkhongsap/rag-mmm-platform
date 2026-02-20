@@ -111,6 +111,29 @@
       "priority": 7,
       "passes": true,
       "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "End-to-end dry-run: embed sample data and validate retrieval",
+      "description": "As a developer, I want to run the full pipeline on sample files and verify results with smoke queries so I have confidence the code works against real data before the full production build.",
+      "acceptanceCriteria": [
+        "python -m src.rag.data_processing.build_index --sample --dry-run prints estimate without errors",
+        "Estimated cost for sample files is under $1.00",
+        "python -m src.rag.data_processing.build_index --sample --text --max-cost-usd 5 completes successfully",
+        "text_documents Qdrant collection exists with >0 vectors after build",
+        "data/index/bm25/ directory exists and is non-empty after build",
+        "python -m src.rag.data_processing.build_index --sample --assets --max-cost-usd 5 completes successfully",
+        "campaign_assets Qdrant collection exists with >0 vectors after build",
+        "python -m src.rag.data_processing.build_index --check prints stats for both collections and BM25 index",
+        "Smoke query 'What is Meta CPM?' via search_text() returns nodes citing meta_ads.csv or config.py in top-5",
+        "Smoke query 'DEEPAL S07 launch creative' via search_assets() returns nodes with valid image_path metadata",
+        "Re-running the build on same data does not create duplicate vectors (collection vector count stays the same)",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "This story requires OPENAI_API_KEY to be set. It calls the real OpenAI embedding API. Use --sample to limit to 6 predefined files (meta_ads.csv, tv_performance.csv, vehicle_sales.csv, MediaAgency_Terms_of_Business.md, config.py, asset_manifest.csv). Cost budget: --max-cost-usd 5 as safety guard."
     }
   ]
 }
