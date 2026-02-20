@@ -123,4 +123,5 @@ Required in `.env` (see `.env.example` for all defaults):
 - For text indexing, ingest.py already provides pre-chunked `Document` objects; keep `VectorStoreIndex.from_documents(..., transformations=[])` to avoid implicit re-splitting.
 - For asset indexing, use the separate `campaign_assets` Qdrant collection and guarantee each `Document` metadata includes `image_path` (default empty string) so downstream retrieval/UI rendering can rely on that key.
 - Persist BM25 lexical index artifacts under `data/index/bm25/`; when available, load via `BM25Retriever.from_persist_dir(...)` instead of rebuilding.
+- `QueryFusionRetriever` resolves an LLM at initialization even when `num_queries=1`; pass an explicit local/mock LLM for offline hybrid retrieval paths that should not require `OPENAI_API_KEY`.
 - Close `QdrantClient` handles in short-lived scripts/tests (especially status checks) to release local `.lock` files and avoid "already accessed by another instance" errors.

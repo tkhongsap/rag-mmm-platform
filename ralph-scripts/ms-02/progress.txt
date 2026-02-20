@@ -3,6 +3,7 @@
 - When adding ignored generated folders under `data/`, preserve `!data/**/.gitkeep` so placeholder directories remain trackable.
 - For text indexing, pass `transformations=[]` to `VectorStoreIndex.from_documents` so ingest.py pre-chunked docs are not re-split by default parsers.
 - For BM25 lexical retrieval, persist artifacts to `data/index/bm25/` and reload with `BM25Retriever.from_persist_dir(...)` when files already exist to avoid unnecessary rebuilds.
+- For `QueryFusionRetriever` in offline paths, pass an explicit local/mock LLM even with `num_queries=1`; it resolves `Settings.llm` at init otherwise.
 - For asset retrieval, normalize docs so every metadata payload includes `image_path` before indexing into `campaign_assets`; downstream UI/search assumes that key always exists.
 - Close local `QdrantClient` instances in short-lived checks/tests to release `.lock` files before opening the same storage path again.
 
@@ -66,4 +67,17 @@
   - Keep CLI control flow in this order for safe runs: load docs -> estimate -> enforce cost cap -> build (or exit on `--dry-run`), so spend guards always run before index mutation.
   - Treat `--sample` assets as the same manifest source (`data/assets/asset_manifest.csv`); sample reduction applies to text categories only.
   - In Qdrant local mode, open/close clients inside the same function scope for health checks to prevent lock collisions across sequential operations.
+---
+## 2026-02-20 15:43:13 +0700 - US-006
+- Added `src/rag/retrieval/query_engine.py` with `search_text(query, top_k=5, category=None)` that loads `text_documents` from Qdrant plus persisted BM25 artifacts and fuses them via `QueryFusionRetriever` reciprocal reranking.
+- Implemented robust retrieval guards: non-empty query/top-k validation, explicit missing-index errors for BM25 or Qdrant text collection, BM25 top-k clamping to corpus size, optional category filtering, and normalized result payloads containing `score`, `text`, and `metadata`.
+- Exported `search_text` from `src/rag/retrieval/__init__.py`.
+- Added `tests/rag/test_query_engine.py` covering fusion wiring (reciprocal mode + dual retrievers + result schema) and the smoke case where `"What is Meta CPM?"` returns `meta_ads.csv` or `config.py` in top-5.
+- Updated root `CLAUDE.md` with the QueryFusionRetriever LLM-resolution gotcha for offline retrieval paths.
+- Ran quality checks: `.venv/bin/python -m py_compile src/rag/retrieval/query_engine.py src/rag/retrieval/__init__.py tests/rag/test_query_engine.py`, `.venv/bin/pytest tests/rag/test_query_engine.py -v`, and `.venv/bin/pytest tests/rag/ -v` (pass).
+- Files changed: `src/rag/retrieval/query_engine.py`, `src/rag/retrieval/__init__.py`, `tests/rag/test_query_engine.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+- **Learnings for future iterations:**
+  - `QueryFusionRetriever` still initializes `Settings.llm` unless an explicit `llm` is passed, so offline/test retrieval should inject `MockLLM()` even when query expansion is disabled.
+  - BM25 `similarity_top_k` must be clamped to indexed corpus size; setting it above corpus size raises a runtime `ValueError`.
+  - Hybrid retrieval functions should normalize `NodeWithScore` objects at module boundaries (`score`/`text`/`metadata`) to keep CLI/API consumers decoupled from LlamaIndex internals.
 ---

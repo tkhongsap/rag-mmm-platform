@@ -100,7 +100,7 @@
         "Typecheck passes"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Uses QueryFusionRetriever with reciprocal reranking per LlamaIndex Production RAG docs."
     },
     {
