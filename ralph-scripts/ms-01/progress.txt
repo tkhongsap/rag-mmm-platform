@@ -1,5 +1,6 @@
 ## Codebase Patterns
 - For dependency and lint workflows in this repo, activate the project virtualenv first (`source .venv/bin/activate`) because system Python may enforce PEP 668 and block global `pip install`.
+- For new generated `data/` outputs, add ignore rules in `.gitignore` but keep `!data/**/.gitkeep` so placeholder files remain tracked.
 
 ## 2026-02-20 09:58:07 +0700 - US-001
 - Implemented missing dependency declarations in `requirements.txt`: `Pillow>=10.0.0`, `qdrant-client>=1.9.0`, and `llama-index-vector-stores-qdrant>=0.3.0`.
@@ -8,4 +9,12 @@
   - Patterns discovered: use the project virtualenv for dependency and check commands (`source .venv/bin/activate && ...`).
   - Gotchas encountered: system-level `pip install -r requirements.txt` fails in this environment with PEP 668 `externally-managed-environment`.
   - Useful context: this story’s quality gate is `make lint` (py_compile checks), and it passed after the dependency update.
+---
+## 2026-02-20 10:01:07 +0700 - US-002
+- Implemented `.gitignore` updates for generated artifacts by adding `data/assets/*`, `data/qdrant_db/`, and `data/index/` under the data directories section while preserving `!data/**/.gitkeep`.
+- Files changed: `.gitignore`, `CLAUDE.md`, `ralph-scripts/ms-01/prd.json`, `ralph-scripts/ms-01/progress.txt`.
+- **Learnings for future iterations:**
+  - Patterns discovered: when adding ignored generated data folders, keep ignore entries grouped under the data section and retain the shared `.gitkeep` exception.
+  - Gotchas encountered: `.gitignore` does not remove already tracked files; it only prevents new untracked artifacts from appearing in status.
+  - Useful context: `source .venv/bin/activate && make lint` remains the required quality gate in this repo and passed for this update.
 ---

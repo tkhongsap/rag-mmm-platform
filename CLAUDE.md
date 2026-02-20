@@ -87,6 +87,8 @@ docs/prd/                         # Product requirements (Word docs)
 prompts/                          # Agent team prompt for synthetic data generation
 ```
 
+Generated data artifacts are ignored in `.gitignore`; preserve the `!data/**/.gitkeep` exception when adding new ignored `data/` subdirectories so empty folder sentinels stay tracked.
+
 ## Data Generator Details
 
 The generators produce synthetic marketing data for a UK automotive launch (DEEPAL/AVATR brands, 2025). Key design:
