@@ -134,6 +134,30 @@
       "priority": 8,
       "passes": false,
       "notes": "This story requires OPENAI_API_KEY to be set. It calls the real OpenAI embedding API. Use --sample to limit to 6 predefined files (meta_ads.csv, tv_performance.csv, vehicle_sales.csv, MediaAgency_Terms_of_Business.md, config.py, asset_manifest.csv). Cost budget: --max-cost-usd 5 as safety guard."
+    },
+    {
+      "id": "US-009",
+      "title": "Full production embedding: all data files",
+      "description": "As a platform engineer, I want all data files (20 CSVs, 7 contracts, config, asset manifest) embedded into Qdrant and BM25 so the full corpus is searchable in production.",
+      "acceptanceCriteria": [
+        "python -m src.rag.data_processing.build_index --dry-run prints estimate for full corpus without errors",
+        "Estimated cost for full corpus is under $5.00",
+        "python -m src.rag.data_processing.build_index --text --max-cost-usd 10 completes successfully",
+        "text_documents Qdrant collection exists with vectors from all 20 CSVs + 7 contracts + config.py",
+        "data/index/bm25/ directory is non-empty with full corpus BM25 artifacts",
+        "python -m src.rag.data_processing.build_index --assets --max-cost-usd 10 completes successfully",
+        "campaign_assets Qdrant collection contains vectors for all 50 asset manifest rows",
+        "python -m src.rag.data_processing.build_index --check prints stats showing full vector counts for both collections",
+        "Smoke query 'What is Meta CPM?' via search_text() returns relevant nodes in top-5",
+        "Smoke query 'TV performance reach' via search_text() returns nodes from tv_performance.csv",
+        "Smoke query 'DEEPAL S07 launch creative' via search_assets() returns nodes with valid image_path metadata",
+        "Re-running the build on same data does not create duplicate vectors",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "Requires OPENAI_API_KEY. Runs WITHOUT --sample flag to embed the full corpus: 20 CSVs in data/raw/, 7 contracts in data/raw/contracts/, data/generators/config.py, and data/assets/asset_manifest.csv. Cost budget: --max-cost-usd 10 as safety guard. This replaces the sample indexes from US-008 with the full production indexes."
     }
   ]
 }
