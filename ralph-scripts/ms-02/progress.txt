@@ -2,6 +2,7 @@
 - Keep both `EMBEDDING_MODEL` and legacy `EMBED_MODEL` env vars aligned in `.env.example` to support newer MS-2 code and older modules simultaneously.
 - When adding ignored generated folders under `data/`, preserve `!data/**/.gitkeep` so placeholder directories remain trackable.
 - For text indexing, pass `transformations=[]` to `VectorStoreIndex.from_documents` so ingest.py pre-chunked docs are not re-split by default parsers.
+- For BM25 lexical retrieval, persist artifacts to `data/index/bm25/` and reload with `BM25Retriever.from_persist_dir(...)` when files already exist to avoid unnecessary rebuilds.
 
 ## 2026-02-20 15:18:12 +07 - US-001
 - Added MS-2 env configuration defaults in `.env.example` for `EMBEDDING_MODEL=text-embedding-3-large` and `QDRANT_PATH=data/qdrant_db`, while keeping legacy `EMBED_MODEL` aligned.
@@ -25,4 +26,16 @@
   - `VectorStoreIndex.from_documents` can apply default transformations unless overridden; explicitly pass `transformations=[]` when upstream loaders already chunk documents.
   - Use collection reset (delete-if-exists before build) for deterministic Qdrant re-indexing and duplicate-free dry-run behavior.
   - Keep root `CLAUDE.md` synced with new cross-module conventions introduced by MS-2 stories.
+---
+## 2026-02-20 15:26:15 +0700 - US-003
+- Added BM25 support to `RAGIndexer` via `build_bm25_index(docs: list[Document])` using `llama_index.retrievers.bm25.BM25Retriever`.
+- BM25 artifacts now persist to `data/index/bm25/` by default (configurable via `bm25_path` in `RAGIndexer.__init__` for testability), and existing artifacts are loaded on subsequent calls instead of rebuilding.
+- Added `tests/rag/test_indexer_bm25.py` to validate: BM25 artifacts persist and are non-empty, second call reloads from disk without rebuilding, and initial build rejects empty docs.
+- Updated root `CLAUDE.md` with the reusable BM25 persistence/reload convention.
+- Ran quality checks: `.venv/bin/python -m py_compile src/rag/embeddings/indexer.py tests/rag/test_indexer_bm25.py` and `.venv/bin/pytest tests/rag/ -v` (pass).
+- Files changed: `src/rag/embeddings/indexer.py`, `tests/rag/test_indexer_bm25.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+- **Learnings for future iterations:**
+  - `BM25Retriever.from_defaults(nodes=docs)` accepts LlamaIndex `Document` objects directly, so no extra node conversion is needed for ingest outputs.
+  - Gate BM25 rebuilds with a persisted-artifact check first; this preserves deterministic dry-run workflows and speeds repeated local validation.
+  - Use explicit `bm25_path`/`qdrant_path` overrides in tests to keep generated index artifacts isolated from repository data directories.
 ---

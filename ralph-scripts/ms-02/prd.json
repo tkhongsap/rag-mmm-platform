@@ -47,7 +47,7 @@
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Use llama-index-retrievers-bm25, which is the LlamaIndex integration wrapper."
     },
     {
