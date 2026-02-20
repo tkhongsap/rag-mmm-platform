@@ -89,7 +89,6 @@ def _generate_ai_image(prompt: str, size: str) -> Image.Image:
         prompt=prompt,
         n=1,
         size=size,
-        response_format="b64_json",
     )
     b64_data = response.data[0].b64_json
     img_bytes = base64.b64decode(b64_data)
@@ -283,13 +282,17 @@ def generate(*, use_ai: bool | None = None) -> None:
                 ai_sizes, prompt_builder = ai_prompts
                 size_str = ai_sizes.get(channel, "1024x1024")
 
-                # Cache check: skip if file already exists
+                # Cache check: skip only if file exists AND matches expected AI dimensions
+                expected_w, expected_h = (int(x) for x in size_str.split("x"))
                 if os.path.exists(filepath):
-                    print(f"    [cached] {channel}/{filename}")
                     img = Image.open(filepath)
                     w, h = img.size
-                    used_ai = True
-                else:
+                    if (w, h) == (expected_w, expected_h):
+                        print(f"    [cached] {channel}/{filename}")
+                        used_ai = True
+                    else:
+                        img = None  # wrong size (e.g. Pillow 800x600) — regenerate
+                if not used_ai:
                     prompt = prompt_builder(
                         channel, model_key, creative_type, audience, vehicle_display,
                     )
