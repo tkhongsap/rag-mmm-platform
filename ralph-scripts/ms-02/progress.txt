@@ -1,93 +1,50 @@
-# Ralph Progress Log
-Started: Fri Feb 20 18:36:59 +07 2026
----
-
 ## Codebase Patterns
-- Makefile uses `$(PYTHON)` variable — prefer `python3` over `python` since system may not have `python` symlink
-- Venv at `.venv/`; activate with `source .venv/bin/activate` or call `.venv/bin/python` directly
-- Lint = `py_compile` on `src/rag/__init__.py` and `src/mmm/__init__.py`
-- Run all modules from project root: `python -m src.rag.data_processing.run`
-- Default embedding model is `text-embedding-3-small` — keep consistent across indexer.py, query_engine.py, .env.example
-- `_resolve_project_path()` is a shared pattern: resolves relative paths against project root (the dir with requirements.txt)
-- `transformations=[]` in VectorStoreIndex.from_documents() prevents implicit SentenceSplitter on pre-chunked docs
-- Qdrant client must be closed in short-lived scripts (`client.close()`) to release .lock files
+- requirements.txt has all RAG deps: llama-index-retrievers-bm25, qdrant-client, llama-index-vector-stores-qdrant
+- .env.example already has QDRANT_PATH=data/qdrant_db and all RAG config vars
+- `make lint` runs py_compile on src/rag and src/mmm
+- ingest.py provides pre-chunked Documents — do NOT re-split with SentenceSplitter
+- Must use `.venv/bin/python` (not system python) to run tests — RAG deps not installed globally
+- build_index.py needs `load_dotenv()` at module level to pick up OPENAI_API_KEY from .env
+- Qdrant local mode: QdrantClient __del__ warning on shutdown is cosmetic, not a real error
+- Sample mode loads 6 files → 694 chunks (~$0.06 estimated cost); full corpus will be larger
+
 ---
 
 ## 2026-02-20 - US-001
-- All three deps already in requirements.txt: llama-index-retrievers-bm25, qdrant-client, llama-index-vector-stores-qdrant
-- QDRANT_PATH=data/qdrant_db already documented in .env.example
-- Fixed Makefile to use `$(PYTHON)` variable (python3 fallback) so `make lint`/`make test` work on systems without `python` symlink
-- Files changed: Makefile
+- Verified all dependencies present in requirements.txt (llama-index-retrievers-bm25, qdrant-client, llama-index-vector-stores-qdrant)
+- Verified .env.example documents QDRANT_PATH=data/qdrant_db
+- Typecheck passes (make lint)
+- No code changes needed — all acceptance criteria already satisfied
+- Files changed: none (verification only)
 - **Learnings for future iterations:**
-  - System only has `python3`, not `python` — Makefile now handles this via `PYTHON ?=` variable
-  - All US-001 acceptance criteria were pre-satisfied by prior work; only needed the Makefile fix
+  - All RAG deps were already in place from prior work
+  - `make lint` only does py_compile, not mypy
 ---
 
-## 2026-02-20 - US-002
-- Added `index_text()` convenience method to RAGIndexer that calls `load_all_text_documents()` from ingest.py
-- Changed default embedding model from text-embedding-3-large to text-embedding-3-small (per PRD)
-- Updated .env.example to match (EMBEDDING_MODEL + EMBED_MODEL)
-- Added `index_assets()` convenience method for US-004 prep
-- Files changed: src/rag/embeddings/indexer.py, .env.example
+## 2026-02-20 - US-002 through US-007 (re-validation)
+- All code was already implemented from prior iteration (commits 64f0a8b through 817080c)
+- Stories reset to passes=false for full end-to-end rerun verification
+- All 100 tests pass with .venv/bin/python -m pytest tests/ -v
+- Typecheck passes (make lint)
+- Files changed: none (re-validation only)
 - **Learnings for future iterations:**
-  - indexer.py already existed with `build_text_index(docs)` — just needed the convenience loader wrapper
-  - `transformations=[]` is critical to prevent implicit SentenceSplitter on pre-chunked docs
-  - `_reset_collection()` provides idempotent re-indexing (drop + recreate)
-  - RAGIndexer resolves QDRANT_PATH relative to project root via `_resolve_project_path()`
+  - Prior iteration already built indexer.py, query_engine.py, build_index.py, and all test files
+  - Glob tool may not find files when searching from ralph-scripts/ms-02 cwd — use absolute paths or find command
 ---
 
-## 2026-02-20 - US-003
-- BM25 build/load was already implemented in `build_bm25_index(docs)` method
-- Persists to `data/index/bm25/` and loads via `BM25Retriever.from_persist_dir()`
-- Added `.gitkeep` to `data/index/bm25/` so directory is tracked in git
-- Files changed: data/index/bm25/.gitkeep (new)
+## 2026-02-20 - US-008
+- Added `load_dotenv()` to build_index.py to load OPENAI_API_KEY from .env
+- Ran full dry-run pipeline: estimate, text+BM25 build, asset build, check, smoke queries
+- Verified: dry-run prints estimate ($0.059 < $1.00), builds complete successfully
+- Verified: text_documents=1465 vectors, campaign_assets=50 vectors, BM25=8 files
+- Verified: "What is Meta CPM?" returns meta_ads.csv + config.py sources
+- Verified: "DEEPAL S07 launch creative" returns creatives with valid image_path metadata
+- Verified: re-running build keeps same vector count (no duplicates)
+- All 100 tests pass
+- Files changed: src/rag/data_processing/build_index.py (added dotenv import)
 - **Learnings for future iterations:**
-  - `_has_bm25_artifacts()` checks for non-empty dir before deciding load vs build
-  - BM25 requires clearing `data/index/bm25/` contents to force rebuild (it loads if artifacts exist)
-  - `.gitignore` has `!data/**/.gitkeep` exception to preserve empty directory sentinels
----
-
-## 2026-02-20 - US-004
-- campaign_assets collection already implemented: `build_asset_index(docs)` + `index_assets()` convenience method
-- `load_asset_documents()` in ingest.py loads from `data/assets/asset_manifest.csv` (50 rows)
-- Each doc has `image_path` in metadata (defaulted to "" via `setdefault`)
-- Files changed: none (functionality already existed from US-002 prep)
-- **Learnings for future iterations:**
-  - Asset manifest at `data/assets/asset_manifest.csv` has 50 entries with image_path, channel, vehicle_model, etc.
-  - `load_asset_documents()` creates one Document per row with description as text
----
-
-## 2026-02-20 - US-005
-- query_engine.py already existed with `search_text(query, top_k=5, category=None)`
-- Uses QueryFusionRetriever over Qdrant dense + BM25 lexical with reciprocal reranking
-- Updated default embedding model from text-embedding-3-large to text-embedding-3-small (consistency with PRD)
-- Files changed: src/rag/retrieval/query_engine.py (default model fix only)
-- **Learnings for future iterations:**
-  - QueryFusionRetriever uses `MockLLM()` with `num_queries=1` to avoid OpenAI LLM dependency for retrieval
-  - `_bm25_top_k()` clamps BM25 top-k to corpus size to prevent out-of-bounds
-  - Post-retrieval category filtering via `_matches_category()` for client-side filtering
-  - `_serialize_node()` converts NodeWithScore to dict with {score, text, metadata}
----
-
-## 2026-02-20 - US-006
-- `search_assets()` and `check_indexes()` already implemented in query_engine.py
-- `search_assets()` targets campaign_assets, filters by channel case-insensitively, guarantees image_path
-- `check_indexes()` is read-only: uses `collection_exists` + `get_collection`, prints stats, returns 0
-- Unknown channels return empty result sets (non-fatal) via `_matches_channel()`
-- Files changed: none (already existed)
-- **Learnings for future iterations:**
-  - `_serialize_asset_node()` wraps `_serialize_node()` and adds `image_path` default
-  - `_read_collection_status()` safely handles missing collections (returns "missing")
-  - `check_indexes()` also reports BM25 status by checking `data/index/bm25/` for files
----
-
-## 2026-02-20 - US-007
-- build_index.py CLI already existed with all required flags: --text, --assets, --check
-- Also has --dry-run, --max-cost-usd, --sample for additional workflows
-- All 100 tests pass including dedicated build_index CLI tests
-- Files changed: none (already existed)
-- **Learnings for future iterations:**
-  - CLI tests in `tests/rag/test_build_index_cli.py` cover all flags
-  - `tests/rag/test_query_engine.py` has smoke tests for search_text, search_assets, check_indexes
-  - Full test suite: 100 tests, 3.5s, all passing
+  - CRITICAL: build_index.py needs load_dotenv() or OPENAI_API_KEY won't be set from .env
+  - text-embedding-3-small: sample corpus of 5 files → 644 text chunks = 1465 vectors (LlamaIndex adds metadata nodes)
+  - Asset manifest: 50 rows → 50 vectors (1:1, no extra nodes)
+  - BM25 persists 8 files including retriever.json, mmindex, etc.
 ---

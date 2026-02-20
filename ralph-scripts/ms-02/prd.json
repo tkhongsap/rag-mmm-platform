@@ -13,7 +13,7 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Bug fix: rank-bm25 is incorrect — the correct LlamaIndex BM25 integration is llama-index-retrievers-bm25"
     },
     {
@@ -29,7 +29,7 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Bug fix: SentenceSplitter conflicts with ingest.py pre-chunking (20 rows/doc for CSVs). Pass docs directly to VectorStoreIndex."
     },
     {
@@ -44,7 +44,7 @@
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -59,7 +59,7 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -75,7 +75,7 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -91,7 +91,7 @@
         "Typecheck passes"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -109,7 +109,7 @@
         "Tests pass"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -132,7 +132,7 @@
         "Tests pass"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "This story requires OPENAI_API_KEY to be set. It calls the real OpenAI embedding API. Use --sample to limit to 6 predefined files (meta_ads.csv, tv_performance.csv, vehicle_sales.csv, MediaAgency_Terms_of_Business.md, config.py, asset_manifest.csv). Cost budget: --max-cost-usd 5 as safety guard."
     },
     {
