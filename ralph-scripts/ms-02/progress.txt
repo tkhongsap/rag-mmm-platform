@@ -1,6 +1,7 @@
 ## Codebase Patterns
 - Keep both `EMBEDDING_MODEL` and legacy `EMBED_MODEL` env vars aligned in `.env.example` to support newer MS-2 code and older modules simultaneously.
 - When adding ignored generated folders under `data/`, preserve `!data/**/.gitkeep` so placeholder directories remain trackable.
+- For text indexing, pass `transformations=[]` to `VectorStoreIndex.from_documents` so ingest.py pre-chunked docs are not re-split by default parsers.
 
 ## 2026-02-20 15:18:12 +07 - US-001
 - Added MS-2 env configuration defaults in `.env.example` for `EMBEDDING_MODEL=text-embedding-3-large` and `QDRANT_PATH=data/qdrant_db`, while keeping legacy `EMBED_MODEL` aligned.
@@ -12,4 +13,16 @@
   - RAG MS-2 setup now standardizes on `EMBEDDING_MODEL` + `QDRANT_PATH`; preserve `EMBED_MODEL` as compatibility alias until older modules migrate.
   - `make lint` may fail in environments missing `python` symlink; use `python3` equivalent commands when validating locally.
   - Root `CLAUDE.md` environment section should stay in sync with `.env.example` when config keys change.
+---
+## 2026-02-20 15:22:21 +0700 - US-002
+- Implemented `RAGIndexer` in `src/rag/embeddings/indexer.py` with env-driven defaults for `QDRANT_PATH` (`data/qdrant_db`) and `EMBEDDING_MODEL` (`text-embedding-3-large`), plus legacy `EMBED_MODEL` fallback.
+- Added `build_text_index(docs: list[Document])` to reset the `text_documents` Qdrant collection each run and rebuild a dense vector index using `OpenAIEmbedding`.
+- Ensured docs are ingested directly without extra chunking by calling `VectorStoreIndex.from_documents(..., transformations=[])` so ingest.py remains the single chunking layer.
+- Exported `RAGIndexer` from `src/rag/embeddings/__init__.py` and updated root `CLAUDE.md` with the no-resplitting indexing convention.
+- Ran quality checks: `python -m py_compile src/rag/embeddings/indexer.py src/rag/embeddings/__init__.py src/rag/data_processing/ingest.py` and `python -m pytest tests/rag/ -v` (pass).
+- Files changed: `src/rag/embeddings/indexer.py`, `src/rag/embeddings/__init__.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+- **Learnings for future iterations:**
+  - `VectorStoreIndex.from_documents` can apply default transformations unless overridden; explicitly pass `transformations=[]` when upstream loaders already chunk documents.
+  - Use collection reset (delete-if-exists before build) for deterministic Qdrant re-indexing and duplicate-free dry-run behavior.
+  - Keep root `CLAUDE.md` synced with new cross-module conventions introduced by MS-2 stories.
 ---

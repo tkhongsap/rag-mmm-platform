@@ -120,3 +120,4 @@ Required in `.env` (see `.env.example` for all defaults):
 - No stubbing/fake data in dev or prod (tests only)
 - Kill existing servers before starting new ones; start a new server after changes
 - All modules run from project root (`python -m src.rag.data_processing.run`, not relative imports)
+- For text indexing, ingest.py already provides pre-chunked `Document` objects; keep `VectorStoreIndex.from_documents(..., transformations=[])` to avoid implicit re-splitting.

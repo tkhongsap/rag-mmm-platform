@@ -31,7 +31,7 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "CRITICAL: Do NOT apply SentenceSplitter — it breaks tabular structure. Pass pre-chunked docs directly to VectorStoreIndex."
     },
     {
