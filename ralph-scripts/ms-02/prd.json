@@ -29,7 +29,7 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Bug fix: SentenceSplitter conflicts with ingest.py pre-chunking (20 rows/doc for CSVs). Pass docs directly to VectorStoreIndex."
     },
     {

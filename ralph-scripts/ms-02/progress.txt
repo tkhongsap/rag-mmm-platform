@@ -18,3 +18,16 @@ Started: Fri Feb 20 18:36:59 +07 2026
   - System only has `python3`, not `python` — Makefile now handles this via `PYTHON ?=` variable
   - All US-001 acceptance criteria were pre-satisfied by prior work; only needed the Makefile fix
 ---
+
+## 2026-02-20 - US-002
+- Added `index_text()` convenience method to RAGIndexer that calls `load_all_text_documents()` from ingest.py
+- Changed default embedding model from text-embedding-3-large to text-embedding-3-small (per PRD)
+- Updated .env.example to match (EMBEDDING_MODEL + EMBED_MODEL)
+- Added `index_assets()` convenience method for US-004 prep
+- Files changed: src/rag/embeddings/indexer.py, .env.example
+- **Learnings for future iterations:**
+  - indexer.py already existed with `build_text_index(docs)` — just needed the convenience loader wrapper
+  - `transformations=[]` is critical to prevent implicit SentenceSplitter on pre-chunked docs
+  - `_reset_collection()` provides idempotent re-indexing (drop + recreate)
+  - RAGIndexer resolves QDRANT_PATH relative to project root via `_resolve_project_path()`
+---

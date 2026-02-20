@@ -13,13 +13,15 @@ from llama_index.retrievers.bm25 import BM25Retriever
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 
+from src.rag.data_processing.ingest import load_all_text_documents, load_asset_documents
+
 logger = logging.getLogger(__name__)
 
 _TEXT_COLLECTION = "text_documents"
 _ASSET_COLLECTION = "campaign_assets"
 _DEFAULT_QDRANT_PATH = "data/qdrant_db"
 _DEFAULT_BM25_PATH = "data/index/bm25"
-_DEFAULT_EMBEDDING_MODEL = "text-embedding-3-large"
+_DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
 _EMBEDDING_COST_PER_1M_TOKENS_USD = 0.13
 
 
@@ -109,6 +111,11 @@ class RAGIndexer:
         )
         return index
 
+    def index_text(self) -> VectorStoreIndex:
+        """Load all text documents via ingest and build the text index."""
+        docs = load_all_text_documents()
+        return self.build_text_index(docs)
+
     def build_asset_index(self, docs: list[Document]) -> VectorStoreIndex:
         """Build the dense asset index in Qdrant for creative search."""
         if not docs:
@@ -139,6 +146,11 @@ class RAGIndexer:
             len(docs),
         )
         return index
+
+    def index_assets(self) -> VectorStoreIndex:
+        """Load asset documents via ingest and build the asset index."""
+        docs = load_asset_documents()
+        return self.build_asset_index(docs)
 
     def estimate(self, docs: list[Document]) -> dict[str, int | float]:
         """Estimate embedding tokens and cost for a document list without API calls."""
