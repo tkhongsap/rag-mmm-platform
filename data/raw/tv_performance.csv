@@ -1,0 +1,306 @@
+date_week_start,broadcaster,daypart,market,spot_length_seconds,spots_aired,grps,reach_000,reach_pct,avg_frequency,cpp,spend,programme_name
+2025-07-07,ITV,Daytime,GB,60,1,14.2,795,1.5,4.1,16098.68,16098.68,Saturday Night Takeaway
+2025-07-07,Sky Go,Pre-Peak,GB,30,1,19.0,2014,3.8,3.6,23270.42,23270.42,Good Morning Britain
+2025-07-07,Sky Go,Daytime,GB,30,1,13.8,2756,5.2,3.5,12236.6,12236.6,F1 Live
+2025-07-07,Sky Go,Breakfast,GB,30,1,18.4,689,1.3,4.0,16175.21,16175.21,Gogglebox
+2025-07-07,Channel4 Streaming,Breakfast,GB,60,1,17.7,3127,5.9,5.7,27712.65,27712.65,F1 Live
+2025-07-07,Channel4 Streaming,Daytime,GB,30,1,6.9,1696,3.2,4.8,13403.49,13403.49,Sky Sports Premier League
+2025-07-07,ITVX,Pre-Peak,GB,60,1,17.4,2279,4.3,3.4,24553.61,24553.61,The Great British Bake Off
+2025-07-07,ITVX,Peak,GB,60,1,24.7,795,1.5,4.5,43894.76,43894.76,Emmerdale
+2025-07-07,ITVX,Late Night,GB,60,1,11.0,1219,2.3,5.7,16207.52,16207.52,Saturday Night Takeaway
+2025-07-07,ITVX,Daytime,GB,30,1,5.0,2120,4.0,5.8,15245.08,15245.08,Grand Designs
+2025-07-07,Channel4 Streaming,Late Night,GB,30,1,8.9,1272,2.4,5.2,7761.82,7761.82,Emmerdale
+2025-07-07,Sky,Peak,GB,30,1,17.0,1537,2.9,5.7,31394.5,31394.5,Sky Sports Premier League
+2025-07-07,Sky,Pre-Peak,GB,30,1,12.1,1113,2.1,5.5,14498.22,14498.22,Grand Designs
+2025-07-07,Channel 4,Peak,GB,30,1,23.2,2279,4.3,4.8,23693.23,23693.23,F1 Live
+2025-07-07,Channel 4,Pre-Peak,GB,30,1,14.8,2226,4.2,3.3,21167.38,21167.38,F1 Live
+2025-07-07,Channel 4,Daytime,GB,30,1,12.0,1113,2.1,3.1,8011.67,8011.67,The Chase
+2025-07-07,ITV,Pre-Peak,GB,30,1,10.0,2756,5.2,3.8,20658.07,20658.07,News at Ten
+2025-07-07,ITV,Breakfast,GB,60,1,12.7,2809,5.3,5.2,26166.01,26166.01,Saturday Night Takeaway
+2025-07-07,ITV,Late Night,GB,60,1,8.4,2544,4.8,4.8,13311.89,13311.89,F1 Live
+2025-07-07,Sky,Late Night,GB,30,1,9.2,1378,2.6,4.4,5994.5,5994.5,Emmerdale
+2025-07-28,ITVX,Breakfast,GB,30,1,18.4,1961,3.7,3.9,13146.45,13146.45,Emmerdale
+2025-07-28,ITVX,Late Night,GB,60,1,9.6,530,1.0,3.2,18333.18,18333.18,Saturday Night Takeaway
+2025-07-28,Channel4 Streaming,Breakfast,GB,30,1,7.3,795,1.5,3.2,15510.22,15510.22,F1 Live
+2025-07-28,Channel4 Streaming,Daytime,GB,60,1,13.7,2226,4.2,3.9,23181.9,23181.9,Sky Sports Premier League
+2025-07-28,Sky Go,Breakfast,GB,30,1,14.9,901,1.7,5.8,18385.78,18385.78,Sky Sports Premier League
+2025-07-28,Sky Go,Peak,GB,30,1,16.6,1060,2.0,3.5,27685.09,27685.09,Grand Designs
+2025-07-28,Sky Go,Late Night,GB,30,1,10.9,1060,2.0,3.6,12602.13,12602.13,Gogglebox
+2025-07-28,ITVX,Peak,GB,60,1,12.6,2279,4.3,3.9,39111.7,39111.7,Emmerdale
+2025-07-28,Channel4 Streaming,Late Night,GB,30,1,11.5,848,1.6,3.9,12463.33,12463.33,The Chase
+2025-07-28,ITVX,Pre-Peak,GB,30,1,13.8,1219,2.3,4.5,17712.81,17712.81,The Great British Bake Off
+2025-07-28,Channel4 Streaming,Peak,GB,30,1,17.2,1908,3.6,5.2,17533.19,17533.19,Channel 4 News
+2025-07-28,Sky,Breakfast,GB,30,1,16.9,2597,4.9,3.2,14967.84,14967.84,Gogglebox
+2025-07-28,Sky,Pre-Peak,GB,30,1,18.2,689,1.3,4.8,19482.36,19482.36,Grand Designs
+2025-07-28,ITV,Peak,GB,30,1,22.2,689,1.3,3.3,14464.17,14464.17,Grand Designs
+2025-07-28,ITV,Late Night,GB,30,1,10.6,477,0.9,5.8,12993.51,12993.51,Good Morning Britain
+2025-07-28,ITV,Breakfast,GB,30,1,8.1,583,1.1,3.4,10694.75,10694.75,Sky Sports Premier League
+2025-07-28,Channel 4,Pre-Peak,GB,30,1,14.7,1219,2.3,3.9,15336.42,15336.42,F1 Live
+2025-07-28,ITV,Daytime,GB,30,1,6.8,1696,3.2,3.3,12704.33,12704.33,Saturday Night Takeaway
+2025-07-28,Channel 4,Daytime,GB,30,1,11.2,2862,5.4,4.3,10648.49,10648.49,Coronation Street
+2025-07-28,Sky,Daytime,GB,60,1,8.6,2650,5.0,5.8,24527.5,24527.5,Sky Sports Premier League
+2025-07-28,Sky,Peak,GB,60,1,23.0,2332,4.4,3.4,43041.16,43041.16,Grand Designs
+2025-07-28,Channel 4,Breakfast,GB,30,1,17.2,1060,2.0,5.7,17262.65,17262.65,Saturday Night Takeaway
+2025-08-18,Sky Go,Peak,GB,60,1,31.7,3233,6.1,4.2,28411.44,28411.44,Emmerdale
+2025-08-18,Sky Go,Pre-Peak,GB,60,1,11.2,2968,5.6,3.6,44411.71,44411.71,Saturday Night Takeaway
+2025-08-18,Sky Go,Breakfast,GB,30,1,9.0,1537,2.9,3.7,15288.89,15288.89,The Great British Bake Off
+2025-08-18,Sky Go,Daytime,GB,60,1,12.8,2968,5.6,3.0,25029.79,25029.79,Channel 4 News
+2025-08-18,Channel4 Streaming,Breakfast,GB,30,1,23.1,2438,4.6,5.1,22077.09,22077.09,The Chase
+2025-08-18,Channel4 Streaming,Late Night,GB,30,1,7.1,689,1.3,5.9,7311.49,7311.49,Emmerdale
+2025-08-18,Channel4 Streaming,Peak,GB,30,1,21.6,3286,6.2,3.1,27053.43,27053.43,Coronation Street
+2025-08-18,ITVX,Peak,GB,60,1,30.9,954,1.8,4.2,46154.54,46154.54,Coronation Street
+2025-08-18,ITVX,Breakfast,GB,60,1,23.5,1643,3.1,5.5,26984.79,26984.79,Coronation Street
+2025-08-18,ITVX,Daytime,GB,30,1,11.2,1378,2.6,3.6,14136.43,14136.43,News at Ten
+2025-08-18,Sky,Late Night,GB,30,1,5.5,2809,5.3,3.2,12415.75,12415.75,Coronation Street
+2025-08-18,Sky,Pre-Peak,GB,60,1,12.0,2226,4.2,5.9,27011.98,27011.98,The Great British Bake Off
+2025-08-18,Sky,Peak,GB,30,1,19.3,3021,5.7,4.7,27441.67,27441.67,F1 Live
+2025-08-18,Channel 4,Pre-Peak,GB,30,1,17.2,1431,2.7,4.0,13654.01,13654.01,Sky Sports Premier League
+2025-08-18,Channel 4,Daytime,GB,30,1,11.4,1908,3.6,5.3,9396.85,9396.85,News at Ten
+2025-08-18,Channel 4,Peak,GB,30,1,31.6,1908,3.6,4.1,17133.4,17133.4,Emmerdale
+2025-08-18,ITV,Peak,GB,60,1,14.8,2014,3.8,4.2,48343.27,48343.27,The Great British Bake Off
+2025-08-18,ITV,Breakfast,GB,30,1,13.4,1272,2.4,3.3,16397.39,16397.39,Gogglebox
+2025-08-18,ITV,Pre-Peak,GB,30,1,11.9,901,1.7,5.5,11498.97,11498.97,Sky Sports Premier League
+2025-08-18,ITVX,Late Night,GB,60,1,8.5,2120,4.0,5.8,22804.97,22804.97,News at Ten
+2025-09-01,ITVX,Pre-Peak,GB,60,1,69.2,2226,4.2,4.3,24118.97,24118.97,Emmerdale
+2025-09-01,ITVX,Daytime,GB,30,1,34.7,530,1.0,5.7,7593.94,7593.94,News at Ten
+2025-09-01,Channel4 Streaming,Daytime,GB,60,1,30.9,1378,2.6,5.0,20157.68,20157.68,News at Ten
+2025-09-01,ITVX,Late Night,GB,30,1,26.8,1802,3.4,4.7,7246.88,7246.88,Saturday Night Takeaway
+2025-09-01,Sky Go,Peak,GB,30,1,54.7,2491,4.7,4.2,22104.92,22104.92,Emmerdale
+2025-09-01,Sky Go,Daytime,GB,30,1,42.5,1378,2.6,4.7,8559.04,8559.04,The Great British Bake Off
+2025-09-01,Sky Go,Breakfast,GB,60,1,65.7,1007,1.9,4.5,23371.32,23371.32,News at Ten
+2025-09-01,Channel4 Streaming,Late Night,GB,30,1,21.5,2173,4.1,3.2,12128.05,12128.05,The Chase
+2025-09-01,Sky,Late Night,GB,60,1,42.1,1431,2.7,5.9,16529.23,16529.23,Grand Designs
+2025-09-01,Channel4 Streaming,Peak,GB,30,1,60.1,2067,3.9,3.5,33743.54,33743.54,Sky Sports Premier League
+2025-09-01,Sky,Daytime,GB,60,1,46.8,1325,2.5,3.8,22021.12,22021.12,Saturday Night Takeaway
+2025-09-01,ITV,Peak,GB,60,1,84.4,2438,4.6,3.1,55230.65,55230.65,Gogglebox
+2025-09-01,ITV,Pre-Peak,GB,60,1,53.9,477,0.9,3.7,34609.27,34609.27,Channel 4 News
+2025-09-01,ITV,Breakfast,GB,30,1,25.0,2544,4.8,4.5,15454.32,15454.32,Good Morning Britain
+2025-09-01,Channel 4,Peak,GB,30,1,61.9,1908,3.6,4.9,14497.26,14497.26,Grand Designs
+2025-09-01,Sky,Pre-Peak,GB,30,1,52.8,583,1.1,5.1,17364.84,17364.84,Emmerdale
+2025-09-01,Channel 4,Daytime,GB,30,1,33.1,3074,5.8,3.3,17943.87,17943.87,News at Ten
+2025-09-01,Sky,Breakfast,GB,30,1,65.8,1696,3.2,4.1,18013.51,18013.51,Good Morning Britain
+2025-09-01,Channel 4,Pre-Peak,GB,60,1,67.3,2915,5.5,3.8,35731.59,35731.59,Sky Sports Premier League
+2025-09-08,ITVX,Breakfast,GB,30,1,26.8,1961,3.7,5.5,23249.21,23249.21,F1 Live
+2025-09-08,Sky Go,Late Night,GB,30,1,40.7,1219,2.3,4.3,9510.86,9510.86,The Chase
+2025-09-08,Sky Go,Breakfast,GB,60,1,41.1,2279,4.3,3.2,24825.92,24825.92,Emmerdale
+2025-09-08,Sky Go,Pre-Peak,GB,30,1,65.1,2862,5.4,5.2,21900.61,21900.61,Sky Sports Premier League
+2025-09-08,Channel4 Streaming,Late Night,GB,60,1,37.0,2279,4.3,3.1,21945.29,21945.29,F1 Live
+2025-09-08,Channel4 Streaming,Daytime,GB,60,1,51.1,1696,3.2,4.1,11143.68,11143.68,Grand Designs
+2025-09-08,Channel4 Streaming,Peak,GB,30,1,90.9,530,1.0,6.0,23117.6,23117.6,Good Morning Britain
+2025-09-08,Channel4 Streaming,Pre-Peak,GB,60,1,71.0,1908,3.6,4.8,42775.34,42775.34,Emmerdale
+2025-09-08,ITVX,Late Night,GB,30,1,20.7,1007,1.9,3.9,13936.82,13936.82,Grand Designs
+2025-09-08,ITVX,Daytime,GB,60,1,52.1,742,1.4,3.5,28530.29,28530.29,Channel 4 News
+2025-09-08,ITVX,Pre-Peak,GB,30,1,45.3,3074,5.8,4.6,21309.84,21309.84,Grand Designs
+2025-09-08,Sky,Late Night,GB,30,1,41.6,1219,2.3,5.3,6441.36,6441.36,Sky Sports Premier League
+2025-09-08,ITV,Late Night,GB,30,1,30.4,1378,2.6,3.0,9428.13,9428.13,News at Ten
+2025-09-08,ITV,Breakfast,GB,60,1,41.1,1431,2.7,4.1,23767.62,23767.62,Sky Sports Premier League
+2025-09-08,ITV,Daytime,GB,60,1,38.9,1431,2.7,3.6,33319.97,33319.97,The Chase
+2025-09-08,Channel 4,Daytime,GB,60,1,26.7,1113,2.1,4.4,19799.7,19799.7,Sky Sports Premier League
+2025-09-08,ITV,Peak,GB,30,1,93.9,1484,2.8,3.6,26828.97,26828.97,Saturday Night Takeaway
+2025-09-08,Channel 4,Pre-Peak,GB,30,1,52.1,583,1.1,3.4,14719.09,14719.09,Channel 4 News
+2025-09-08,Sky,Breakfast,GB,30,1,45.8,2332,4.4,3.8,11191.05,11191.05,Emmerdale
+2025-09-08,Sky,Daytime,GB,30,1,25.5,1696,3.2,3.4,16196.69,16196.69,Sky Sports Premier League
+2025-09-08,Channel 4,Breakfast,GB,60,1,29.0,3021,5.7,4.3,32416.33,32416.33,Emmerdale
+2025-09-22,ITVX,Daytime,GB,30,1,20.7,2491,4.7,3.5,12522.75,12522.75,The Great British Bake Off
+2025-09-22,Sky Go,Breakfast,GB,60,1,36.2,901,1.7,3.3,26114.18,26114.18,Grand Designs
+2025-09-22,Sky Go,Daytime,GB,30,1,47.3,2438,4.6,4.9,12216.99,12216.99,Gogglebox
+2025-09-22,Channel4 Streaming,Pre-Peak,GB,60,1,43.6,1643,3.1,4.0,48648.38,48648.38,F1 Live
+2025-09-22,Channel4 Streaming,Late Night,GB,30,1,20.9,1007,1.9,4.6,13350.73,13350.73,Saturday Night Takeaway
+2025-09-22,Channel4 Streaming,Daytime,GB,30,1,38.9,1855,3.5,4.5,9572.64,9572.64,F1 Live
+2025-09-22,Channel4 Streaming,Peak,GB,30,1,87.9,848,1.6,4.0,21417.08,21417.08,The Great British Bake Off
+2025-09-22,ITVX,Late Night,GB,30,1,38.1,2173,4.1,6.0,14348.9,14348.9,Sky Sports Premier League
+2025-09-22,Sky Go,Pre-Peak,GB,60,1,75.0,530,1.0,5.7,20444.08,20444.08,The Great British Bake Off
+2025-09-22,ITVX,Pre-Peak,GB,30,1,57.5,848,1.6,3.9,23442.59,23442.59,F1 Live
+2025-09-22,Sky,Daytime,GB,30,1,23.1,689,1.3,5.4,15482.45,15482.45,Emmerdale
+2025-09-22,ITV,Breakfast,GB,30,1,35.6,2650,5.0,3.0,14217.72,14217.72,Channel 4 News
+2025-09-22,ITV,Peak,GB,60,1,86.8,795,1.5,4.9,37672.26,37672.26,News at Ten
+2025-09-22,ITV,Late Night,GB,60,1,39.1,2385,4.5,3.5,12661.36,12661.36,The Great British Bake Off
+2025-09-22,Sky,Peak,GB,30,1,49.1,1908,3.6,4.3,14649.82,14649.82,Saturday Night Takeaway
+2025-09-22,Channel 4,Daytime,GB,60,1,46.5,2279,4.3,4.9,17207.13,17207.13,Good Morning Britain
+2025-09-22,Channel 4,Pre-Peak,GB,30,1,73.3,424,0.8,4.4,22116.85,22116.85,F1 Live
+2025-09-22,Sky,Late Night,GB,30,1,22.7,2067,3.9,5.7,8241.08,8241.08,The Great British Bake Off
+2025-09-22,Channel 4,Breakfast,GB,60,1,25.4,1272,2.4,4.6,34145.18,34145.18,News at Ten
+2025-09-29,ITVX,Peak,GB,30,1,63.8,3021,5.7,5.9,28871.5,28871.5,Emmerdale
+2025-09-29,Sky Go,Pre-Peak,GB,30,1,81.5,1378,2.6,5.0,16572.8,16572.8,Coronation Street
+2025-09-29,Sky Go,Late Night,GB,30,1,20.8,2650,5.0,3.1,12476.78,12476.78,Good Morning Britain
+2025-09-29,Channel4 Streaming,Breakfast,GB,30,1,49.8,742,1.4,3.7,21975.79,21975.79,The Great British Bake Off
+2025-09-29,Channel4 Streaming,Peak,GB,30,1,72.3,2544,4.8,4.0,17846.6,17846.6,Channel 4 News
+2025-09-29,Channel4 Streaming,Daytime,GB,30,1,47.8,1643,3.1,4.0,10775.99,10775.99,Channel 4 News
+2025-09-29,ITVX,Breakfast,GB,30,1,50.3,477,0.9,3.4,21088.9,21088.9,Sky Sports Premier League
+2025-09-29,ITVX,Pre-Peak,GB,30,1,44.2,2332,4.4,3.3,11512.22,11512.22,Gogglebox
+2025-09-29,Sky Go,Peak,GB,30,1,62.9,1802,3.4,4.8,23802.27,23802.27,Emmerdale
+2025-09-29,Sky,Breakfast,GB,30,1,35.1,1696,3.2,5.8,13550.1,13550.1,Grand Designs
+2025-09-29,Sky,Late Night,GB,30,1,20.7,2120,4.0,3.9,7410.87,7410.87,Saturday Night Takeaway
+2025-09-29,Channel 4,Breakfast,GB,30,1,51.1,2173,4.1,4.3,10905.94,10905.94,Gogglebox
+2025-09-29,Channel 4,Late Night,GB,60,1,21.6,1113,2.1,3.5,16334.51,16334.51,Gogglebox
+2025-09-29,Channel 4,Daytime,GB,60,1,49.5,1378,2.6,5.9,29371.04,29371.04,Sky Sports Premier League
+2025-09-29,Channel 4,Pre-Peak,GB,30,1,82.0,2438,4.6,5.9,18699.11,18699.11,F1 Live
+2025-09-29,ITV,Late Night,GB,30,1,41.5,1749,3.3,3.9,13624.11,13624.11,Coronation Street
+2025-09-29,ITV,Pre-Peak,GB,30,1,29.5,848,1.6,4.2,18098.73,18098.73,Grand Designs
+2025-09-29,ITV,Breakfast,GB,60,1,29.6,2067,3.9,3.7,39618.91,39618.91,Grand Designs
+2025-09-29,ITV,Daytime,GB,60,1,32.5,3127,5.9,4.1,21381.29,21381.29,News at Ten
+2025-09-29,Sky,Daytime,GB,30,1,41.7,2226,4.2,3.6,12339.49,12339.49,F1 Live
+2025-10-13,ITVX,Breakfast,GB,60,1,33.5,2597,4.9,4.7,17621.34,17621.34,News at Ten
+2025-10-13,Channel4 Streaming,Pre-Peak,GB,30,1,59.1,742,1.4,3.3,10259.82,10259.82,The Chase
+2025-10-13,Channel4 Streaming,Daytime,GB,30,1,37.2,1802,3.4,5.7,14024.45,14024.45,Sky Sports Premier League
+2025-10-13,Channel4 Streaming,Peak,GB,30,1,64.8,1060,2.0,4.1,18297.92,18297.92,F1 Live
+2025-10-13,ITVX,Daytime,GB,60,1,33.5,3021,5.7,3.1,16651.91,16651.91,Emmerdale
+2025-10-13,Sky Go,Breakfast,GB,30,1,45.1,1961,3.7,5.2,17809.85,17809.85,Channel 4 News
+2025-10-13,Sky Go,Peak,GB,30,1,69.7,2968,5.6,5.0,24204.48,24204.48,Channel 4 News
+2025-10-13,Sky Go,Daytime,GB,30,1,17.2,2226,4.2,5.3,16356.42,16356.42,Gogglebox
+2025-10-13,Channel4 Streaming,Breakfast,GB,30,1,19.6,848,1.6,3.0,12764.17,12764.17,Coronation Street
+2025-10-13,Sky,Breakfast,GB,30,1,42.9,424,0.8,5.9,14366.51,14366.51,Coronation Street
+2025-10-13,ITVX,Peak,GB,30,1,34.8,1643,3.1,4.3,28306.47,28306.47,Channel 4 News
+2025-10-13,ITV,Breakfast,GB,30,1,31.6,2120,4.0,4.2,9508.5,9508.5,The Great British Bake Off
+2025-10-13,ITV,Peak,GB,30,1,63.4,424,0.8,4.3,17191.24,17191.24,Sky Sports Premier League
+2025-10-13,ITV,Daytime,GB,60,1,24.7,848,1.6,4.2,15390.99,15390.99,Channel 4 News
+2025-10-13,ITV,Pre-Peak,GB,30,1,34.9,2173,4.1,3.1,18927.63,18927.63,The Great British Bake Off
+2025-10-13,Channel 4,Daytime,GB,30,1,28.9,1378,2.6,5.9,13361.3,13361.3,Good Morning Britain
+2025-10-13,Sky,Daytime,GB,60,1,35.5,1431,2.7,4.3,28200.06,28200.06,Channel 4 News
+2025-10-13,Channel 4,Pre-Peak,GB,30,1,57.2,1272,2.4,5.2,12283.82,12283.82,The Chase
+2025-10-13,Sky,Pre-Peak,GB,30,1,23.0,1484,2.8,4.1,21091.21,21091.21,Coronation Street
+2025-10-13,Sky,Late Night,GB,30,1,29.3,1961,3.7,3.8,13825.98,13825.98,News at Ten
+2025-10-13,Channel 4,Peak,GB,60,1,54.9,2862,5.4,3.8,33634.7,33634.7,Gogglebox
+2025-10-20,ITVX,Peak,GB,30,1,24.7,1060,2.0,3.0,29264.89,29264.89,Emmerdale
+2025-10-20,Sky Go,Peak,GB,60,1,44.0,1272,2.4,3.5,47332.76,47332.76,F1 Live
+2025-10-20,Sky Go,Daytime,GB,30,1,33.4,3074,5.8,5.4,15671.61,15671.61,F1 Live
+2025-10-20,Sky Go,Pre-Peak,GB,60,1,48.3,1484,2.8,5.9,20261.52,20261.52,Saturday Night Takeaway
+2025-10-20,Channel4 Streaming,Peak,GB,30,1,30.6,3021,5.7,5.2,21089.32,21089.32,Channel 4 News
+2025-10-20,Channel4 Streaming,Daytime,GB,30,1,29.4,2226,4.2,3.0,7453.31,7453.31,Saturday Night Takeaway
+2025-10-20,Channel4 Streaming,Pre-Peak,GB,30,1,49.9,1325,2.5,4.7,23979.59,23979.59,Emmerdale
+2025-10-20,ITVX,Late Night,GB,30,1,21.9,848,1.6,3.1,13192.63,13192.63,Good Morning Britain
+2025-10-20,ITVX,Pre-Peak,GB,30,1,38.6,848,1.6,3.2,15199.25,15199.25,F1 Live
+2025-10-20,Sky Go,Late Night,GB,60,1,23.4,2067,3.9,4.2,17748.79,17748.79,Saturday Night Takeaway
+2025-10-20,ITVX,Daytime,GB,60,1,22.3,3127,5.9,3.5,18129.31,18129.31,F1 Live
+2025-10-20,Sky,Peak,GB,30,1,31.2,1855,3.5,4.8,18421.27,18421.27,Emmerdale
+2025-10-20,Sky,Pre-Peak,GB,30,1,57.9,2597,4.9,4.6,17753.79,17753.79,Emmerdale
+2025-10-20,Channel 4,Pre-Peak,GB,30,1,48.1,2756,5.2,5.4,23502.75,23502.75,Grand Designs
+2025-10-20,Channel 4,Daytime,GB,60,1,25.3,2067,3.9,5.1,21246.77,21246.77,F1 Live
+2025-10-20,Channel 4,Late Night,GB,30,1,15.5,2809,5.3,4.1,14666.37,14666.37,Sky Sports Premier League
+2025-10-20,ITV,Daytime,GB,30,1,31.8,1272,2.4,4.8,10285.6,10285.6,Emmerdale
+2025-10-20,ITV,Late Night,GB,30,1,23.2,2332,4.4,3.2,8456.22,8456.22,Emmerdale
+2025-10-20,ITV,Pre-Peak,GB,30,1,31.9,1908,3.6,4.9,15194.38,15194.38,The Chase
+2025-10-20,ITV,Peak,GB,30,1,32.1,3127,5.9,6.0,18735.41,18735.41,News at Ten
+2025-10-20,Sky,Late Night,GB,30,1,28.5,1908,3.6,4.3,12305.21,12305.21,Sky Sports Premier League
+2025-11-03,ITVX,Late Night,GB,30,1,18.2,477,0.9,3.6,12338.97,12338.97,News at Ten
+2025-11-03,ITVX,Breakfast,GB,30,1,32.3,2438,4.6,4.0,16938.12,16938.12,Emmerdale
+2025-11-03,Channel4 Streaming,Breakfast,GB,60,1,32.1,530,1.0,4.2,30359.43,30359.43,The Chase
+2025-11-03,Channel4 Streaming,Daytime,GB,30,1,9.9,3074,5.8,3.6,14250.17,14250.17,Gogglebox
+2025-11-03,Sky Go,Late Night,GB,30,1,19.1,2703,5.1,4.5,13258.2,13258.2,Channel 4 News
+2025-11-03,Channel4 Streaming,Pre-Peak,GB,30,1,21.9,1643,3.1,4.5,13325.44,13325.44,Sky Sports Premier League
+2025-11-03,Sky Go,Daytime,GB,30,1,14.2,2279,4.3,4.1,15391.07,15391.07,Grand Designs
+2025-11-03,Sky Go,Peak,GB,30,1,26.3,954,1.8,3.3,22664.45,22664.45,Good Morning Britain
+2025-11-03,Sky Go,Breakfast,GB,60,1,28.1,3021,5.7,3.4,18112.38,18112.38,Emmerdale
+2025-11-03,Channel4 Streaming,Peak,GB,30,1,25.9,2650,5.0,5.1,16002.56,16002.56,News at Ten
+2025-11-03,ITVX,Peak,GB,30,1,29.1,2703,5.1,4.6,18009.6,18009.6,The Great British Bake Off
+2025-11-03,Sky,Peak,GB,30,1,16.4,2915,5.5,4.2,19731.66,19731.66,Grand Designs
+2025-11-03,Sky,Daytime,GB,60,1,12.6,1802,3.4,5.1,14174.96,14174.96,News at Ten
+2025-11-03,Sky,Late Night,GB,30,1,13.5,2862,5.4,5.5,12251.9,12251.9,Sky Sports Premier League
+2025-11-03,Channel 4,Daytime,GB,30,1,16.6,2809,5.3,5.1,7848.26,7848.26,Good Morning Britain
+2025-11-03,Channel 4,Breakfast,GB,30,1,22.2,2385,4.5,4.0,14924.29,14924.29,Good Morning Britain
+2025-11-03,Channel 4,Pre-Peak,GB,30,1,33.6,3233,6.1,5.8,24588.12,24588.12,Coronation Street
+2025-11-03,Channel 4,Peak,GB,60,1,44.8,2173,4.1,3.9,41197.11,41197.11,The Chase
+2025-11-03,ITV,Breakfast,GB,30,1,21.5,2597,4.9,3.4,21302.35,21302.35,The Great British Bake Off
+2025-11-03,ITV,Peak,GB,30,1,29.7,1378,2.6,5.9,16736.96,16736.96,The Great British Bake Off
+2025-11-03,ITV,Pre-Peak,GB,30,1,18.2,3021,5.7,3.7,20138.79,20138.79,News at Ten
+2025-11-03,Sky,Breakfast,GB,30,1,15.6,2438,4.6,5.6,11391.83,11391.83,Gogglebox
+2025-11-10,ITVX,Late Night,GB,30,1,18.5,2279,4.3,5.2,11186.86,11186.86,The Chase
+2025-11-10,ITVX,Pre-Peak,GB,30,1,21.1,2067,3.9,3.4,18604.73,18604.73,Saturday Night Takeaway
+2025-11-10,Channel4 Streaming,Peak,GB,60,1,20.6,1484,2.8,4.4,43339.54,43339.54,Emmerdale
+2025-11-10,ITVX,Breakfast,GB,30,1,14.9,689,1.3,4.3,10391.98,10391.98,Gogglebox
+2025-11-10,Channel4 Streaming,Late Night,GB,30,1,9.3,1007,1.9,5.8,15105.86,15105.86,The Great British Bake Off
+2025-11-10,Sky Go,Pre-Peak,GB,60,1,13.3,1219,2.3,3.7,44080.82,44080.82,News at Ten
+2025-11-10,Sky Go,Late Night,GB,30,1,21.3,3021,5.7,5.9,9234.8,9234.8,Saturday Night Takeaway
+2025-11-10,Channel4 Streaming,Pre-Peak,GB,30,1,18.1,795,1.5,4.6,21692.05,21692.05,The Chase
+2025-11-10,Sky,Peak,GB,30,1,43.5,1272,2.4,4.8,23847.85,23847.85,Channel 4 News
+2025-11-10,Sky Go,Breakfast,GB,30,1,19.2,901,1.7,3.4,18706.27,18706.27,The Chase
+2025-11-10,Sky,Daytime,GB,30,1,14.3,583,1.1,5.3,11961.19,11961.19,Coronation Street
+2025-11-10,Sky,Late Night,GB,30,1,14.7,1643,3.1,4.9,9844.04,9844.04,News at Ten
+2025-11-10,ITV,Daytime,GB,30,1,10.3,2226,4.2,5.9,8618.88,8618.88,Sky Sports Premier League
+2025-11-10,ITV,Breakfast,GB,60,1,26.1,424,0.8,4.6,27043.37,27043.37,The Great British Bake Off
+2025-11-10,ITV,Late Night,GB,30,1,18.0,795,1.5,3.7,7669.11,7669.11,F1 Live
+2025-11-10,Channel 4,Pre-Peak,GB,60,1,35.1,1749,3.3,4.2,24655.3,24655.3,Saturday Night Takeaway
+2025-11-10,Channel 4,Peak,GB,60,1,31.1,1113,2.1,5.4,50618.62,50618.62,Good Morning Britain
+2025-11-10,Channel 4,Late Night,GB,30,1,16.0,1537,2.9,3.7,7600.69,7600.69,Sky Sports Premier League
+2025-11-10,ITV,Pre-Peak,GB,30,1,37.6,2014,3.8,5.3,23945.34,23945.34,Channel 4 News
+2025-11-24,Sky Go,Breakfast,GB,60,1,20.2,583,1.1,4.9,32664.13,32664.13,The Chase
+2025-11-24,Sky Go,Pre-Peak,GB,30,1,13.5,1007,1.9,3.4,20735.98,20735.98,Emmerdale
+2025-11-24,Sky Go,Late Night,GB,30,1,13.7,2120,4.0,5.8,11820.8,11820.8,Channel 4 News
+2025-11-24,Channel4 Streaming,Late Night,GB,30,1,15.6,2968,5.6,5.5,10552.11,10552.11,The Great British Bake Off
+2025-11-24,Channel4 Streaming,Peak,GB,60,1,30.8,2332,4.4,5.6,29539.71,29539.71,The Great British Bake Off
+2025-11-24,ITVX,Breakfast,GB,30,1,24.3,530,1.0,4.6,12347.79,12347.79,Coronation Street
+2025-11-24,Channel4 Streaming,Pre-Peak,GB,60,1,33.8,901,1.7,4.4,22441.46,22441.46,The Great British Bake Off
+2025-11-24,Channel4 Streaming,Breakfast,GB,60,1,23.0,2120,4.0,5.8,33735.08,33735.08,F1 Live
+2025-11-24,ITVX,Peak,GB,30,1,38.5,424,0.8,5.9,14020.28,14020.28,Coronation Street
+2025-11-24,Channel 4,Peak,GB,60,1,32.5,3074,5.8,5.3,53139.6,53139.6,Emmerdale
+2025-11-24,Sky,Breakfast,GB,30,1,25.3,1961,3.7,5.1,16475.24,16475.24,News at Ten
+2025-11-24,Sky,Daytime,GB,30,1,14.3,1696,3.2,5.8,10858.82,10858.82,Channel 4 News
+2025-11-24,Sky,Pre-Peak,GB,60,1,31.8,954,1.8,4.5,21684.5,21684.5,The Great British Bake Off
+2025-11-24,Channel 4,Daytime,GB,60,1,18.0,1590,3.0,5.5,22761.25,22761.25,The Great British Bake Off
+2025-11-24,Channel 4,Breakfast,GB,30,1,13.9,1272,2.4,5.5,19672.78,19672.78,Grand Designs
+2025-11-24,ITV,Peak,GB,30,1,23.2,742,1.4,5.1,16035.79,16035.79,Good Morning Britain
+2025-11-24,ITV,Pre-Peak,GB,30,1,34.3,1961,3.7,5.1,12748.15,12748.15,Saturday Night Takeaway
+2025-11-24,ITV,Daytime,GB,30,1,13.9,1537,2.9,4.8,10112.88,10112.88,Gogglebox
+2025-11-24,ITVX,Late Night,GB,30,1,12.3,2279,4.3,5.9,12616.99,12616.99,Good Morning Britain
+2025-12-01,ITVX,Breakfast,GB,30,1,17.5,530,1.0,5.2,12265.49,12265.49,Good Morning Britain
+2025-12-01,ITVX,Pre-Peak,GB,30,1,20.0,689,1.3,4.3,18308.68,18308.68,Coronation Street
+2025-12-01,Channel4 Streaming,Breakfast,GB,30,1,21.1,2067,3.9,4.6,19006.22,19006.22,Saturday Night Takeaway
+2025-12-01,Channel4 Streaming,Peak,GB,30,1,15.2,3233,6.1,4.4,28639.83,28639.83,Channel 4 News
+2025-12-01,Sky Go,Late Night,GB,60,1,6.5,2332,4.4,4.0,15270.28,15270.28,The Chase
+2025-12-01,Channel4 Streaming,Pre-Peak,GB,30,1,22.5,1378,2.6,4.5,22655.6,22655.6,Saturday Night Takeaway
+2025-12-01,Sky Go,Daytime,GB,60,1,11.6,954,1.8,3.7,15185.83,15185.83,F1 Live
+2025-12-01,ITVX,Daytime,GB,30,1,11.5,2385,4.5,5.5,17043.01,17043.01,The Great British Bake Off
+2025-12-01,Channel4 Streaming,Late Night,GB,30,1,8.7,2067,3.9,3.6,9702.41,9702.41,Coronation Street
+2025-12-01,ITVX,Late Night,GB,60,1,5.2,2438,4.6,4.4,12064.94,12064.94,Gogglebox
+2025-12-01,Sky Go,Peak,GB,30,1,25.9,1908,3.6,5.8,30673.16,30673.16,Sky Sports Premier League
+2025-12-01,Sky,Peak,GB,30,1,21.8,848,1.6,4.6,21158.31,21158.31,Coronation Street
+2025-12-01,ITV,Daytime,GB,30,1,11.4,2385,4.5,5.8,13279.76,13279.76,The Great British Bake Off
+2025-12-01,ITV,Breakfast,GB,30,1,21.4,1007,1.9,4.8,17484.76,17484.76,The Chase
+2025-12-01,ITV,Peak,GB,60,1,26.8,1749,3.3,3.8,44076.55,44076.55,F1 Live
+2025-12-01,Channel 4,Peak,GB,60,1,13.0,2332,4.4,3.0,43217.7,43217.7,Sky Sports Premier League
+2025-12-01,Sky,Daytime,GB,30,1,6.1,1113,2.1,4.9,10302.66,10302.66,Channel 4 News
+2025-12-01,Channel 4,Daytime,GB,30,1,16.3,583,1.1,4.8,17304.6,17304.6,Coronation Street
+2025-12-01,Channel 4,Late Night,GB,30,1,7.9,2491,4.7,4.3,12855.24,12855.24,News at Ten
+2025-12-01,Sky,Pre-Peak,GB,60,1,26.4,1113,2.1,4.5,31285.57,31285.57,Grand Designs
+2025-12-01,Channel 4,Pre-Peak,GB,30,1,14.2,1325,2.5,5.2,14082.19,14082.19,Gogglebox
+2025-12-15,ITVX,Breakfast,GB,30,1,19.3,2332,4.4,4.7,15060.81,15060.81,Sky Sports Premier League
+2025-12-15,Sky Go,Pre-Peak,GB,30,1,24.3,1908,3.6,3.4,13231.83,13231.83,Saturday Night Takeaway
+2025-12-15,Sky Go,Daytime,GB,60,1,6.0,1590,3.0,3.0,18431.14,18431.14,Channel 4 News
+2025-12-15,Sky Go,Peak,GB,30,1,24.1,2862,5.4,5.0,21173.45,21173.45,Channel 4 News
+2025-12-15,Channel4 Streaming,Breakfast,GB,60,1,9.2,3074,5.8,5.7,27832.94,27832.94,The Great British Bake Off
+2025-12-15,Channel4 Streaming,Late Night,GB,60,1,12.0,689,1.3,5.4,14799.32,14799.32,Gogglebox
+2025-12-15,Channel4 Streaming,Daytime,GB,30,1,5.6,583,1.1,4.2,14808.29,14808.29,Sky Sports Premier League
+2025-12-15,Channel4 Streaming,Peak,GB,30,1,28.7,2226,4.2,4.5,26078.02,26078.02,F1 Live
+2025-12-15,ITVX,Late Night,GB,60,1,13.8,2756,5.2,4.0,14472.31,14472.31,Channel 4 News
+2025-12-15,Sky Go,Breakfast,GB,30,1,19.6,2809,5.3,4.6,15675.43,15675.43,Emmerdale
+2025-12-15,ITVX,Pre-Peak,GB,60,1,13.5,583,1.1,5.7,36230.16,36230.16,Gogglebox
+2025-12-15,Sky,Late Night,GB,30,1,8.3,2385,4.5,4.2,13896.85,13896.85,Coronation Street
+2025-12-15,Sky,Breakfast,GB,30,1,15.4,424,0.8,4.4,11892.44,11892.44,Channel 4 News
+2025-12-15,Sky,Peak,GB,30,1,30.6,2544,4.8,5.7,17760.08,17760.08,Coronation Street
+2025-12-15,Channel 4,Late Night,GB,60,1,6.6,583,1.1,5.8,19276.63,19276.63,Channel 4 News
+2025-12-15,Channel 4,Pre-Peak,GB,30,1,15.9,2067,3.9,4.5,12160.28,12160.28,Good Morning Britain
+2025-12-15,Channel 4,Daytime,GB,30,1,6.5,636,1.2,3.3,15672.27,15672.27,The Chase
+2025-12-15,ITV,Daytime,GB,30,1,9.8,636,1.2,4.0,8889.78,8889.78,Coronation Street
+2025-12-15,ITV,Breakfast,GB,30,1,12.5,1166,2.2,5.2,22446.9,22446.9,Grand Designs
+2025-12-15,ITV,Late Night,GB,60,1,13.6,901,1.7,4.0,13968.61,13968.61,The Great British Bake Off
+2025-12-15,ITVX,Daytime,GB,30,1,10.3,1908,3.6,5.3,9463.5,9463.5,Sky Sports Premier League
+2025-12-22,ITVX,Late Night,GB,30,1,12.9,1166,2.2,5.5,7583.58,7583.58,Grand Designs
+2025-12-22,Channel4 Streaming,Peak,GB,30,1,22.8,954,1.8,3.2,25450.36,25450.36,Coronation Street
+2025-12-22,Channel4 Streaming,Daytime,GB,30,1,14.7,689,1.3,3.1,12719.62,12719.62,Emmerdale
+2025-12-22,ITVX,Daytime,GB,60,1,14.2,2703,5.1,4.1,21012.06,21012.06,Channel 4 News
+2025-12-22,Channel4 Streaming,Breakfast,GB,30,1,20.6,2226,4.2,3.0,15238.04,15238.04,Saturday Night Takeaway
+2025-12-22,Sky Go,Peak,GB,30,1,25.6,2809,5.3,4.3,32348.03,32348.03,Coronation Street
+2025-12-22,Sky Go,Pre-Peak,GB,30,1,10.7,1961,3.7,4.9,19617.48,19617.48,Gogglebox
+2025-12-22,Channel4 Streaming,Pre-Peak,GB,60,1,18.3,2968,5.6,5.4,38157.58,38157.58,F1 Live
+2025-12-22,ITVX,Pre-Peak,GB,30,1,18.4,3127,5.9,5.9,22491.55,22491.55,Gogglebox
+2025-12-22,Sky Go,Late Night,GB,30,1,8.2,2650,5.0,5.8,7476.61,7476.61,The Chase
+2025-12-22,Sky,Late Night,GB,60,1,9.3,742,1.4,3.2,23977.52,23977.52,News at Ten
+2025-12-22,Sky,Pre-Peak,GB,60,1,15.5,1060,2.0,5.4,36048.01,36048.01,Saturday Night Takeaway
+2025-12-22,Channel 4,Peak,GB,30,1,17.0,2332,4.4,3.3,12839.77,12839.77,News at Ten
+2025-12-22,Channel 4,Pre-Peak,GB,30,1,11.9,848,1.6,3.4,14385.93,14385.93,Gogglebox
+2025-12-22,Channel 4,Late Night,GB,60,1,5.0,1484,2.8,5.3,22897.53,22897.53,News at Ten
+2025-12-22,ITV,Breakfast,GB,60,1,18.4,1325,2.5,4.7,18229.2,18229.2,F1 Live
+2025-12-22,ITV,Peak,GB,30,1,17.3,742,1.4,5.5,18647.32,18647.32,The Great British Bake Off
+2025-12-22,ITV,Pre-Peak,GB,60,1,14.1,2332,4.4,5.4,46061.26,46061.26,F1 Live
+2025-12-22,Sky,Breakfast,GB,60,1,16.9,2597,4.9,4.2,27929.97,27929.97,Coronation Street
+2025-12-22,Sky Go,Breakfast,GB,30,1,13.8,901,1.7,5.3,13082.41,13082.41,The Chase

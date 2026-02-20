@@ -1,0 +1,361 @@
+year_month,competitor,channel,estimated_spend_gbp,share_of_voice_pct,source
+2025-01,Tesla,tv,719725.42,22.7,Kantar Media
+2025-01,Tesla,digital,613517.02,19.9,Nielsen Ad Intel
+2025-01,Tesla,ooh,260210.01,6.5,BARB/RAJAR
+2025-01,BMW,tv,1180594.42,35.0,Kantar Media
+2025-01,BMW,digital,1167263.76,35.0,Pathmatics
+2025-01,BMW,ooh,383885.92,14.5,Nielsen Ad Intel
+2025-01,Audi,tv,1102412.31,31.8,BARB/RAJAR
+2025-01,Audi,digital,881846.4,28.1,Comscore
+2025-01,Audi,ooh,384914.19,8.9,Pathmatics
+2025-01,Mercedes-Benz,tv,1175372.15,35.0,Nielsen Ad Intel
+2025-01,Mercedes-Benz,digital,1102294.82,35.0,BARB/RAJAR
+2025-01,Mercedes-Benz,ooh,372355.88,13.8,Internal Estimate
+2025-01,Hyundai,tv,426819.1,16.6,Internal Estimate
+2025-01,Hyundai,digital,440910.18,15.2,Comscore
+2025-01,Hyundai,ooh,135742.09,4.8,Nielsen Ad Intel
+2025-01,Kia,tv,318899.47,13.1,Comscore
+2025-01,Kia,digital,283248.66,9.9,Nielsen Ad Intel
+2025-01,Kia,ooh,103296.99,3.5,Internal Estimate
+2025-01,Volvo,tv,338463.74,11.1,Comscore
+2025-01,Volvo,digital,291521.69,11.0,Comscore
+2025-01,Volvo,ooh,102066.5,3.5,Nielsen Ad Intel
+2025-01,Polestar,tv,139715.02,2.2,Internal Estimate
+2025-01,Polestar,digital,117360.93,4.4,Pathmatics
+2025-01,Polestar,ooh,44669.12,1.6,Pathmatics
+2025-01,BYD,tv,232318.84,6.4,Nielsen Ad Intel
+2025-01,BYD,digital,198774.15,5.2,Nielsen Ad Intel
+2025-01,BYD,ooh,82239.72,2.7,Nielsen Ad Intel
+2025-01,MG,tv,305095.75,9.4,Comscore
+2025-01,MG,digital,273993.44,13.6,Comscore
+2025-01,MG,ooh,105731.59,3.8,Nielsen Ad Intel
+2025-02,Tesla,tv,351410.05,9.1,Nielsen Ad Intel
+2025-02,Tesla,digital,323789.59,9.5,Nielsen Ad Intel
+2025-02,Tesla,ooh,102638.27,3.0,Nielsen Ad Intel
+2025-02,BMW,tv,938774.32,34.9,BARB/RAJAR
+2025-02,BMW,digital,802157.55,29.3,Kantar Media
+2025-02,BMW,ooh,292591.25,10.8,Comscore
+2025-02,Audi,tv,547706.78,19.3,Comscore
+2025-02,Audi,digital,585146.42,22.7,Kantar Media
+2025-02,Audi,ooh,190815.28,8.1,Kantar Media
+2025-02,Mercedes-Benz,tv,1189174.1,35.0,BARB/RAJAR
+2025-02,Mercedes-Benz,digital,1064245.99,31.3,BARB/RAJAR
+2025-02,Mercedes-Benz,ooh,434131.56,16.7,Comscore
+2025-02,Hyundai,tv,460649.56,15.7,Nielsen Ad Intel
+2025-02,Hyundai,digital,480160.34,14.9,Kantar Media
+2025-02,Hyundai,ooh,183834.98,5.5,Pathmatics
+2025-02,Kia,tv,273207.1,7.6,Kantar Media
+2025-02,Kia,digital,224311.57,6.7,Kantar Media
+2025-02,Kia,ooh,91333.82,3.3,Internal Estimate
+2025-02,Volvo,tv,448494.26,19.3,Nielsen Ad Intel
+2025-02,Volvo,digital,302800.91,10.2,Nielsen Ad Intel
+2025-02,Volvo,ooh,146022.82,5.8,Kantar Media
+2025-02,Polestar,tv,251285.6,8.5,Nielsen Ad Intel
+2025-02,Polestar,digital,229311.37,8.4,Nielsen Ad Intel
+2025-02,Polestar,ooh,85234.62,2.8,Pathmatics
+2025-02,BYD,tv,174931.71,5.4,Kantar Media
+2025-02,BYD,digital,163012.17,6.1,Internal Estimate
+2025-02,BYD,ooh,58442.8,2.1,Pathmatics
+2025-02,MG,tv,339305.87,11.7,Pathmatics
+2025-02,MG,digital,312959.33,9.3,Nielsen Ad Intel
+2025-02,MG,ooh,123355.99,4.6,Pathmatics
+2025-03,Tesla,tv,419815.92,11.7,Pathmatics
+2025-03,Tesla,digital,403645.94,15.1,Internal Estimate
+2025-03,Tesla,ooh,153450.41,6.0,BARB/RAJAR
+2025-03,BMW,tv,1166104.32,35.0,Pathmatics
+2025-03,BMW,digital,1213151.0,35.0,Kantar Media
+2025-03,BMW,ooh,382889.49,13.4,Kantar Media
+2025-03,Audi,tv,834915.51,24.4,Kantar Media
+2025-03,Audi,digital,730643.57,27.9,Nielsen Ad Intel
+2025-03,Audi,ooh,244903.75,8.5,Comscore
+2025-03,Mercedes-Benz,tv,1133324.13,28.0,Nielsen Ad Intel
+2025-03,Mercedes-Benz,digital,1024049.2,35.0,BARB/RAJAR
+2025-03,Mercedes-Benz,ooh,358333.74,10.5,BARB/RAJAR
+2025-03,Hyundai,tv,448708.2,13.9,Nielsen Ad Intel
+2025-03,Hyundai,digital,394448.19,13.6,Pathmatics
+2025-03,Hyundai,ooh,133325.59,4.6,Pathmatics
+2025-03,Kia,tv,307756.81,12.0,Kantar Media
+2025-03,Kia,digital,280686.17,7.2,Pathmatics
+2025-03,Kia,ooh,113699.79,3.3,Comscore
+2025-03,Volvo,tv,284546.53,10.1,Kantar Media
+2025-03,Volvo,digital,216846.9,7.4,Comscore
+2025-03,Volvo,ooh,76442.65,3.3,Comscore
+2025-03,Polestar,tv,187562.9,6.6,Pathmatics
+2025-03,Polestar,digital,162482.12,5.6,BARB/RAJAR
+2025-03,Polestar,ooh,68247.02,2.0,Comscore
+2025-03,BYD,tv,168716.72,6.1,Comscore
+2025-03,BYD,digital,131035.59,4.0,Kantar Media
+2025-03,BYD,ooh,51813.27,1.8,Nielsen Ad Intel
+2025-03,MG,tv,280976.18,10.0,BARB/RAJAR
+2025-03,MG,digital,257790.88,8.1,Internal Estimate
+2025-03,MG,ooh,114152.17,2.4,Kantar Media
+2025-04,Tesla,tv,341793.95,12.8,Nielsen Ad Intel
+2025-04,Tesla,digital,297851.29,9.3,Comscore
+2025-04,Tesla,ooh,105622.19,3.1,Nielsen Ad Intel
+2025-04,BMW,tv,783854.69,19.3,Pathmatics
+2025-04,BMW,digital,668821.14,21.8,Internal Estimate
+2025-04,BMW,ooh,240043.65,9.8,Comscore
+2025-04,Audi,tv,1044374.9,33.0,Nielsen Ad Intel
+2025-04,Audi,digital,831890.22,29.3,Pathmatics
+2025-04,Audi,ooh,271249.44,9.6,Kantar Media
+2025-04,Mercedes-Benz,tv,909575.7,26.3,Comscore
+2025-04,Mercedes-Benz,digital,658977.92,24.4,Internal Estimate
+2025-04,Mercedes-Benz,ooh,258372.22,9.0,Pathmatics
+2025-04,Hyundai,tv,471540.75,19.2,Pathmatics
+2025-04,Hyundai,digital,367032.47,12.0,Pathmatics
+2025-04,Hyundai,ooh,138638.46,3.5,Pathmatics
+2025-04,Kia,tv,313305.5,11.8,BARB/RAJAR
+2025-04,Kia,digital,260712.36,9.0,Comscore
+2025-04,Kia,ooh,91568.47,2.8,Nielsen Ad Intel
+2025-04,Volvo,tv,261908.64,10.4,Pathmatics
+2025-04,Volvo,digital,218460.7,8.3,Pathmatics
+2025-04,Volvo,ooh,92965.98,3.1,Internal Estimate
+2025-04,Polestar,tv,188229.08,6.5,Pathmatics
+2025-04,Polestar,digital,193221.29,6.8,Pathmatics
+2025-04,Polestar,ooh,78600.92,2.5,Pathmatics
+2025-04,BYD,tv,295185.2,10.1,Internal Estimate
+2025-04,BYD,digital,278440.47,7.9,Kantar Media
+2025-04,BYD,ooh,115345.36,4.1,Pathmatics
+2025-04,MG,tv,374711.82,9.8,Kantar Media
+2025-04,MG,digital,325950.65,10.5,BARB/RAJAR
+2025-04,MG,ooh,120957.45,3.1,Nielsen Ad Intel
+2025-05,Tesla,tv,379225.41,10.7,Comscore
+2025-05,Tesla,digital,355104.53,13.6,Comscore
+2025-05,Tesla,ooh,120648.54,3.9,Kantar Media
+2025-05,BMW,tv,1323687.47,35.0,BARB/RAJAR
+2025-05,BMW,digital,1187168.15,35.0,Internal Estimate
+2025-05,BMW,ooh,414080.44,15.7,Pathmatics
+2025-05,Audi,tv,950626.09,32.2,Nielsen Ad Intel
+2025-05,Audi,digital,845363.26,24.0,Internal Estimate
+2025-05,Audi,ooh,301554.07,7.3,Kantar Media
+2025-05,Mercedes-Benz,tv,923604.9,25.2,Kantar Media
+2025-05,Mercedes-Benz,digital,858285.72,26.5,BARB/RAJAR
+2025-05,Mercedes-Benz,ooh,306428.3,12.4,Comscore
+2025-05,Hyundai,tv,437842.46,9.6,Comscore
+2025-05,Hyundai,digital,390020.31,11.2,Internal Estimate
+2025-05,Hyundai,ooh,121024.45,4.2,Nielsen Ad Intel
+2025-05,Kia,tv,264843.11,8.5,Comscore
+2025-05,Kia,digital,217310.15,8.3,BARB/RAJAR
+2025-05,Kia,ooh,88883.39,2.4,Nielsen Ad Intel
+2025-05,Volvo,tv,251272.96,8.3,Comscore
+2025-05,Volvo,digital,231671.27,7.9,Internal Estimate
+2025-05,Volvo,ooh,90074.95,2.3,Kantar Media
+2025-05,Polestar,tv,242711.69,7.0,Comscore
+2025-05,Polestar,digital,199441.18,6.8,Internal Estimate
+2025-05,Polestar,ooh,79988.04,3.2,Internal Estimate
+2025-05,BYD,tv,232842.29,7.6,Internal Estimate
+2025-05,BYD,digital,237438.35,6.4,Internal Estimate
+2025-05,BYD,ooh,88146.75,3.2,Pathmatics
+2025-05,MG,tv,433148.47,15.0,Comscore
+2025-05,MG,digital,325452.03,11.4,Internal Estimate
+2025-05,MG,ooh,135204.88,4.2,BARB/RAJAR
+2025-06,Tesla,tv,714652.77,26.9,Internal Estimate
+2025-06,Tesla,digital,554689.17,20.2,Nielsen Ad Intel
+2025-06,Tesla,ooh,236161.35,8.7,Comscore
+2025-06,BMW,tv,1145914.52,35.0,Pathmatics
+2025-06,BMW,digital,1070128.24,26.9,Kantar Media
+2025-06,BMW,ooh,359309.2,11.7,Pathmatics
+2025-06,Audi,tv,929836.94,32.0,Nielsen Ad Intel
+2025-06,Audi,digital,817359.45,24.9,BARB/RAJAR
+2025-06,Audi,ooh,331483.76,9.8,Pathmatics
+2025-06,Mercedes-Benz,tv,1069358.44,35.0,Pathmatics
+2025-06,Mercedes-Benz,digital,1030978.75,35.0,Pathmatics
+2025-06,Mercedes-Benz,ooh,386751.45,14.9,Nielsen Ad Intel
+2025-06,Hyundai,tv,314472.47,11.7,Internal Estimate
+2025-06,Hyundai,digital,286161.07,12.9,Internal Estimate
+2025-06,Hyundai,ooh,122862.73,3.2,Internal Estimate
+2025-06,Kia,tv,425263.88,11.5,Internal Estimate
+2025-06,Kia,digital,405426.35,13.2,Internal Estimate
+2025-06,Kia,ooh,134803.16,3.6,Pathmatics
+2025-06,Volvo,tv,312903.05,10.8,Kantar Media
+2025-06,Volvo,digital,282950.2,11.4,Internal Estimate
+2025-06,Volvo,ooh,114858.86,3.8,BARB/RAJAR
+2025-06,Polestar,tv,361484.24,10.5,Kantar Media
+2025-06,Polestar,digital,269867.27,8.9,Nielsen Ad Intel
+2025-06,Polestar,ooh,94958.28,3.4,Kantar Media
+2025-06,BYD,tv,382683.52,13.5,Pathmatics
+2025-06,BYD,digital,382552.5,17.4,Internal Estimate
+2025-06,BYD,ooh,126787.48,3.8,Internal Estimate
+2025-06,MG,tv,281254.23,9.4,Comscore
+2025-06,MG,digital,253408.76,7.7,Kantar Media
+2025-06,MG,ooh,86494.47,3.1,Internal Estimate
+2025-07,Tesla,tv,337716.19,12.6,Internal Estimate
+2025-07,Tesla,digital,278672.38,10.3,Comscore
+2025-07,Tesla,ooh,111898.14,2.9,Internal Estimate
+2025-07,BMW,tv,1466436.03,35.0,Comscore
+2025-07,BMW,digital,1268993.58,35.0,Kantar Media
+2025-07,BMW,ooh,474243.63,15.3,Kantar Media
+2025-07,Audi,tv,1162207.63,35.0,Nielsen Ad Intel
+2025-07,Audi,digital,948710.32,29.5,Kantar Media
+2025-07,Audi,ooh,316196.29,12.7,Nielsen Ad Intel
+2025-07,Mercedes-Benz,tv,1594691.45,35.0,Nielsen Ad Intel
+2025-07,Mercedes-Benz,digital,1181648.67,35.0,Internal Estimate
+2025-07,Mercedes-Benz,ooh,546874.97,18.7,Nielsen Ad Intel
+2025-07,Hyundai,tv,507814.99,10.2,Kantar Media
+2025-07,Hyundai,digital,403480.41,13.5,Kantar Media
+2025-07,Hyundai,ooh,155843.86,5.1,Pathmatics
+2025-07,Kia,tv,484343.88,12.6,Comscore
+2025-07,Kia,digital,357189.9,13.7,Internal Estimate
+2025-07,Kia,ooh,151660.16,5.9,Internal Estimate
+2025-07,Volvo,tv,376782.86,14.0,BARB/RAJAR
+2025-07,Volvo,digital,409119.62,15.8,Kantar Media
+2025-07,Volvo,ooh,153377.69,4.3,Nielsen Ad Intel
+2025-07,Polestar,tv,249470.36,7.2,BARB/RAJAR
+2025-07,Polestar,digital,233980.79,9.1,Nielsen Ad Intel
+2025-07,Polestar,ooh,81706.18,2.8,Nielsen Ad Intel
+2025-07,BYD,tv,387683.43,9.0,Nielsen Ad Intel
+2025-07,BYD,digital,354388.44,8.7,Pathmatics
+2025-07,BYD,ooh,148937.06,5.0,Nielsen Ad Intel
+2025-07,MG,tv,479867.96,15.3,Kantar Media
+2025-07,MG,digital,488173.7,11.0,Comscore
+2025-07,MG,ooh,160123.9,4.6,Comscore
+2025-08,Tesla,tv,356875.67,10.5,Internal Estimate
+2025-08,Tesla,digital,303204.74,10.3,Comscore
+2025-08,Tesla,ooh,129191.33,4.0,Comscore
+2025-08,BMW,tv,1075065.07,30.3,Kantar Media
+2025-08,BMW,digital,973340.12,35.0,BARB/RAJAR
+2025-08,BMW,ooh,352690.3,8.2,Internal Estimate
+2025-08,Audi,tv,1500633.74,35.0,Nielsen Ad Intel
+2025-08,Audi,digital,1220437.53,35.0,Comscore
+2025-08,Audi,ooh,515017.87,23.1,Pathmatics
+2025-08,Mercedes-Benz,tv,1255989.67,35.0,Nielsen Ad Intel
+2025-08,Mercedes-Benz,digital,1215997.85,35.0,Internal Estimate
+2025-08,Mercedes-Benz,ooh,490092.32,18.5,Internal Estimate
+2025-08,Hyundai,tv,910601.14,30.7,BARB/RAJAR
+2025-08,Hyundai,digital,702213.62,28.6,Kantar Media
+2025-08,Hyundai,ooh,235186.01,7.5,Kantar Media
+2025-08,Kia,tv,329924.29,10.2,BARB/RAJAR
+2025-08,Kia,digital,311901.41,11.0,Nielsen Ad Intel
+2025-08,Kia,ooh,122648.01,3.7,Comscore
+2025-08,Volvo,tv,264570.83,10.2,BARB/RAJAR
+2025-08,Volvo,digital,242234.47,9.0,BARB/RAJAR
+2025-08,Volvo,ooh,90341.76,3.7,Kantar Media
+2025-08,Polestar,tv,314249.1,11.2,Pathmatics
+2025-08,Polestar,digital,242279.36,8.3,Comscore
+2025-08,Polestar,ooh,86328.04,2.8,Kantar Media
+2025-08,BYD,tv,191079.89,7.2,Comscore
+2025-08,BYD,digital,216606.44,7.1,BARB/RAJAR
+2025-08,BYD,ooh,78281.51,1.9,Nielsen Ad Intel
+2025-08,MG,tv,633224.55,23.4,BARB/RAJAR
+2025-08,MG,digital,492710.97,12.5,BARB/RAJAR
+2025-08,MG,ooh,171254.11,5.4,Nielsen Ad Intel
+2025-09,Tesla,tv,895724.82,23.2,BARB/RAJAR
+2025-09,Tesla,digital,745270.41,28.3,Pathmatics
+2025-09,Tesla,ooh,274743.46,8.9,Comscore
+2025-09,BMW,tv,1898897.89,35.0,Comscore
+2025-09,BMW,digital,1375236.35,35.0,Comscore
+2025-09,BMW,ooh,511949.7,22.8,Comscore
+2025-09,Audi,tv,1737999.29,35.0,Internal Estimate
+2025-09,Audi,digital,1646486.98,35.0,Nielsen Ad Intel
+2025-09,Audi,ooh,581373.18,25.2,Comscore
+2025-09,Mercedes-Benz,tv,2506039.06,35.0,Comscore
+2025-09,Mercedes-Benz,digital,2117168.29,35.0,Nielsen Ad Intel
+2025-09,Mercedes-Benz,ooh,864522.18,26.5,Nielsen Ad Intel
+2025-09,Hyundai,tv,1104775.55,35.0,BARB/RAJAR
+2025-09,Hyundai,digital,1057300.8,31.7,Comscore
+2025-09,Hyundai,ooh,404577.19,13.3,Pathmatics
+2025-09,Kia,tv,751799.4,26.1,Kantar Media
+2025-09,Kia,digital,690028.48,27.1,BARB/RAJAR
+2025-09,Kia,ooh,273656.75,7.2,BARB/RAJAR
+2025-09,Volvo,tv,653092.42,20.0,Pathmatics
+2025-09,Volvo,digital,641223.0,11.9,Nielsen Ad Intel
+2025-09,Volvo,ooh,225435.45,8.8,Kantar Media
+2025-09,Polestar,tv,472083.25,15.4,BARB/RAJAR
+2025-09,Polestar,digital,424925.55,13.9,Comscore
+2025-09,Polestar,ooh,178666.84,5.8,Internal Estimate
+2025-09,BYD,tv,263917.82,7.9,BARB/RAJAR
+2025-09,BYD,digital,248081.01,10.2,Nielsen Ad Intel
+2025-09,BYD,ooh,85278.64,3.3,Kantar Media
+2025-09,MG,tv,505156.55,14.4,Nielsen Ad Intel
+2025-09,MG,digital,447626.38,16.1,Internal Estimate
+2025-09,MG,ooh,146511.75,5.8,BARB/RAJAR
+2025-10,Tesla,tv,911114.18,30.1,Nielsen Ad Intel
+2025-10,Tesla,digital,765862.03,27.9,Nielsen Ad Intel
+2025-10,Tesla,ooh,318544.49,8.8,Internal Estimate
+2025-10,BMW,tv,1308497.14,35.0,Kantar Media
+2025-10,BMW,digital,1328194.33,34.9,Kantar Media
+2025-10,BMW,ooh,464781.03,16.1,Nielsen Ad Intel
+2025-10,Audi,tv,1542755.63,35.0,Pathmatics
+2025-10,Audi,digital,1292742.73,34.9,Kantar Media
+2025-10,Audi,ooh,505712.33,14.7,Nielsen Ad Intel
+2025-10,Mercedes-Benz,tv,1236971.39,35.0,Nielsen Ad Intel
+2025-10,Mercedes-Benz,digital,1128876.92,35.0,Kantar Media
+2025-10,Mercedes-Benz,ooh,421129.42,10.5,Nielsen Ad Intel
+2025-10,Hyundai,tv,790495.7,26.3,Internal Estimate
+2025-10,Hyundai,digital,603547.81,11.2,Internal Estimate
+2025-10,Hyundai,ooh,242700.97,6.8,Nielsen Ad Intel
+2025-10,Kia,tv,452282.1,16.5,Pathmatics
+2025-10,Kia,digital,452971.98,14.6,Kantar Media
+2025-10,Kia,ooh,127240.01,4.0,Comscore
+2025-10,Volvo,tv,325744.02,9.2,Nielsen Ad Intel
+2025-10,Volvo,digital,223873.44,9.6,Pathmatics
+2025-10,Volvo,ooh,98281.57,3.9,Kantar Media
+2025-10,Polestar,tv,332921.94,8.9,Nielsen Ad Intel
+2025-10,Polestar,digital,281580.5,10.9,Kantar Media
+2025-10,Polestar,ooh,110751.26,3.3,Pathmatics
+2025-10,BYD,tv,328664.63,12.2,Kantar Media
+2025-10,BYD,digital,293252.27,9.9,Nielsen Ad Intel
+2025-10,BYD,ooh,115389.0,3.5,Nielsen Ad Intel
+2025-10,MG,tv,554967.54,19.5,Pathmatics
+2025-10,MG,digital,523667.64,16.0,Kantar Media
+2025-10,MG,ooh,157039.05,4.3,BARB/RAJAR
+2025-11,Tesla,tv,800428.45,29.7,Nielsen Ad Intel
+2025-11,Tesla,digital,691132.24,23.7,Nielsen Ad Intel
+2025-11,Tesla,ooh,229851.98,7.6,Kantar Media
+2025-11,BMW,tv,1188630.35,33.2,Kantar Media
+2025-11,BMW,digital,1075224.14,35.0,Pathmatics
+2025-11,BMW,ooh,380053.56,12.2,Comscore
+2025-11,Audi,tv,729060.84,27.8,Kantar Media
+2025-11,Audi,digital,662873.89,24.1,BARB/RAJAR
+2025-11,Audi,ooh,252119.26,9.9,Internal Estimate
+2025-11,Mercedes-Benz,tv,1490445.62,35.0,Nielsen Ad Intel
+2025-11,Mercedes-Benz,digital,1345953.72,35.0,Nielsen Ad Intel
+2025-11,Mercedes-Benz,ooh,457425.67,16.9,Pathmatics
+2025-11,Hyundai,tv,794952.73,27.4,Internal Estimate
+2025-11,Hyundai,digital,753197.01,25.6,Comscore
+2025-11,Hyundai,ooh,288942.19,10.7,BARB/RAJAR
+2025-11,Kia,tv,455149.69,16.3,Pathmatics
+2025-11,Kia,digital,483855.17,16.8,Internal Estimate
+2025-11,Kia,ooh,149429.45,5.3,Internal Estimate
+2025-11,Volvo,tv,559123.52,17.3,Comscore
+2025-11,Volvo,digital,513247.17,18.1,Internal Estimate
+2025-11,Volvo,ooh,219928.94,8.3,Internal Estimate
+2025-11,Polestar,tv,217229.51,7.7,BARB/RAJAR
+2025-11,Polestar,digital,235724.37,8.7,BARB/RAJAR
+2025-11,Polestar,ooh,62097.26,2.5,BARB/RAJAR
+2025-11,BYD,tv,288636.84,9.2,BARB/RAJAR
+2025-11,BYD,digital,227984.38,6.2,Comscore
+2025-11,BYD,ooh,96989.31,3.4,Pathmatics
+2025-11,MG,tv,536618.8,16.4,Kantar Media
+2025-11,MG,digital,456983.85,15.3,Nielsen Ad Intel
+2025-11,MG,ooh,173855.12,5.8,Internal Estimate
+2025-12,Tesla,tv,540926.75,15.8,BARB/RAJAR
+2025-12,Tesla,digital,471177.31,18.0,Kantar Media
+2025-12,Tesla,ooh,169828.53,7.3,Pathmatics
+2025-12,BMW,tv,915490.19,21.8,Nielsen Ad Intel
+2025-12,BMW,digital,963645.73,35.0,BARB/RAJAR
+2025-12,BMW,ooh,370590.52,13.2,Internal Estimate
+2025-12,Audi,tv,825621.36,27.1,Comscore
+2025-12,Audi,digital,694086.33,25.1,Internal Estimate
+2025-12,Audi,ooh,260625.82,9.3,Pathmatics
+2025-12,Mercedes-Benz,tv,1401872.85,35.0,Kantar Media
+2025-12,Mercedes-Benz,digital,1007958.73,33.6,Nielsen Ad Intel
+2025-12,Mercedes-Benz,ooh,394059.59,13.7,Internal Estimate
+2025-12,Hyundai,tv,469378.31,17.2,Internal Estimate
+2025-12,Hyundai,digital,490345.1,13.7,Comscore
+2025-12,Hyundai,ooh,187320.44,8.1,Internal Estimate
+2025-12,Kia,tv,466292.69,16.4,BARB/RAJAR
+2025-12,Kia,digital,462412.6,12.6,Internal Estimate
+2025-12,Kia,ooh,157255.54,4.9,BARB/RAJAR
+2025-12,Volvo,tv,386014.78,13.6,Nielsen Ad Intel
+2025-12,Volvo,digital,350819.53,11.7,Internal Estimate
+2025-12,Volvo,ooh,135517.7,4.4,Pathmatics
+2025-12,Polestar,tv,246083.48,10.2,Pathmatics
+2025-12,Polestar,digital,218484.52,7.3,Comscore
+2025-12,Polestar,ooh,93558.7,4.0,Pathmatics
+2025-12,BYD,tv,266303.38,8.3,Internal Estimate
+2025-12,BYD,digital,232819.1,7.2,Nielsen Ad Intel
+2025-12,BYD,ooh,87672.82,2.9,Internal Estimate
+2025-12,MG,tv,395139.65,14.4,Pathmatics
+2025-12,MG,digital,341816.0,10.7,Pathmatics
+2025-12,MG,ooh,138964.14,5.2,Pathmatics

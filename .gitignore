@@ -86,7 +86,7 @@ Thumbs.db
 
 # Data directories (generated/large files)
 data/assets/*
-data/raw/*
+# data/raw/ is tracked (needed for cloud runs)
 data/processed/*
 data/embeddings/*
 data/mmm/*
