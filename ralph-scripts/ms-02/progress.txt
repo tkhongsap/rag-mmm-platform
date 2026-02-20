@@ -6,7 +6,8 @@
 - Must use `.venv/bin/python` (not system python) to run tests — RAG deps not installed globally
 - build_index.py needs `load_dotenv()` at module level to pick up OPENAI_API_KEY from .env
 - Qdrant local mode: QdrantClient __del__ warning on shutdown is cosmetic, not a real error
-- Sample mode loads 6 files → 694 chunks (~$0.06 estimated cost); full corpus will be larger
+- Sample mode loads 6 files → 694 chunks (~$0.06 estimated cost)
+- Full corpus: 28 files → 3435 chunks → 5675 text vectors + 50 asset vectors (~$0.27 estimated cost)
 
 ---
 
@@ -47,4 +48,24 @@
   - text-embedding-3-small: sample corpus of 5 files → 644 text chunks = 1465 vectors (LlamaIndex adds metadata nodes)
   - Asset manifest: 50 rows → 50 vectors (1:1, no extra nodes)
   - BM25 persists 8 files including retriever.json, mmindex, etc.
+---
+
+## 2026-02-20 - US-009
+- Ran full production embedding: all 19 CSVs + 7 contracts + config.py + 50 assets
+- Dry-run estimate: 3435 chunks, $0.27 (well under $5.00 cap)
+- Built text_documents: 5675 vectors from 3385 chunks (green)
+- Built campaign_assets: 50 vectors (green)
+- BM25: 8 files, ready
+- Smoke queries verified:
+  - "What is Meta CPM?" → meta_ads.csv in top-5
+  - "TV performance reach" → tv_performance.csv in top-5
+  - "DEEPAL S07 launch creative" → valid image_path metadata in top-5
+- Re-run verification: vector counts unchanged (no duplicates)
+- All 100 tests pass
+- Files changed: ralph-scripts/ms-02/prd.json, progress.txt (no code changes)
+- **Learnings for future iterations:**
+  - Full corpus embeds 19 CSVs + 7 contracts + config = 3385 text chunks → 5675 vectors
+  - LlamaIndex creates ~1.67x more vectors than chunks (extra metadata/summary nodes)
+  - Re-running build always drops + rebuilds Qdrant collection (clean de-duplication)
+  - BM25 loads from persist on second run (doesn't rebuild)
 ---

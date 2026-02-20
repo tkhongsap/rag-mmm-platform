@@ -156,7 +156,7 @@
         "Tests pass"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "Requires OPENAI_API_KEY. Runs WITHOUT --sample flag to embed the full corpus: 20 CSVs in data/raw/, 7 contracts in data/raw/contracts/, data/generators/config.py, and data/assets/asset_manifest.csv. Cost budget: --max-cost-usd 10 as safety guard. This replaces the sample indexes from US-008 with the full production indexes."
     }
   ]
