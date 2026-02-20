@@ -42,3 +42,13 @@ Started: Fri Feb 20 18:36:59 +07 2026
   - BM25 requires clearing `data/index/bm25/` contents to force rebuild (it loads if artifacts exist)
   - `.gitignore` has `!data/**/.gitkeep` exception to preserve empty directory sentinels
 ---
+
+## 2026-02-20 - US-004
+- campaign_assets collection already implemented: `build_asset_index(docs)` + `index_assets()` convenience method
+- `load_asset_documents()` in ingest.py loads from `data/assets/asset_manifest.csv` (50 rows)
+- Each doc has `image_path` in metadata (defaulted to "" via `setdefault`)
+- Files changed: none (functionality already existed from US-002 prep)
+- **Learnings for future iterations:**
+  - Asset manifest at `data/assets/asset_manifest.csv` has 50 entries with image_path, channel, vehicle_model, etc.
+  - `load_asset_documents()` creates one Document per row with description as text
+---
