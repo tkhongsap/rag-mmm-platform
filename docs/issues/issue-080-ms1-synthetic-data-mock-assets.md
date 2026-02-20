@@ -1,7 +1,8 @@
 # Issue #80 — MS-1: Synthetic Data & Mock Assets (Foundation)
 
-**State:** OPEN
-**Created:** 2026-02-19
+**State:** Open
+**Created:** 2026-02-19T09:54:13Z
+**Updated:** 2026-02-19T09:54:13Z
 **Labels:** —
 **Assignees:** —
 **Source:** https://github.com/tkhongsap/rag-mmm-platform/issues/80
@@ -58,8 +59,7 @@ None — this is the root milestone.
 
 ## Blocks
 
-- MS-2 (#81), MS-4a (#83) (everything downstream)
+- #MS-2, #MS-4a (everything downstream)
 
 ---
-
 📋 Reference: [`docs/blueprint/milestones.md`](docs/blueprint/milestones.md) · [`docs/blueprint/team-execution-plan.md`](docs/blueprint/team-execution-plan.md)
