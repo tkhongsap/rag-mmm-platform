@@ -1,0 +1,69 @@
+{
+  "project": "rag-mmm-platform",
+  "branchName": "ralph/ms1-synthetic-data-foundation",
+  "description": "MS-1 Synthetic Data & Mock Assets Foundation - Close 4 remaining gaps so generate_all.py runs cleanly end-to-end",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Add missing Python dependencies to requirements.txt",
+      "description": "As a developer, I need all required packages declared in requirements.txt so that a fresh pip install succeeds and the full pipeline runs.",
+      "acceptanceCriteria": [
+        "Pillow>=10.0.0 added to requirements.txt (required by data/generators/assets.py:18 for PNG generation)",
+        "qdrant-client>=1.9.0 added to requirements.txt (vector store client, MS-2 prep)",
+        "llama-index-vector-stores-qdrant>=0.3.0 added to requirements.txt (LlamaIndex Qdrant integration, MS-2 prep)",
+        "pip install -r requirements.txt completes without errors",
+        "make lint passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Add .gitignore entries for generated assets and databases",
+      "description": "As a developer, I want generated binary files excluded from git tracking so that PNGs and database files don't bloat the repository.",
+      "acceptanceCriteria": [
+        "data/assets/* added to .gitignore in the Data directories section",
+        "data/qdrant_db/ added to .gitignore",
+        "data/index/ added to .gitignore",
+        "Existing !data/**/.gitkeep pattern still works — .gitkeep files remain tracked",
+        "git status does not show data/assets/ PNGs as untracked files",
+        "make lint passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Create aggregate_mmm re-export module",
+      "description": "As a developer, I want the MMM aggregation step to run successfully so that generate_all.py completes all steps without skipping any.",
+      "acceptanceCriteria": [
+        "data/generators/aggregate_mmm.py exists and re-exports aggregate_mmm_data from data/generators/validators.py",
+        "Module is importable via importlib.import_module('data.generators.aggregate_mmm')",
+        "Running python3 data/generators/generate_all.py shows MMM aggregation step as OK instead of SKIPPED",
+        "MMM output files in data/mmm/ are correctly generated (model_ready.csv, weekly_channel_spend.csv, weekly_sales.csv — 52 rows each)",
+        "make lint passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Fix spend verification column filter in generate_all.py",
+      "description": "As a developer, I want the spend verification to accurately report budget deviation so that I can trust the validation output.",
+      "acceptanceCriteria": [
+        "Spend verification loop in generate_all.py (lines 270-283) scans only data/raw/ directory, not data/mmm/",
+        "competitor_spend.csv is excluded from the spend sum",
+        "Column filter matches exact column name 'spend' (c.lower() == 'spend') instead of requiring both 'spend' and 'gbp'",
+        "After fix, reported spend deviation is < 5% with status OK",
+        "Full pipeline python3 data/generators/generate_all.py completes with all 10 validations passing",
+        "make lint passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

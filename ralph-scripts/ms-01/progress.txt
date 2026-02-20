@@ -1,0 +1,11 @@
+## Codebase Patterns
+- For dependency and lint workflows in this repo, activate the project virtualenv first (`source .venv/bin/activate`) because system Python may enforce PEP 668 and block global `pip install`.
+
+## 2026-02-20 09:58:07 +0700 - US-001
+- Implemented missing dependency declarations in `requirements.txt`: `Pillow>=10.0.0`, `qdrant-client>=1.9.0`, and `llama-index-vector-stores-qdrant>=0.3.0`.
+- Files changed: `requirements.txt`, `CLAUDE.md`, `ralph-scripts/ms-01/prd.json`, `ralph-scripts/ms-01/progress.txt`.
+- **Learnings for future iterations:**
+  - Patterns discovered: use the project virtualenv for dependency and check commands (`source .venv/bin/activate && ...`).
+  - Gotchas encountered: system-level `pip install -r requirements.txt` fails in this environment with PEP 668 `externally-managed-environment`.
+  - Useful context: this story’s quality gate is `make lint` (py_compile checks), and it passed after the dependency update.
+---

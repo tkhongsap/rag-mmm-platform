@@ -14,6 +14,8 @@ Enterprise platform combining RAG (Retrieval-Augmented Generation) with Marketin
 # Install
 make install                    # pip install -r requirements.txt
 cp .env.example .env            # Then set OPENAI_API_KEY
+# Note: use the project venv first (`source .venv/bin/activate`) because
+# system-level `pip install` may fail under PEP 668 externally managed Python.
 
 # Test
 make test                       # python -m pytest tests/ -v
