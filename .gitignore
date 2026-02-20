@@ -85,10 +85,13 @@ dmypy.json
 Thumbs.db
 
 # Data directories (generated/large files)
+data/assets/*
 data/raw/*
 data/processed/*
 data/embeddings/*
 data/mmm/*
+data/qdrant_db/
+data/index/
 !data/**/.gitkeep
 
 # Embedding artifacts

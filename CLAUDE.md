@@ -14,6 +14,8 @@ Enterprise platform combining RAG (Retrieval-Augmented Generation) with Marketin
 # Install
 make install                    # pip install -r requirements.txt
 cp .env.example .env            # Then set OPENAI_API_KEY
+# Note: use the project venv first (`source .venv/bin/activate`) because
+# system-level `pip install` may fail under PEP 668 externally managed Python.
 
 # Test
 make test                       # python -m pytest tests/ -v
@@ -73,6 +75,7 @@ data/generators/                  # FULLY IMPLEMENTED synthetic data pipeline
 ├── contracts.py                  # 7 markdown vendor contracts
 ├── events.py                     # Events calendar
 ├── external_data.py              # Competitor spend, economic indicators
+├── aggregate_mmm.py              # Compatibility shim re-exporting aggregate_mmm_data
 ├── validators.py                 # 10 validation checks + MMM weekly aggregation
 └── generate_all.py               # 7-step orchestrator entry point
 
@@ -85,6 +88,8 @@ docs/prd/                         # Product requirements (Word docs)
 prompts/                          # Agent team prompt for synthetic data generation
 ```
 
+Generated data artifacts are ignored in `.gitignore`; preserve the `!data/**/.gitkeep` exception when adding new ignored `data/` subdirectories so empty folder sentinels stay tracked.
+
 ## Data Generator Details
 
 The generators produce synthetic marketing data for a UK automotive launch (DEEPAL/AVATR brands, 2025). Key design:
@@ -93,6 +98,8 @@ The generators produce synthetic marketing data for a UK automotive launch (DEEP
 - **Causal chain**: media spend → website sessions → configurator → leads → test drives → sales (sales_pipeline.py reads generated media CSVs)
 - **Validation**: 10 checks (file existence, row counts, date ranges, spend ±5% of budget, KPI ranges, no negatives, no NaN in critical columns)
 - **MMM aggregation**: validators.py also produces 3 weekly datasets for modeling (52 weeks × 11 channels)
+- **Orchestrator import contract**: `generate_all.py` imports MMM aggregation from `data.generators.aggregate_mmm`; keep a module at that path exposing `aggregate_mmm_data` even if implementation lives in `validators.py`.
+- **Summary spend verification rule**: `generate_all.py` spend verification should scan only `data/raw/`, ignore `competitor_spend.csv`, and sum only columns named exactly `spend` to avoid double counting and non-channel spend fields.
 - Helper functions: `apply_adstock()` (geometric decay), `apply_saturation()` (Hill function), seasonal multipliers
 
 ## Environment Variables
