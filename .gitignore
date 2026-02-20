@@ -92,6 +92,7 @@ data/embeddings/*
 data/mmm/*
 data/qdrant_db/
 data/index/
+data/index/bm25/
 !data/**/.gitkeep
 
 # Embedding artifacts

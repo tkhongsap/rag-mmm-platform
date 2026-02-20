@@ -106,7 +106,8 @@ The generators produce synthetic marketing data for a UK automotive launch (DEEP
 
 Required in `.env` (see `.env.example` for all defaults):
 - `OPENAI_API_KEY` — required for RAG pipeline
-- RAG: `CHUNK_SIZE=1024`, `CHUNK_OVERLAP=50`, `EMBED_MODEL=text-embedding-3-small`, `LLM_MODEL=claude-opus-4-6`
+- RAG: `CHUNK_SIZE=1024`, `CHUNK_OVERLAP=50`, `EMBEDDING_MODEL=text-embedding-3-large`, `QDRANT_PATH=data/qdrant_db`, `LLM_MODEL=claude-opus-4-6`
+- Legacy alias: `EMBED_MODEL` remains supported for older modules and should match `EMBEDDING_MODEL`
 - MMM: `MMM_DATE_COLUMN=date`, `MMM_TARGET_COLUMN=sales`, `MMM_ADSTOCK_MAX_LAG=8`
 
 ## Development Rules
@@ -119,3 +120,10 @@ Required in `.env` (see `.env.example` for all defaults):
 - No stubbing/fake data in dev or prod (tests only)
 - Kill existing servers before starting new ones; start a new server after changes
 - All modules run from project root (`python -m src.rag.data_processing.run`, not relative imports)
+- For text indexing, ingest.py already provides pre-chunked `Document` objects; keep `VectorStoreIndex.from_documents(..., transformations=[])` to avoid implicit re-splitting.
+- For asset indexing, use the separate `campaign_assets` Qdrant collection and guarantee each `Document` metadata includes `image_path` (default empty string) so downstream retrieval/UI rendering can rely on that key.
+- Persist BM25 lexical index artifacts under `data/index/bm25/`; when available, load via `BM25Retriever.from_persist_dir(...)` instead of rebuilding.
+- `QueryFusionRetriever` resolves an LLM at initialization even when `num_queries=1`; pass an explicit local/mock LLM for offline hybrid retrieval paths that should not require `OPENAI_API_KEY`.
+- Close `QdrantClient` handles in short-lived scripts/tests (especially status checks) to release local `.lock` files and avoid "already accessed by another instance" errors.
+- Asset channel filtering should be case-insensitive and non-fatal: unknown channels should return empty result sets instead of raising.
+- Keep index health checks read-only (`collection_exists` + `get_collection`); do not create/reset collections inside status helpers.

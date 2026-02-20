@@ -1,21 +1,3 @@
-# PRD: MS-2 — RAG Pipeline: Ingest, Embed, Retrieve (Ralph JSON)
-
-**Issue:** [#81](https://github.com/tkhongsap/rag-mmm-platform/issues/81)
-**Branch:** `ralph/ms2-rag-pipeline-ingest-embed-retrieve`
-**Date:** 2026-02-20
-**Format:** Ralph PRD (prd.json reference copy)
-
----
-
-## Overview
-
-MS-2 delivers the first production-capable RAG retrieval foundation for text and assets. The RAG pipeline should load all supported source documents, create persistent indexes, and expose hybrid retrieval for text and campaign assets. This enables the platform to move from file-based stubs to semantic retrieval against indexed data.
-
----
-
-## Ralph PRD JSON
-
-```json
 {
   "project": "rag-mmm-platform",
   "branchName": "ralph/ms2-rag-pipeline-ingest-embed-retrieve",
@@ -132,42 +114,3 @@ MS-2 delivers the first production-capable RAG retrieval foundation for text and
     }
   ]
 }
-```
-
----
-
-## Story Ordering Rationale
-
-Stories execute in dependency order:
-
-1. **US-001** (Config): Set up dependencies and environment variables first
-2. **US-002** (Text Indexing): Build the Qdrant text collection with embeddings
-3. **US-003** (BM25): Add lexical indexing to the same RAGIndexer
-4. **US-004** (Assets): Extend RAGIndexer for campaign asset collection
-5. **US-005** (Text Query): Create query engine for text search using built indexes
-6. **US-006** (Asset Query & Health): Add asset search and diagnostics
-7. **US-007** (CLI): Build the command-line interface using all prior components
-
----
-
-## Key Files
-
-| File | Change | Story |
-|------|--------|-------|
-| `requirements.txt` | Add qdrant, embeddings, bm25 deps | US-001 |
-| `.env.example` | Document QDRANT_PATH | US-001 |
-| `src/rag/embeddings/indexer.py` | New: RAGIndexer (text + BM25 + assets) | US-002, US-003, US-004 |
-| `src/rag/retrieval/query_engine.py` | New: search_text(), search_assets(), check_indexes() | US-005, US-006 |
-| `src/rag/data_processing/build_index.py` | New: CLI with --text, --assets, --check | US-007 |
-
----
-
-## Acceptance Checklist
-
-- [x] 7 stories, each completable in one Ralph iteration
-- [x] Ordered by dependency (config → indexer → query → CLI)
-- [x] All stories have "Typecheck passes"
-- [x] US-007 has "Tests pass"
-- [x] No UI stories — no browser verification needed
-- [x] All criteria are verifiable (specific methods, files, return values)
-- [x] No story depends on a later story
