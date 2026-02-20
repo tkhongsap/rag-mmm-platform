@@ -7,7 +7,7 @@ set -o pipefail
 
 # Parse arguments
 TOOL="claude"  # Default to claude
-MAX_ITERATIONS=20
+MAX_ITERATIONS=30
 CLAUDE_MODEL="claude-opus-4-6"
 
 while [[ $# -gt 0 ]]; do
