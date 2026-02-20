@@ -1,359 +1,146 @@
-# PRD: MS-2 Dry-Run Validation — Parse, Chunk, Embed, Index, Retrieve (Sample Data)
-
-**Issue:** [#81 Precursor — MS-2 Dry-Run Test](../docs/issues/issue-081-ms2-dry-run-test.md)
-**Branch:** `ms2-dry-run-validation`
-**Status:** Draft
-**Created:** 2026-02-20
-
----
+# PRD: MS-2 Dry-Run — Validate RAG Pipeline on Sample Data
 
 ## Introduction
 
-Before indexing all 27+ production documents, validate the entire RAG pipeline (parse → chunk → embed → index → retrieve) with a small, representative sample. The dry-run uses 6 files (1 per data category) to verify embedding costs, document parsing, chunking strategies, Qdrant collection creation, BM25 indexing, and hybrid retrieval end-to-end. Collections are ephemeral (auto-cleanup); only the final report persists for cost baseline and success validation.
-
-**Target User:** Developers running locally during feature development, before submitting PR.
-
----
+Before committing to the full MS-2 production build (27+ files), prove the entire RAG pipeline works end-to-end: parse → chunk → embed → index → retrieve. Build the three missing modules (`indexer.py`, `query_engine.py`, `build_index.py`), then test them with one representative file per data category. The result is a working pipeline validated on sample data, with cost guards (`--dry-run`, `--max-cost-usd`) to prevent surprises. This precursor unlocks [Issue #81](../docs/issues/issue-081-ms2-rag-pipeline-ingest-embed-retrieve.md) for the full production build using the same code.
 
 ## Goals
 
-- Validate the entire ingest → embed → index → retrieve pipeline with minimal cost and risk
-- Estimate embedding costs (text-embedding-3-large) with accuracy ±10% of actual API usage
-- Confirm parsing handles multi-format data (CSVs, markdown, Python config, manifest)
-- Verify chunking strategies preserve data integrity (20-row CSV windows, sentence splitting for text)
-- Test hybrid retrieval (vector + BM25 + reciprocal reranking) with smoke queries
-- Provide reproducible baseline (same input → same chunk count, vectors, cost)
-- Support easy re-run without side effects (ephemeral collections auto-cleanup)
-
----
+- Build the three missing MS-2 modules (indexer, query engine, CLI)
+- Validate the pipeline on 1 file per data category (~6 files, ~$0.05 estimated cost)
+- Embed with `text-embedding-3-large` into local Qdrant at `data/qdrant_db/`
+- Confirm hybrid retrieval (vector + BM25 + reciprocal reranking) returns relevant results
+- Provide `--dry-run` cost estimation and `--max-cost-usd` budget guard for safe operation
+- Establish a cost baseline to inform the full #81 production run
 
 ## User Stories
 
-### US-001: Add --dry-run CLI flag with cost estimation
+### US-001: Configuration and environment setup
 
-**Description:** As a developer, I want to run a dry-run that estimates embedding cost and chunk counts without hitting the API, so I can validate the pipeline design before production.
+**Description:** As a developer, I want embedding model and Qdrant path configurable via `.env` so the pipeline is portable across environments.
 
 **Acceptance Criteria:**
-- [ ] `build_index.py` accepts `--dry-run` flag
-- [ ] Dry-run loads 6 sample files (meta_ads.csv, tv_spend.csv, vehicle_sales.csv, meta_contract.md, config.py, asset_manifest first 5 rows)
-- [ ] Dry-run parses and chunks all 6 files without errors
-- [ ] Dry-run reports: document count (6), chunk count (40–60), estimated tokens, estimated cost
-- [ ] Estimated cost printed before any API calls
-- [ ] Cost estimate is accurate within ±10% of actual API cost (validated in later story)
-- [ ] Help text documents `--dry-run` flag
+- [ ] `.env.example` documents `QDRANT_PATH` with default `data/qdrant_db`
+- [ ] `.env.example` documents `EMBEDDING_MODEL` with default `text-embedding-3-large`
+- [ ] `requirements.txt` already contains `llama-index-retrievers-bm25`, `qdrant-client`, `llama-index-vector-stores-qdrant` — verify present, no changes needed
+- [ ] `data/qdrant_db/` and `data/index/bm25/` added to `.gitignore` if not already
 - [ ] Typecheck passes
 
-### US-002: Add --max-cost-usd guard to prevent budget overruns
+### US-002: RAGIndexer — Qdrant collections and BM25 index
 
-**Description:** As an operator, I want to set a maximum cost cap so the build aborts if estimated cost exceeds my budget.
+**Description:** As a platform engineer, I want an indexer that embeds documents into Qdrant and builds a BM25 index so both dense and lexical retrieval are available.
 
 **Acceptance Criteria:**
-- [ ] `build_index.py` accepts `--max-cost-usd <float>` flag
-- [ ] If cost estimate exceeds cap, CLI prints error and aborts before embedding
-- [ ] Error message includes: estimated cost, cap value, difference
-- [ ] Example: `--dry-run --max-cost-usd 0.10` with $0.0002 estimate succeeds; with $0.50 estimate aborts
-- [ ] Default behavior (no flag) has no cost cap
-- [ ] Help text documents flag and default behavior
+- [ ] `src/rag/embeddings/indexer.py` exists with `RAGIndexer` class
+- [ ] `RAGIndexer.__init__` reads `QDRANT_PATH` and `EMBEDDING_MODEL` from env with defaults
+- [ ] `build_text_index(docs: list[Document])` creates `text_documents` collection in Qdrant using `OpenAIEmbedding(model=EMBEDDING_MODEL)`
+- [ ] Documents passed directly to `VectorStoreIndex` without additional splitting — `ingest.py` handles pre-chunking (20-row CSV windows, single-doc contracts/config)
+- [ ] `build_bm25_index(docs: list[Document])` persists BM25 index to `data/index/bm25/`
+- [ ] `build_asset_index(docs: list[Document])` creates `campaign_assets` collection in Qdrant
+- [ ] Clean rebuild: drops and recreates collections on each run — no duplicate vectors
+- [ ] `estimate(docs: list[Document])` returns dict with `chunk_count`, `estimated_tokens`, `estimated_cost_usd` without calling the OpenAI API
 - [ ] Typecheck passes
 
-### US-003: Implement parsing and chunking for sample files
+### US-003: build_index.py CLI with dry-run and cost guard
 
-**Description:** As a developer, I want the dry-run to parse and chunk CSV, markdown, and config files correctly so I can verify chunking strategies don't break data integrity.
+**Description:** As a developer, I want a CLI that can estimate costs, limit spend, and build indexes incrementally so I can test safely before production.
 
 **Acceptance Criteria:**
-- [ ] CSV files chunk at 20-row windows (e.g., 520 rows → ~26 chunks)
-- [ ] Markdown contracts chunk by sentence/paragraph (SentenceSplitter behavior)
-- [ ] Python config loaded as searchable text (not executed)
-- [ ] Asset manifest rows parsed as documents (1 row = 1 doc)
-- [ ] Chunk metadata includes: source file, chunk_id, text snippet, row range (for CSVs)
-- [ ] Dry-run --check prints chunk breakdown by file
-- [ ] No errors during parsing (validate with 6 test files)
+- [ ] `src/rag/data_processing/build_index.py` runnable as `python -m src.rag.data_processing.build_index`
+- [ ] `--dry-run`: loads and chunks documents, prints estimate (doc count, chunk count, tokens, cost), exits without calling OpenAI
+- [ ] `--max-cost-usd <float>`: aborts with clear message if estimated cost exceeds cap
+- [ ] `--text`: builds `text_documents` collection + BM25 index only
+- [ ] `--assets`: builds `campaign_assets` collection only
+- [ ] `--check`: prints collection stats (name, vector count, status) and BM25 index status without mutation
+- [ ] `--sample`: loads 1 file per data category instead of all files (see Sample Files table below)
+- [ ] No flags defaults to full build (text + assets, all files)
+- [ ] Help text (`--help`) documents all flags
 - [ ] Typecheck passes
 
-### US-004: Create ephemeral Qdrant collections with vectors
+**Sample files** (used with `--sample`):
 
-**Description:** As a developer, I want sample documents embedded and stored in temporary Qdrant collections so I can test retrieval without polluting production.
+| Category | File | Rows | Expected Chunks |
+|----------|------|------|-----------------|
+| Digital media | `data/raw/meta_ads.csv` | 7,920 | ~396 |
+| Traditional media | `data/raw/tv_performance.csv` | 305 | ~16 |
+| Sales pipeline | `data/raw/vehicle_sales.csv` | 4,600 | ~230 |
+| Contract | `data/raw/contracts/MediaAgency_Terms_of_Business.md` | — | 1 |
+| Config | `data/generators/config.py` | — | 1 |
+| Assets | `data/assets/asset_manifest.csv` | 50 | 50 |
+
+### US-004: Hybrid retrieval — search_text and search_assets
+
+**Description:** As a query consumer, I want hybrid text search combining dense vectors and BM25 lexical matching so retrieval is strong for both semantic and keyword-heavy questions.
 
 **Acceptance Criteria:**
-- [ ] Dry-run creates collection: `dry_run_text_documents` (text CSVs + contracts + config)
-- [ ] Dry-run creates collection: `dry_run_campaign_assets` (asset manifest descriptions)
-- [ ] Collections stored in data/qdrant_db/ (local, embedded Qdrant)
-- [ ] Each collection contains correct vector count:
-  - dry_run_text_documents: ~52 vectors (all text chunks)
-  - dry_run_campaign_assets: 5 vectors (manifest rows)
-- [ ] Each vector includes metadata: source file, chunk_id, text
-- [ ] Embedding model: OpenAI text-embedding-3-large (configurable via EMBEDDING_MODEL env var)
-- [ ] Re-running dry-run on same files does NOT duplicate vectors (collection recreate or idempotent update)
+- [ ] `src/rag/retrieval/query_engine.py` exists
+- [ ] `search_text(query: str, top_k: int = 5, category: str | None = None)` function
+- [ ] `search_text` uses `QueryFusionRetriever` over Qdrant vector retriever + BM25 retriever
+- [ ] `search_text` applies reciprocal reranking and returns ranked list of nodes
+- [ ] Each returned node has `score`, `text`, and `metadata` (including `source_file`, `category`)
+- [ ] `search_assets(query: str, top_k: int = 5, channel: str | None = None)` function
+- [ ] `search_assets` queries `campaign_assets` collection and returns nodes with `image_path` metadata
+- [ ] `check_indexes()` prints collection stats without mutating indexes
 - [ ] Typecheck passes
 
-### US-005: Build BM25 index for sample documents
+### US-005: End-to-end dry-run validation
 
-**Description:** As a retrieval engineer, I want BM25 indexes persisted for sample data so hybrid (vector + lexical) retrieval can be tested.
+**Description:** As a developer, I want to run the full pipeline on sample files and verify results with smoke queries so I have confidence before the production build.
 
 **Acceptance Criteria:**
-- [ ] BM25 index built from sample text docs (same documents as Qdrant collection)
-- [ ] BM25 artifacts persisted to `data/index/bm25/dry_run/`
-- [ ] Directory contains inverted index files (e.g., `inverted_index.pkl`, `metadata.json`, `tokenizer.json`)
-- [ ] BM25 can be loaded on second run without rebuilding
-- [ ] BM25 index size > 0 bytes (validate with `ls -la`)
+- [ ] `python -m src.rag.data_processing.build_index --sample --dry-run` prints estimate without errors
+- [ ] Estimated cost for sample files is under $0.10
+- [ ] `python -m src.rag.data_processing.build_index --sample --text --max-cost-usd 10` completes successfully
+- [ ] `text_documents` collection exists with >0 vectors
+- [ ] `data/index/bm25/` directory exists and is non-empty
+- [ ] `python -m src.rag.data_processing.build_index --sample --assets --max-cost-usd 10` completes successfully
+- [ ] `campaign_assets` collection exists with >0 vectors
+- [ ] `python -m src.rag.data_processing.build_index --check` prints stats for both collections
+- [ ] Smoke query `"What is Meta CPM?"` returns nodes citing `meta_ads.csv` or `config.py` in top-5
+- [ ] Smoke query `"DEEPAL S07 launch creative"` returns nodes with valid `image_path` metadata
+- [ ] Re-running the build on same data does not create duplicate vectors
 - [ ] Typecheck passes
-
-### US-006: Implement hybrid retrieval with smoke tests
-
-**Description:** As a query consumer, I want to test hybrid text search (vector + BM25 + reranking) with real queries so I know retrieval works end-to-end.
-
-**Acceptance Criteria:**
-- [ ] `search_text(query, collection='dry_run_text_documents', top_k=5)` function exists
-- [ ] Uses QueryFusionRetriever (Qdrant vector + BM25 lexical retrieval)
-- [ ] Applies reciprocal reranking to combined results
-- [ ] Query "Meta CPM" returns top-5 nodes:
-  - At least 1 node from meta_ads.csv (with row range in metadata)
-  - At least 1 node from config.py (with line/section in metadata)
-  - Each node includes: score, text snippet, source file
-- [ ] Query "TV spend" returns tv_spend.csv nodes in top-5
-- [ ] Query "vehicle sales channel" returns vehicle_sales.csv nodes in top-5
-- [ ] `search_assets(query, collection='dry_run_campaign_assets', top_k=5)` function exists and works
-- [ ] Query "S07 launch creative" returns asset description nodes with image_path metadata
-- [ ] No exceptions raised during queries
-- [ ] Typecheck passes
-
-### US-007: Implement --check-dry-run report mode
-
-**Description:** As an operator, I want a summary report of dry-run collections, costs, and sample queries so I can validate the build succeeded and understand capacity.
-
-**Acceptance Criteria:**
-- [ ] `build_index.py --check-dry-run` prints summary without mutation
-- [ ] Report includes:
-  - Collection stats: dry_run_text_documents (vector count, approx size)
-  - Collection stats: dry_run_campaign_assets (vector count, approx size)
-  - BM25 index stats: path, file count, total size
-  - Cost summary: model, tokens used, actual cost (from API), budget remaining
-- [ ] Report includes 1 sample query result for each collection (e.g., "Meta CPM" for text, "S07" for assets)
-- [ ] Report is human-readable and suitable for docs/capacity planning
-- [ ] Report runs in <2 seconds (no heavy recomputation)
-- [ ] Typecheck passes
-
-### US-008: Implement ephemeral collection cleanup with --cleanup flag
-
-**Description:** As a developer, I want dry-run collections to auto-cleanup after tests pass so the local environment stays clean.
-
-**Acceptance Criteria:**
-- [ ] After smoke tests pass, dry_run_* collections deleted from Qdrant
-- [ ] BM25 index at data/index/bm25/dry_run/ NOT deleted (for manual inspection if needed)
-- [ ] `--cleanup` flag added to explicitly trigger manual cleanup if needed
-- [ ] Cleanup status printed: "Dry-run collections cleaned up" or "Cleanup skipped (use --cleanup to force)"
-- [ ] Error in cleanup does not fail overall build (logged as warning)
-- [ ] Re-running dry-run immediately after cleanup succeeds without conflicts
-- [ ] Typecheck passes
-
-### US-009: Add dry-run smoke test suite
-
-**Description:** As a QA engineer, I want automated tests that validate the entire dry-run pipeline so regressions are caught early.
-
-**Acceptance Criteria:**
-- [ ] New file: `tests/rag/test_dry_run_pipeline.py`
-- [ ] Test: `test_dry_run_dry_estimate()` — parse 6 files, verify chunk count 40–60
-- [ ] Test: `test_dry_run_cost_estimation()` — estimate cost, verify ±10% accuracy
-- [ ] Test: `test_dry_run_qdrant_collections()` — collections created with correct vector counts
-- [ ] Test: `test_dry_run_bm25_index()` — BM25 persisted and loadable
-- [ ] Test: `test_dry_run_text_retrieval()` — "Meta CPM" query returns expected sources
-- [ ] Test: `test_dry_run_asset_retrieval()` — "S07 launch creative" query returns image_path
-- [ ] Test: `test_dry_run_cleanup()` — collections deleted after test
-- [ ] All tests pass: `pytest tests/rag/test_dry_run_pipeline.py -v`
-- [ ] Tests run in <30 seconds total (avoid long OpenAI API calls in tests; use mocks if needed)
-
-### US-010: Document dry-run workflow in README and .env.example
-
-**Description:** As a new developer, I want clear instructions on how to run the dry-run so I can validate the RAG pipeline locally before production build.
-
-**Acceptance Criteria:**
-- [ ] `.env.example` documents:
-  - EMBEDDING_MODEL (default: text-embedding-3-large)
-  - QDRANT_PATH (default: data/qdrant_db)
-  - Any other new env vars introduced
-- [ ] `docs/` or `README.md` includes dry-run quickstart:
-  - "Run: `python -m src.rag.data_processing.build_index --dry-run --text --assets --max-cost-usd 0.10`"
-  - Expected output (chunk count, cost, collection stats)
-  - Smoke test examples
-- [ ] Instructions include cleanup: "After testing, collections auto-cleanup; BM25 index persists at data/index/bm25/dry_run/"
-- [ ] Instructions link to full MS-2 production build docs
-- [ ] Typecheck passes
-
----
 
 ## Functional Requirements
 
-- **FR-1:** CLI supports `--dry-run` flag to estimate without embedding
-- **FR-2:** CLI supports `--text` flag to index text docs (CSVs, contracts, config)
-- **FR-3:** CLI supports `--assets` flag to index asset manifest descriptions
-- **FR-4:** CLI supports `--max-cost-usd <float>` to enforce cost cap
-- **FR-5:** CLI supports `--check-dry-run` to print collection/cost summary without mutation
-- **FR-6:** CLI supports `--cleanup` to manually delete dry_run_* collections
-- **FR-7:** Dry-run loads exactly 6 sample files (1 per data category) by default
-- **FR-8:** Parsing correctly chunks CSVs at 20-row windows; text at sentence/paragraph boundaries
-- **FR-9:** Qdrant collections named `dry_run_text_documents` and `dry_run_campaign_assets`
-- **FR-10:** BM25 index persisted to `data/index/bm25/dry_run/`
-- **FR-11:** Embedding model configurable via EMBEDDING_MODEL env var (default: text-embedding-3-large)
-- **FR-12:** Hybrid retrieval uses QueryFusionRetriever + reciprocal reranking
-- **FR-13:** Smoke queries validated: "Meta CPM", "TV spend", "vehicle sales", "S07 launch creative"
-- **FR-14:** Dry-run collections auto-cleanup after tests pass; BM25 index persists
-- **FR-15:** Cost estimate accurate within ±10% of actual API cost
-
----
+- FR-1: `indexer.py` creates two Qdrant collections (`text_documents`, `campaign_assets`) in local embedded mode at `QDRANT_PATH`
+- FR-2: `indexer.py` builds BM25 index from text documents and persists to `data/index/bm25/`
+- FR-3: `indexer.py` provides cost estimation (chunk count, tokens, cost) without calling OpenAI API
+- FR-4: `build_index.py` CLI supports `--dry-run`, `--max-cost-usd`, `--text`, `--assets`, `--check`, `--sample` flags
+- FR-5: `--sample` loads exactly 6 predefined files (1 per data category) via individual ingest.py loaders
+- FR-6: `query_engine.py` implements hybrid retrieval using `QueryFusionRetriever` with reciprocal reranking
+- FR-7: Embedding model is `text-embedding-3-large`, configurable via `EMBEDDING_MODEL` env var
+- FR-8: Clean rebuild mode drops and recreates collections — no duplicate vectors on re-run
+- FR-9: Build aborts before any API calls if `--max-cost-usd` cap is exceeded
 
 ## Non-Goals
 
-- Full production indexing of all 27+ documents (that's MS-2 main build)
-- Real-time query latency optimization (smoke tests only)
-- Asset image embedding or similarity search (text-to-image-path only)
-- Sub-question routing or multi-hop retrieval (simple single-query search only)
-- Persistent dry-run results for historical tracking (ephemeral, single-use)
-- Dry-run mode for incremental indexing (text/asset choices are independent, not incremental)
-- Custom chunking strategies (20-row CSV, SentenceSplitter for text only)
-
----
-
-## Design Considerations
-
-### CLI Layout
-
-```bash
-# Basic dry-run (estimate only)
-python -m src.rag.data_processing.build_index --dry-run --text --assets
-
-# With cost cap
-python -m src.rag.data_processing.build_index --dry-run --text --assets --max-cost-usd 0.10
-
-# Check collections after build
-python -m src.rag.data_processing.build_index --check-dry-run
-
-# Manual cleanup (if auto-cleanup failed or user wants to inspect longer)
-python -m src.rag.data_processing.build_index --cleanup
-```
-
-### Report Output Example
-
-```
-Dry-run report:
-===============
-Dry-run completed successfully!
-
-Collections:
-  dry_run_text_documents
-    - Vectors: 52
-    - Size: ~500 KB
-    - Status: ready
-    - Sample query "Meta CPM": 3 results (meta_ads, config, tv_spend)
-
-  dry_run_campaign_assets
-    - Vectors: 5
-    - Size: ~50 KB
-    - Status: ready
-    - Sample query "S07 launch creative": 2 results (image_path included)
-
-BM25 Index:
-  Path: data/index/bm25/dry_run/
-  Files: 3 (inverted_index.pkl, metadata.json, tokenizer.json)
-  Size: ~100 KB
-  Status: ready
-
-Cost Summary:
-  Model: text-embedding-3-large
-  Tokens: 10,240
-  Cost: $0.0002
-  Budget: $0.10
-  Used: 0.2%
-
-Next: Run full MS-2 production build (all 27+ documents).
-Cleanup: dry_run_* collections will be deleted on next session.
-```
-
----
+- Full production indexing of all 27+ files (that is Issue #81)
+- Incremental/delta indexing (clean rebuild only for this precursor)
+- Query latency optimization or caching
+- Sub-question routing or multi-hop retrieval
+- Embedding PNG images directly (text-to-image-path via asset manifest metadata only)
+- UI integration or RAG Chat page wiring
 
 ## Technical Considerations
 
-- **Embedding Model:** text-embedding-3-large (higher quality than text-embedding-3-small; ~20K tokens = $0.0004, well under $0.10 budget)
-- **Qdrant:** Local embedded mode (data/qdrant_db/) — no external server needed
-- **BM25:** Persisted to allow inspection; not auto-deleted (separate from Qdrant cleanup)
-- **Sample Selection:**
-  - meta_ads.csv: typical digital media CSV (largest, ~520 rows)
-  - tv_spend.csv: traditional media (smaller, ~52 rows)
-  - vehicle_sales.csv: different schema (KPIs not spend)
-  - meta_contract.md: tests markdown parsing
-  - config.py: tests Python config-as-text
-  - asset_manifest: 5 rows for asset indexing test
-- **Cost Tracking:** Implement token counter before API call; log actual usage after API response
-- **Reusable Components:**
-  - Reuse `src/rag/data_processing/ingest.py` for loading documents
-  - Reuse `src/rag/embeddings/indexer.py` for Qdrant/BM25 creation (once implemented)
-  - Build smoke tests in `tests/rag/test_dry_run_pipeline.py`
-
----
+- **ingest.py is ready**: `load_csv_documents()`, `load_contract_documents()`, `load_config_document()`, `load_asset_documents()` already exist and produce chunked `Document` objects. No modification needed — `--sample` just calls these with specific paths instead of `load_all_text_documents()`.
+- **No SentenceSplitter on CSVs**: `ingest.py` pre-chunks CSVs at 20-row windows. Passing them through `SentenceSplitter` would break tabular structure. Documents go directly into `VectorStoreIndex`.
+- **BM25 package**: Use `llama-index-retrievers-bm25` (the LlamaIndex integration), not `rank-bm25` (raw library).
+- **Cost model**: `text-embedding-3-large` at $0.13/1M tokens. Sample files (~694 chunks, ~347K tokens) ≈ $0.045. Full corpus will be proportionally more but still well under $10.
+- **Qdrant embedded mode**: No external server needed. Qdrant stores data at `data/qdrant_db/` on disk.
 
 ## Success Metrics
 
-| Metric | Target | Validation |
-|--------|--------|-----------|
-| **Pipeline runs end-to-end** | ✓ | All 6 files parse, chunk, embed, index without errors |
-| **Chunk count accuracy** | 40–60 chunks | Actual vs. estimate within 5% |
-| **Cost estimate accuracy** | ±10% | Estimated vs. actual API cost |
-| **All smoke queries return results** | ✓ | 3 text queries + 1 asset query each return ≥1 result |
-| **Retrieval sources match expectations** | ✓ | "Meta CPM" returns meta_ads.csv + config.py in top results |
-| **BM25 index persists** | ✓ | data/index/bm25/dry_run/ non-empty after build |
-| **Collections auto-cleanup** | ✓ | dry_run_* collections deleted after tests |
-| **Reproducibility** | ✓ | Same input produces same chunk count / vector count |
-
----
+- Pipeline runs end-to-end on 6 sample files without errors
+- `--dry-run` cost estimate is within ±20% of actual API cost
+- Both Qdrant collections exist with correct vector counts after build
+- BM25 index persists and loads without rebuild
+- Smoke queries return relevant results with correct source metadata
+- Total API cost for sample run is under $0.10
 
 ## Open Questions
 
-1. Should dry-run support custom sample file selection, or always use the fixed 6 files?
-2. Should BM25 index also auto-cleanup, or persist for inspection?
-3. Should smoke tests use mocked OpenAI API (faster, but less realistic) or real API calls (slower, but validates end-to-end)?
-4. Should cost estimates include latency/rate-limit warnings?
-5. Should dry-run report be saved to file (e.g., `data/dry_run_report.json`) for CI/CD integration?
-
----
-
-## Dependencies
-
-- **MS-1** (#80) — asset manifest must exist
-- **ingest.py** — already exists; dry-run reuses it
-- **OpenAI API** — OPENAI_API_KEY required in .env
-- **LlamaIndex** — QueryFusionRetriever, OpenAIEmbedding
-
----
-
-## Rollout Plan
-
-### Phase 1: Dry-Run (This PRD)
-✓ Validate parse/chunk/embed/index/retrieve with 6 sample files
-✓ Cost estimation (<$0.01)
-✓ Ephemeral collections auto-cleanup
-✓ Smoke tests pass locally
-
-### Phase 2: Production Build (MS-2 Main, #81)
-→ Same pipeline, all 27+ documents
-→ Persistent collections: text_documents, campaign_assets
-→ BM25 at data/index/bm25/ (no subfolder)
-→ Full RAG Chat integration
-
----
-
-## Files Created/Modified
-
-| File | Change | Est. Lines |
-|------|--------|-----------|
-| `src/rag/data_processing/build_index.py` | New CLI with --dry-run, --max-cost-usd, --check-dry-run, --cleanup | ~100 |
-| `src/rag/embeddings/indexer.py` | Add dry-run mode, cost tracking, collection naming (will be created in earlier story) | +40 |
-| `src/rag/retrieval/query_engine.py` | Add dry-run collection support (will be created in earlier story) | +15 |
-| `tests/rag/test_dry_run_pipeline.py` | New smoke test suite | ~120 |
-| `.env.example` | Document EMBEDDING_MODEL, QDRANT_PATH | +2 |
-| `docs/README.md` or `docs/DRY_RUN.md` | Quickstart guide and instructions | ~30 |
-
----
-
-## Summary
-
-The dry-run is a **low-cost, high-confidence pre-flight check** for MS-2. Developers run it locally during feature development; it validates the entire pipeline with 6 representative files, estimates real costs, and cleans up after itself. Success unlocks the production MS-2 build with confidence.
-
+1. Should `--sample` file list be configurable or always use the 6 predefined files?
+2. Should the cost report be saved to a file (e.g., `data/dry_run_report.json`) for reference?
+3. For automated tests: mock the OpenAI API (fast, free) or call it live (slow, more realistic)?
