@@ -121,4 +121,5 @@ Required in `.env` (see `.env.example` for all defaults):
 - Kill existing servers before starting new ones; start a new server after changes
 - All modules run from project root (`python -m src.rag.data_processing.run`, not relative imports)
 - For text indexing, ingest.py already provides pre-chunked `Document` objects; keep `VectorStoreIndex.from_documents(..., transformations=[])` to avoid implicit re-splitting.
+- For asset indexing, use the separate `campaign_assets` Qdrant collection and guarantee each `Document` metadata includes `image_path` (default empty string) so downstream retrieval/UI rendering can rely on that key.
 - Persist BM25 lexical index artifacts under `data/index/bm25/`; when available, load via `BM25Retriever.from_persist_dir(...)` instead of rebuilding.

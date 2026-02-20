@@ -3,6 +3,7 @@
 - When adding ignored generated folders under `data/`, preserve `!data/**/.gitkeep` so placeholder directories remain trackable.
 - For text indexing, pass `transformations=[]` to `VectorStoreIndex.from_documents` so ingest.py pre-chunked docs are not re-split by default parsers.
 - For BM25 lexical retrieval, persist artifacts to `data/index/bm25/` and reload with `BM25Retriever.from_persist_dir(...)` when files already exist to avoid unnecessary rebuilds.
+- For asset retrieval, normalize docs so every metadata payload includes `image_path` before indexing into `campaign_assets`; downstream UI/search assumes that key always exists.
 
 ## 2026-02-20 15:18:12 +07 - US-001
 - Added MS-2 env configuration defaults in `.env.example` for `EMBEDDING_MODEL=text-embedding-3-large` and `QDRANT_PATH=data/qdrant_db`, while keeping legacy `EMBED_MODEL` aligned.
@@ -38,4 +39,16 @@
   - `BM25Retriever.from_defaults(nodes=docs)` accepts LlamaIndex `Document` objects directly, so no extra node conversion is needed for ingest outputs.
   - Gate BM25 rebuilds with a persisted-artifact check first; this preserves deterministic dry-run workflows and speeds repeated local validation.
   - Use explicit `bm25_path`/`qdrant_path` overrides in tests to keep generated index artifacts isolated from repository data directories.
+---
+## 2026-02-20 15:30:06 +0700 - US-004
+- Added `build_asset_index(docs)` to `RAGIndexer`, with clean rebuild behavior for the `campaign_assets` Qdrant collection and no extra chunk transformations.
+- Added offline `estimate(docs)` to compute `chunk_count`, `estimated_tokens`, and `estimated_cost_usd` using `text-embedding-3-large` pricing (`$0.13 / 1M` tokens) without calling OpenAI APIs.
+- Added `tests/rag/test_indexer_assets.py` to validate asset metadata normalization (`image_path` always present), collection targeting, empty-input validation, and estimator math.
+- Updated root `CLAUDE.md` with the reusable asset-index metadata convention.
+- Ran quality checks: `.venv/bin/python -m py_compile src/rag/embeddings/indexer.py tests/rag/test_indexer_assets.py` and `.venv/bin/pytest tests/rag/ -v` (pass).
+- Files changed: `src/rag/embeddings/indexer.py`, `tests/rag/test_indexer_assets.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+- **Learnings for future iterations:**
+  - Keep asset indexing isolated in `campaign_assets` so text and creative retrieval can evolve independently.
+  - Normalize missing `image_path` metadata at indexing time to avoid defensive checks in downstream retrieval/UI code.
+  - Use a local heuristic token estimator (`~4 chars/token`) for dry-run spend guards; avoid embedding API calls during planning.
 ---
