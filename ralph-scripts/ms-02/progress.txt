@@ -64,3 +64,15 @@ Started: Fri Feb 20 18:36:59 +07 2026
   - Post-retrieval category filtering via `_matches_category()` for client-side filtering
   - `_serialize_node()` converts NodeWithScore to dict with {score, text, metadata}
 ---
+
+## 2026-02-20 - US-006
+- `search_assets()` and `check_indexes()` already implemented in query_engine.py
+- `search_assets()` targets campaign_assets, filters by channel case-insensitively, guarantees image_path
+- `check_indexes()` is read-only: uses `collection_exists` + `get_collection`, prints stats, returns 0
+- Unknown channels return empty result sets (non-fatal) via `_matches_channel()`
+- Files changed: none (already existed)
+- **Learnings for future iterations:**
+  - `_serialize_asset_node()` wraps `_serialize_node()` and adds `image_path` default
+  - `_read_collection_status()` safely handles missing collections (returns "missing")
+  - `check_indexes()` also reports BM25 status by checking `data/index/bm25/` for files
+---
