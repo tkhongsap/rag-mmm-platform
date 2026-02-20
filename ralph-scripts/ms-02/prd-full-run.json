@@ -1,115 +1,122 @@
 {
   "project": "rag-mmm-platform",
-  "branchName": "ralph/ms2-rag-pipeline-ingest-embed-retrieve",
-  "description": "MS-2 — RAG Pipeline: Ingest, Embed, Retrieve. Deliver production-capable RAG retrieval foundation for text and assets with persistent Qdrant indexes, BM25 hybrid retrieval, and CLI tooling.",
+  "branchName": "ralph/ms2-dry-run-validation",
+  "description": "MS-2 Dry-Run — Validate the RAG pipeline (parse, chunk, embed, index, retrieve) on sample files before the full production build. Build indexer.py, query_engine.py, and build_index.py, then test with 1 file per data category (~6 files, ~$0.05 estimated cost). Precursor to Issue #81.",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Verify deps + add QDRANT_PATH config",
-      "description": "As a devops operator, I want Qdrant and embedding dependencies installed and configurable so that indexing can run in different runtime environments.",
+      "title": "Config and environment setup",
+      "description": "As a developer, I want embedding model and Qdrant path configurable via .env so the pipeline is portable across environments.",
       "acceptanceCriteria": [
-        "requirements.txt already contains: llama-index-retrievers-bm25, qdrant-client, llama-index-vector-stores-qdrant (verify these are present)",
-        ".env.example documents optional QDRANT_PATH with default value data/qdrant_db",
+        ".env.example documents QDRANT_PATH with default data/qdrant_db",
+        ".env.example documents EMBEDDING_MODEL with default text-embedding-3-large",
+        "requirements.txt already contains llama-index-retrievers-bm25, qdrant-client, llama-index-vector-stores-qdrant — verify present, no changes needed",
+        "data/qdrant_db/ and data/index/bm25/ added to .gitignore if not already present",
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "Bug fix: rank-bm25 is incorrect — the correct LlamaIndex BM25 integration is llama-index-retrievers-bm25"
-    },
-    {
-      "id": "US-002",
-      "title": "Create RAGIndexer with text Qdrant collection",
-      "description": "As a platform engineer, I want documents indexed into Qdrant so that text retrieval is fast and repeatable.",
-      "acceptanceCriteria": [
-        "src/rag/embeddings/indexer.py exists with RAGIndexer class",
-        "RAGIndexer loads documents via load_all_text_documents() from src/rag/data_processing/ingest.py",
-        "RAGIndexer creates text_documents collection under QDRANT_PATH with vectors from OpenAIEmbedding(model='text-embedding-3-small')",
-        "Documents passed directly to VectorStoreIndex without additional splitting (ingest.py handles pre-chunking)",
-        "Running indexing twice on same corpus replaces vectors deterministically without duplicates",
-        "Typecheck passes"
-      ],
-      "priority": 2,
-      "passes": false,
-      "notes": "Bug fix: SentenceSplitter conflicts with ingest.py pre-chunking (20 rows/doc for CSVs). Pass docs directly to VectorStoreIndex."
-    },
-    {
-      "id": "US-003",
-      "title": "Add BM25 build/load to RAGIndexer",
-      "description": "As a retrieval engineer, I want BM25 indexes built and persisted so that hybrid lexical + dense retrieval works.",
-      "acceptanceCriteria": [
-        "RAGIndexer builds BM25 index from same document corpus",
-        "BM25 artifacts persisted under data/index/bm25/ directory",
-        "data/index/bm25/ is non-empty after indexing",
-        "RAGIndexer can load persisted BM25 without rebuilding on second call",
-        "Typecheck passes"
-      ],
-      "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
-      "id": "US-004",
-      "title": "Add campaign_assets collection to RAGIndexer",
-      "description": "As a campaign analyst, I want asset descriptions indexed in Qdrant so that asset search is available alongside text search.",
+      "id": "US-002",
+      "title": "RAGIndexer — text_documents Qdrant collection",
+      "description": "As a platform engineer, I want documents indexed into a Qdrant text_documents collection so that dense vector retrieval is available.",
       "acceptanceCriteria": [
-        "RAGIndexer loads campaign assets from asset manifest metadata",
-        "RAGIndexer creates campaign_assets collection under QDRANT_PATH with same embedding model",
+        "src/rag/embeddings/indexer.py exists with RAGIndexer class",
+        "RAGIndexer.__init__ reads QDRANT_PATH and EMBEDDING_MODEL from env with defaults (data/qdrant_db and text-embedding-3-large)",
+        "build_text_index(docs: list[Document]) creates text_documents collection in Qdrant using OpenAIEmbedding(model=EMBEDDING_MODEL)",
+        "Documents passed directly to VectorStoreIndex without additional splitting — ingest.py handles pre-chunking (20-row CSV windows, single-doc contracts/config)",
+        "Clean rebuild: drops and recreates text_documents collection on each run — no duplicate vectors",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "CRITICAL: Do NOT apply SentenceSplitter — it breaks tabular structure. Pass pre-chunked docs directly to VectorStoreIndex."
+    },
+    {
+      "id": "US-003",
+      "title": "RAGIndexer — BM25 index",
+      "description": "As a retrieval engineer, I want a BM25 index built and persisted so that lexical retrieval is available for hybrid search.",
+      "acceptanceCriteria": [
+        "build_bm25_index(docs: list[Document]) method added to RAGIndexer",
+        "Uses llama-index-retrievers-bm25 (NOT rank-bm25 raw library)",
+        "BM25 artifacts persisted to data/index/bm25/ directory",
+        "data/index/bm25/ is non-empty after indexing",
+        "BM25 index loadable without rebuild on second call",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "Use llama-index-retrievers-bm25, which is the LlamaIndex integration wrapper."
+    },
+    {
+      "id": "US-004",
+      "title": "RAGIndexer — campaign_assets collection and cost estimation",
+      "description": "As a campaign analyst, I want asset descriptions indexed in Qdrant and a cost estimator so I can search creatives and plan API spend.",
+      "acceptanceCriteria": [
+        "build_asset_index(docs: list[Document]) creates campaign_assets collection in Qdrant with same embedding model",
         "campaign_assets collection contains >0 vectors after indexing",
         "Asset metadata includes image_path field for later retrieval",
+        "estimate(docs: list[Document]) returns dict with chunk_count, estimated_tokens, estimated_cost_usd without calling the OpenAI API",
+        "Cost model uses text-embedding-3-large pricing ($0.13/1M tokens)",
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-005",
-      "title": "Create query_engine.py with search_text()",
-      "description": "As a query consumer, I want hybrid text search combining dense and lexical signals so relevance is strong for both semantic and keyword-heavy questions.",
+      "title": "build_index.py CLI with dry-run and cost guard",
+      "description": "As a developer, I want a CLI that can estimate costs, limit spend, and build indexes incrementally so I can test safely.",
       "acceptanceCriteria": [
-        "src/rag/retrieval/query_engine.py exists with search_text(query, top_k=5, category=None) function",
-        "search_text() uses QueryFusionRetriever over Qdrant and BM25 indexes",
-        "search_text() applies reciprocal reranking and returns ranked list of nodes",
-        "Each returned node has score, text, and metadata fields",
-        "Query 'What is Meta CPM?' returns nodes from meta_ads.csv or config metadata",
+        "src/rag/data_processing/build_index.py exists and runnable as: python -m src.rag.data_processing.build_index",
+        "--dry-run: loads and chunks documents, prints estimate (doc count, chunk count, tokens, cost), exits without calling OpenAI",
+        "--max-cost-usd <float>: aborts with clear message if estimated cost exceeds cap",
+        "--text: builds text_documents collection + BM25 index only",
+        "--assets: builds campaign_assets collection only",
+        "--check: prints collection stats (name, vector count, status) and BM25 index status without mutation",
+        "--sample: loads 1 file per data category instead of all files (6 predefined files: meta_ads.csv, tv_performance.csv, vehicle_sales.csv, MediaAgency_Terms_of_Business.md, config.py, asset_manifest.csv)",
+        "No flags defaults to full build (text + assets, all files)",
+        "Help text (--help) documents all flags",
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Sample files: meta_ads.csv (digital), tv_performance.csv (traditional), vehicle_sales.csv (sales), MediaAgency_Terms_of_Business.md (contract), config.py (config), asset_manifest.csv (assets)."
     },
     {
       "id": "US-006",
-      "title": "Add search_assets() + check_indexes()",
-      "description": "As a campaign analyst and operator, I want asset search and index health checks available so I can locate creatives and verify index status.",
+      "title": "search_text() with hybrid retrieval",
+      "description": "As a query consumer, I want hybrid text search combining dense vectors and BM25 lexical matching with reciprocal reranking so retrieval is strong for both semantic and keyword-heavy questions.",
       "acceptanceCriteria": [
-        "search_assets(query, top_k=5, channel=None) function exists in query_engine.py",
-        "search_assets() targets campaign_assets collection and supports optional channel filter",
-        "search_assets() returns nodes with image_path metadata without crashing on unknown channels",
-        "Query 'DEEPAL S07 launch creative' returns matching creative entries with valid image_path",
-        "check_indexes() function prints collection stats (name, vector_count, status) without mutating indexes",
+        "src/rag/retrieval/query_engine.py exists",
+        "search_text(query: str, top_k: int = 5, category: str | None = None) function",
+        "search_text uses QueryFusionRetriever over Qdrant vector retriever + BM25 retriever",
+        "search_text applies reciprocal reranking and returns ranked list of nodes",
+        "Each returned node has score, text, and metadata (including source_file, category)",
+        "Smoke test: query 'What is Meta CPM?' returns nodes citing meta_ads.csv or config.py in top-5",
         "Typecheck passes"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Uses QueryFusionRetriever with reciprocal reranking per LlamaIndex Production RAG docs."
     },
     {
       "id": "US-007",
-      "title": "Create build_index.py CLI",
-      "description": "As an operator, I want a CLI tool that can build indexes and verify health so I can manage indexing in production.",
+      "title": "search_assets() and check_indexes()",
+      "description": "As a campaign analyst and operator, I want asset search and index health checks so I can locate creatives and verify index status.",
       "acceptanceCriteria": [
-        "src/rag/data_processing/build_index.py exists and is runnable as: python -m src.rag.data_processing.build_index",
-        "CLI supports --text flag to build text_documents + BM25 indexes only",
-        "CLI supports --assets flag to build campaign_assets collection only",
-        "CLI supports --check flag to print index health without mutation",
-        "Running without flags defaults to full indexing (both text and assets) or explicitly documents default in help",
-        "Module uses QDRANT_PATH and other env config from .env",
-        "Typecheck passes",
-        "Tests pass"
+        "search_assets(query: str, top_k: int = 5, channel: str | None = None) function in query_engine.py",
+        "search_assets queries campaign_assets collection and returns nodes with image_path metadata",
+        "search_assets handles unknown channels gracefully without crashing",
+        "check_indexes() prints collection stats (name, vector_count, status) without mutating indexes",
+        "Smoke test: query 'DEEPAL S07 launch creative' returns nodes with valid image_path metadata",
+        "Typecheck passes"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
