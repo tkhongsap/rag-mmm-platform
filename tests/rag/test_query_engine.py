@@ -7,6 +7,8 @@ from pathlib import Path
 from llama_index.core import Document
 from llama_index.core.embeddings import MockEmbedding
 from llama_index.core.schema import NodeWithScore, TextNode
+from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams
 
 from src.rag.embeddings import indexer as indexer_module
 from src.rag.embeddings.indexer import RAGIndexer
@@ -174,3 +176,114 @@ def test_search_text_smoke_meta_cpm_returns_expected_sources(tmp_path: Path, mon
     assert any("meta_ads.csv" in source or "config.py" in source for source in source_files)
     assert len(results) <= 5
     assert all("score" in result and "text" in result and "metadata" in result for result in results)
+
+
+def test_search_assets_smoke_returns_valid_image_path_metadata(
+    tmp_path: Path, monkeypatch
+):
+    qdrant_dir = tmp_path / "qdrant"
+
+    monkeypatch.setenv("QDRANT_PATH", str(qdrant_dir))
+    monkeypatch.setattr(indexer_module, "OpenAIEmbedding", lambda model: MockEmbedding(embed_dim=8))
+    monkeypatch.setattr(query_engine, "OpenAIEmbedding", lambda model: MockEmbedding(embed_dim=8))
+
+    docs = [
+        Document(
+            text=(
+                "DEEPAL S07 launch creative for social channel with panoramic exterior "
+                "shot and campaign CTA."
+            ),
+            metadata={
+                "source_file": "data/assets/asset_manifest.csv",
+                "category": "assets",
+                "channel": "meta",
+                "image_path": "data/assets/meta/meta_deepal_s07_social_post_05.png",
+            },
+        ),
+        Document(
+            text="AVATR 12 OOH creative focused on digital screen placement and awareness.",
+            metadata={
+                "source_file": "data/assets/asset_manifest.csv",
+                "category": "assets",
+                "channel": "ooh",
+                "image_path": "data/assets/ooh/ooh_avatr_12_digital_screen_06.png",
+            },
+        ),
+    ]
+
+    indexer = RAGIndexer(qdrant_path=str(qdrant_dir), bm25_path=str(tmp_path / "bm25"))
+    indexer.build_asset_index(docs)
+    indexer.qdrant_client.close()
+
+    results = query_engine.search_assets("DEEPAL S07 launch creative", top_k=5)
+
+    assert len(results) > 0
+    assert len(results) <= 5
+    assert all("score" in result and "text" in result and "metadata" in result for result in results)
+    assert all("image_path" in result["metadata"] for result in results)
+    assert all(result["metadata"]["image_path"] for result in results)
+
+
+def test_search_assets_unknown_channel_returns_empty_without_crashing(
+    tmp_path: Path, monkeypatch
+):
+    qdrant_dir = tmp_path / "qdrant"
+
+    monkeypatch.setenv("QDRANT_PATH", str(qdrant_dir))
+    monkeypatch.setattr(indexer_module, "OpenAIEmbedding", lambda model: MockEmbedding(embed_dim=8))
+    monkeypatch.setattr(query_engine, "OpenAIEmbedding", lambda model: MockEmbedding(embed_dim=8))
+
+    docs = [
+        Document(
+            text="DEEPAL S07 launch creative used in Meta social campaign.",
+            metadata={
+                "source_file": "data/assets/asset_manifest.csv",
+                "category": "assets",
+                "channel": "meta",
+                "image_path": "data/assets/meta/meta_deepal_s07_social_post_05.png",
+            },
+        )
+    ]
+
+    indexer = RAGIndexer(qdrant_path=str(qdrant_dir), bm25_path=str(tmp_path / "bm25"))
+    indexer.build_asset_index(docs)
+    indexer.qdrant_client.close()
+
+    results = query_engine.search_assets(
+        "DEEPAL S07 launch creative",
+        top_k=5,
+        channel="unknown_channel",
+    )
+
+    assert results == []
+
+
+def test_check_indexes_prints_collection_stats(tmp_path: Path, monkeypatch, capsys):
+    qdrant_path = tmp_path / "qdrant"
+    bm25_path = tmp_path / "bm25"
+    qdrant_path.mkdir(parents=True, exist_ok=True)
+    bm25_path.mkdir(parents=True, exist_ok=True)
+    (bm25_path / "retriever.json").write_text("{}", encoding="utf-8")
+
+    qdrant_client = QdrantClient(path=str(qdrant_path))
+    qdrant_client.create_collection(
+        collection_name="text_documents",
+        vectors_config=VectorParams(size=4, distance=Distance.COSINE),
+    )
+    qdrant_client.create_collection(
+        collection_name="campaign_assets",
+        vectors_config=VectorParams(size=4, distance=Distance.COSINE),
+    )
+    qdrant_client.close()
+
+    monkeypatch.setenv("QDRANT_PATH", str(qdrant_path))
+    monkeypatch.setattr(query_engine, "_DEFAULT_BM25_PATH", str(bm25_path))
+
+    exit_code = query_engine.check_indexes()
+    output = capsys.readouterr().out
+
+    assert exit_code == 0
+    assert "text_documents: vector_count=0, status=green" in output
+    assert "campaign_assets: vector_count=0, status=green" in output
+    assert "BM25: path=" in output
+    assert "status=ready" in output

@@ -19,6 +19,7 @@ from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 
 _TEXT_COLLECTION = "text_documents"
+_ASSET_COLLECTION = "campaign_assets"
 _DEFAULT_QDRANT_PATH = "data/qdrant_db"
 _DEFAULT_BM25_PATH = "data/index/bm25"
 _DEFAULT_EMBEDDING_MODEL = "text-embedding-3-large"
@@ -56,6 +57,14 @@ def _build_category_filters(category: str | None) -> MetadataFilters | None:
     )
 
 
+def _normalize_optional_filter(value: str | None) -> str | None:
+    """Normalize optional filter input for case-insensitive matching."""
+    if value is None:
+        return None
+    normalized = value.strip().lower()
+    return normalized or None
+
+
 def _node_text(node_with_score: NodeWithScore) -> str:
     """Extract node text from retrieval results in a version-safe way."""
     node = node_with_score.node
@@ -78,12 +87,45 @@ def _serialize_node(node_with_score: NodeWithScore) -> dict[str, Any]:
 
 def _matches_category(node_with_score: NodeWithScore, category: str | None) -> bool:
     """Check whether a retrieved node belongs to the requested category."""
-    if not category:
+    expected = _normalize_optional_filter(category)
+    if expected is None:
         return True
 
-    expected = category.strip().lower()
     actual = str((node_with_score.node.metadata or {}).get("category", "")).lower()
     return actual == expected
+
+
+def _matches_channel(node_with_score: NodeWithScore, channel: str | None) -> bool:
+    """Check whether a retrieved asset node belongs to the requested channel."""
+    expected = _normalize_optional_filter(channel)
+    if expected is None:
+        return True
+
+    actual = str((node_with_score.node.metadata or {}).get("channel", "")).lower()
+    return actual == expected
+
+
+def _serialize_asset_node(node_with_score: NodeWithScore) -> dict[str, Any]:
+    """Serialize asset results and guarantee image_path key presence."""
+    payload = _serialize_node(node_with_score)
+    payload["metadata"].setdefault("image_path", "")
+    return payload
+
+
+def _format_collection_status(name: str, vector_count: int, status: str) -> str:
+    """Render collection status line consistently."""
+    return f"{name}: vector_count={vector_count}, status={status}"
+
+
+def _read_collection_status(client: QdrantClient, collection_name: str) -> tuple[int, str]:
+    """Read collection vector count and status if present."""
+    if not client.collection_exists(collection_name):
+        return (0, "missing")
+
+    collection = client.get_collection(collection_name)
+    vector_count = int(collection.points_count or 0)
+    status = str(getattr(collection.status, "value", collection.status))
+    return (vector_count, status)
 
 
 def _bm25_top_k(bm25_retriever: BM25Retriever, requested_top_k: int) -> int:
@@ -164,3 +206,80 @@ def search_text(
         return [_serialize_node(node) for node in filtered_nodes[:top_k]]
     finally:
         qdrant_client.close()
+
+
+def search_assets(
+    query: str,
+    top_k: int = 5,
+    channel: str | None = None,
+) -> list[dict[str, Any]]:
+    """Run dense asset retrieval from campaign_assets with optional channel filtering."""
+    query_text = query.strip()
+    if not query_text:
+        raise ValueError("query must be a non-empty string")
+    if top_k <= 0:
+        raise ValueError("top_k must be > 0")
+
+    qdrant_path = _resolve_project_path(os.getenv("QDRANT_PATH", _DEFAULT_QDRANT_PATH))
+    embedding_model_name = (
+        os.getenv("EMBEDDING_MODEL")
+        or os.getenv("EMBED_MODEL", _DEFAULT_EMBEDDING_MODEL)
+    )
+    embedding = OpenAIEmbedding(model=embedding_model_name)
+
+    qdrant_client = QdrantClient(path=str(qdrant_path))
+    try:
+        if not qdrant_client.collection_exists(_ASSET_COLLECTION):
+            raise FileNotFoundError(
+                "Qdrant collection 'campaign_assets' not found. Run build_index.py --assets first."
+            )
+
+        vector_store = QdrantVectorStore(
+            client=qdrant_client,
+            collection_name=_ASSET_COLLECTION,
+        )
+        vector_index = VectorStoreIndex.from_vector_store(
+            vector_store=vector_store,
+            embed_model=embedding,
+        )
+        vector_retriever = VectorIndexRetriever(
+            index=vector_index,
+            similarity_top_k=top_k,
+            embed_model=embedding,
+        )
+
+        nodes = vector_retriever.retrieve(query_text)
+        filtered_nodes = [node for node in nodes if _matches_channel(node, channel)]
+        return [_serialize_asset_node(node) for node in filtered_nodes[:top_k]]
+    finally:
+        qdrant_client.close()
+
+
+def check_indexes() -> int:
+    """Print collection/BM25 status without mutating any index artifacts."""
+    raw_qdrant_path = os.getenv("QDRANT_PATH", _DEFAULT_QDRANT_PATH)
+    qdrant_path = _resolve_project_path(raw_qdrant_path)
+    bm25_path = _resolve_project_path(_DEFAULT_BM25_PATH)
+
+    print("Index status:")
+    if qdrant_path.exists():
+        client = QdrantClient(path=str(qdrant_path))
+        try:
+            text_count, text_status = _read_collection_status(client, _TEXT_COLLECTION)
+            asset_count, asset_status = _read_collection_status(client, _ASSET_COLLECTION)
+        finally:
+            client.close()
+    else:
+        text_count, text_status = (0, "missing")
+        asset_count, asset_status = (0, "missing")
+
+    print(f"- {_format_collection_status(_TEXT_COLLECTION, text_count, text_status)}")
+    print(f"- {_format_collection_status(_ASSET_COLLECTION, asset_count, asset_status)}")
+
+    bm25_files = list(bm25_path.iterdir()) if bm25_path.exists() else []
+    bm25_status = "ready" if bm25_files else "missing"
+    print(
+        "- BM25: "
+        f"path={bm25_path}, status={bm25_status}, file_count={len(bm25_files)}"
+    )
+    return 0

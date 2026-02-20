@@ -125,3 +125,5 @@ Required in `.env` (see `.env.example` for all defaults):
 - Persist BM25 lexical index artifacts under `data/index/bm25/`; when available, load via `BM25Retriever.from_persist_dir(...)` instead of rebuilding.
 - `QueryFusionRetriever` resolves an LLM at initialization even when `num_queries=1`; pass an explicit local/mock LLM for offline hybrid retrieval paths that should not require `OPENAI_API_KEY`.
 - Close `QdrantClient` handles in short-lived scripts/tests (especially status checks) to release local `.lock` files and avoid "already accessed by another instance" errors.
+- Asset channel filtering should be case-insensitive and non-fatal: unknown channels should return empty result sets instead of raising.
+- Keep index health checks read-only (`collection_exists` + `get_collection`); do not create/reset collections inside status helpers.

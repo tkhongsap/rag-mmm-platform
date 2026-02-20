@@ -5,6 +5,7 @@
 - For BM25 lexical retrieval, persist artifacts to `data/index/bm25/` and reload with `BM25Retriever.from_persist_dir(...)` when files already exist to avoid unnecessary rebuilds.
 - For `QueryFusionRetriever` in offline paths, pass an explicit local/mock LLM even with `num_queries=1`; it resolves `Settings.llm` at init otherwise.
 - For asset retrieval, normalize docs so every metadata payload includes `image_path` before indexing into `campaign_assets`; downstream UI/search assumes that key always exists.
+- For asset search filters, apply case-insensitive metadata matching and return an empty list (not an exception) when channel values are unknown.
 - Close local `QdrantClient` instances in short-lived checks/tests to release `.lock` files before opening the same storage path again.
 
 ## 2026-02-20 15:18:12 +07 - US-001
@@ -80,4 +81,21 @@
   - `QueryFusionRetriever` still initializes `Settings.llm` unless an explicit `llm` is passed, so offline/test retrieval should inject `MockLLM()` even when query expansion is disabled.
   - BM25 `similarity_top_k` must be clamped to indexed corpus size; setting it above corpus size raises a runtime `ValueError`.
   - Hybrid retrieval functions should normalize `NodeWithScore` objects at module boundaries (`score`/`text`/`metadata`) to keep CLI/API consumers decoupled from LlamaIndex internals.
+---
+## 2026-02-20 15:47:45 +0700 - US-007
+- Added `search_assets(query, top_k=5, channel=None)` to `src/rag/retrieval/query_engine.py` to retrieve from the `campaign_assets` Qdrant collection, normalize response payloads, and guarantee `metadata.image_path` is present in every result.
+- Added case-insensitive optional channel filtering in `search_assets`; unknown channel values now return `[]` without raising exceptions.
+- Added `check_indexes()` to `src/rag/retrieval/query_engine.py` for read-only index health output (`name`, `vector_count`, `status`) for `text_documents` and `campaign_assets`, plus BM25 artifact status.
+- Exported `search_assets` and `check_indexes` via `src/rag/retrieval/__init__.py`.
+- Expanded `tests/rag/test_query_engine.py` with US-007 coverage:
+  - smoke query `"DEEPAL S07 launch creative"` returns asset nodes with valid `image_path`,
+  - unknown channel handling is graceful (empty results, no crash),
+  - `check_indexes()` prints collection stats and BM25 readiness.
+- Updated root `CLAUDE.md` with reusable retrieval/check patterns for case-insensitive asset filtering and read-only index checks.
+- Ran quality checks: `.venv/bin/python -m py_compile src/rag/retrieval/query_engine.py src/rag/retrieval/__init__.py tests/rag/test_query_engine.py`, `.venv/bin/pytest tests/rag/test_query_engine.py -v`, and `.venv/bin/pytest tests/rag/ -v` (pass).
+- Files changed: `src/rag/retrieval/query_engine.py`, `src/rag/retrieval/__init__.py`, `tests/rag/test_query_engine.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+- **Learnings for future iterations:**
+  - Use case-insensitive post-retrieval metadata filtering for `search_assets` so channel filters behave consistently across user input capitalization.
+  - Keep retrieval-layer health checks strictly read-only by querying existing collection metadata; never instantiate builders/reset paths in status helpers.
+  - Asset retrieval serializers should enforce `image_path` presence even if upstream metadata is incomplete.
 ---
