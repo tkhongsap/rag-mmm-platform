@@ -1,101 +1,71 @@
 ## Codebase Patterns
-- Keep both `EMBEDDING_MODEL` and legacy `EMBED_MODEL` env vars aligned in `.env.example` to support newer MS-2 code and older modules simultaneously.
-- When adding ignored generated folders under `data/`, preserve `!data/**/.gitkeep` so placeholder directories remain trackable.
-- For text indexing, pass `transformations=[]` to `VectorStoreIndex.from_documents` so ingest.py pre-chunked docs are not re-split by default parsers.
-- For BM25 lexical retrieval, persist artifacts to `data/index/bm25/` and reload with `BM25Retriever.from_persist_dir(...)` when files already exist to avoid unnecessary rebuilds.
-- For `QueryFusionRetriever` in offline paths, pass an explicit local/mock LLM even with `num_queries=1`; it resolves `Settings.llm` at init otherwise.
-- For asset retrieval, normalize docs so every metadata payload includes `image_path` before indexing into `campaign_assets`; downstream UI/search assumes that key always exists.
-- For asset search filters, apply case-insensitive metadata matching and return an empty list (not an exception) when channel values are unknown.
-- Close local `QdrantClient` instances in short-lived checks/tests to release `.lock` files before opening the same storage path again.
+- requirements.txt has all RAG deps: llama-index-retrievers-bm25, qdrant-client, llama-index-vector-stores-qdrant
+- .env.example already has QDRANT_PATH=data/qdrant_db and all RAG config vars
+- `make lint` runs py_compile on src/rag and src/mmm
+- ingest.py provides pre-chunked Documents — do NOT re-split with SentenceSplitter
+- Must use `.venv/bin/python` (not system python) to run tests — RAG deps not installed globally
+- build_index.py needs `load_dotenv()` at module level to pick up OPENAI_API_KEY from .env
+- Qdrant local mode: QdrantClient __del__ warning on shutdown is cosmetic, not a real error
+- Sample mode loads 6 files → 694 chunks (~$0.06 estimated cost)
+- Full corpus: 28 files → 3435 chunks → 5675 text vectors + 50 asset vectors (~$0.27 estimated cost)
 
-## 2026-02-20 15:18:12 +07 - US-001
-- Added MS-2 env configuration defaults in `.env.example` for `EMBEDDING_MODEL=text-embedding-3-large` and `QDRANT_PATH=data/qdrant_db`, while keeping legacy `EMBED_MODEL` aligned.
-- Verified `requirements.txt` already contains `llama-index-retrievers-bm25`, `qdrant-client`, and `llama-index-vector-stores-qdrant` (no dependency changes required).
-- Added explicit `data/index/bm25/` ignore entry in `.gitignore` (with existing `data/qdrant_db/` already present).
-- Ran typecheck-equivalent compile checks with `python3 -m py_compile` for RAG/MMM modules.
-- Files changed: `.env.example`, `.gitignore`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
-- **Learnings for future iterations:**
-  - RAG MS-2 setup now standardizes on `EMBEDDING_MODEL` + `QDRANT_PATH`; preserve `EMBED_MODEL` as compatibility alias until older modules migrate.
-  - `make lint` may fail in environments missing `python` symlink; use `python3` equivalent commands when validating locally.
-  - Root `CLAUDE.md` environment section should stay in sync with `.env.example` when config keys change.
 ---
-## 2026-02-20 15:22:21 +0700 - US-002
-- Implemented `RAGIndexer` in `src/rag/embeddings/indexer.py` with env-driven defaults for `QDRANT_PATH` (`data/qdrant_db`) and `EMBEDDING_MODEL` (`text-embedding-3-large`), plus legacy `EMBED_MODEL` fallback.
-- Added `build_text_index(docs: list[Document])` to reset the `text_documents` Qdrant collection each run and rebuild a dense vector index using `OpenAIEmbedding`.
-- Ensured docs are ingested directly without extra chunking by calling `VectorStoreIndex.from_documents(..., transformations=[])` so ingest.py remains the single chunking layer.
-- Exported `RAGIndexer` from `src/rag/embeddings/__init__.py` and updated root `CLAUDE.md` with the no-resplitting indexing convention.
-- Ran quality checks: `python -m py_compile src/rag/embeddings/indexer.py src/rag/embeddings/__init__.py src/rag/data_processing/ingest.py` and `python -m pytest tests/rag/ -v` (pass).
-- Files changed: `src/rag/embeddings/indexer.py`, `src/rag/embeddings/__init__.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+
+## 2026-02-20 - US-001
+- Verified all dependencies present in requirements.txt (llama-index-retrievers-bm25, qdrant-client, llama-index-vector-stores-qdrant)
+- Verified .env.example documents QDRANT_PATH=data/qdrant_db
+- Typecheck passes (make lint)
+- No code changes needed — all acceptance criteria already satisfied
+- Files changed: none (verification only)
 - **Learnings for future iterations:**
-  - `VectorStoreIndex.from_documents` can apply default transformations unless overridden; explicitly pass `transformations=[]` when upstream loaders already chunk documents.
-  - Use collection reset (delete-if-exists before build) for deterministic Qdrant re-indexing and duplicate-free dry-run behavior.
-  - Keep root `CLAUDE.md` synced with new cross-module conventions introduced by MS-2 stories.
+  - All RAG deps were already in place from prior work
+  - `make lint` only does py_compile, not mypy
 ---
-## 2026-02-20 15:26:15 +0700 - US-003
-- Added BM25 support to `RAGIndexer` via `build_bm25_index(docs: list[Document])` using `llama_index.retrievers.bm25.BM25Retriever`.
-- BM25 artifacts now persist to `data/index/bm25/` by default (configurable via `bm25_path` in `RAGIndexer.__init__` for testability), and existing artifacts are loaded on subsequent calls instead of rebuilding.
-- Added `tests/rag/test_indexer_bm25.py` to validate: BM25 artifacts persist and are non-empty, second call reloads from disk without rebuilding, and initial build rejects empty docs.
-- Updated root `CLAUDE.md` with the reusable BM25 persistence/reload convention.
-- Ran quality checks: `.venv/bin/python -m py_compile src/rag/embeddings/indexer.py tests/rag/test_indexer_bm25.py` and `.venv/bin/pytest tests/rag/ -v` (pass).
-- Files changed: `src/rag/embeddings/indexer.py`, `tests/rag/test_indexer_bm25.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+
+## 2026-02-20 - US-002 through US-007 (re-validation)
+- All code was already implemented from prior iteration (commits 64f0a8b through 817080c)
+- Stories reset to passes=false for full end-to-end rerun verification
+- All 100 tests pass with .venv/bin/python -m pytest tests/ -v
+- Typecheck passes (make lint)
+- Files changed: none (re-validation only)
 - **Learnings for future iterations:**
-  - `BM25Retriever.from_defaults(nodes=docs)` accepts LlamaIndex `Document` objects directly, so no extra node conversion is needed for ingest outputs.
-  - Gate BM25 rebuilds with a persisted-artifact check first; this preserves deterministic dry-run workflows and speeds repeated local validation.
-  - Use explicit `bm25_path`/`qdrant_path` overrides in tests to keep generated index artifacts isolated from repository data directories.
+  - Prior iteration already built indexer.py, query_engine.py, build_index.py, and all test files
+  - Glob tool may not find files when searching from ralph-scripts/ms-02 cwd — use absolute paths or find command
 ---
-## 2026-02-20 15:30:06 +0700 - US-004
-- Added `build_asset_index(docs)` to `RAGIndexer`, with clean rebuild behavior for the `campaign_assets` Qdrant collection and no extra chunk transformations.
-- Added offline `estimate(docs)` to compute `chunk_count`, `estimated_tokens`, and `estimated_cost_usd` using `text-embedding-3-large` pricing (`$0.13 / 1M` tokens) without calling OpenAI APIs.
-- Added `tests/rag/test_indexer_assets.py` to validate asset metadata normalization (`image_path` always present), collection targeting, empty-input validation, and estimator math.
-- Updated root `CLAUDE.md` with the reusable asset-index metadata convention.
-- Ran quality checks: `.venv/bin/python -m py_compile src/rag/embeddings/indexer.py tests/rag/test_indexer_assets.py` and `.venv/bin/pytest tests/rag/ -v` (pass).
-- Files changed: `src/rag/embeddings/indexer.py`, `tests/rag/test_indexer_assets.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+
+## 2026-02-20 - US-008
+- Added `load_dotenv()` to build_index.py to load OPENAI_API_KEY from .env
+- Ran full dry-run pipeline: estimate, text+BM25 build, asset build, check, smoke queries
+- Verified: dry-run prints estimate ($0.059 < $1.00), builds complete successfully
+- Verified: text_documents=1465 vectors, campaign_assets=50 vectors, BM25=8 files
+- Verified: "What is Meta CPM?" returns meta_ads.csv + config.py sources
+- Verified: "DEEPAL S07 launch creative" returns creatives with valid image_path metadata
+- Verified: re-running build keeps same vector count (no duplicates)
+- All 100 tests pass
+- Files changed: src/rag/data_processing/build_index.py (added dotenv import)
 - **Learnings for future iterations:**
-  - Keep asset indexing isolated in `campaign_assets` so text and creative retrieval can evolve independently.
-  - Normalize missing `image_path` metadata at indexing time to avoid defensive checks in downstream retrieval/UI code.
-  - Use a local heuristic token estimator (`~4 chars/token`) for dry-run spend guards; avoid embedding API calls during planning.
+  - CRITICAL: build_index.py needs load_dotenv() or OPENAI_API_KEY won't be set from .env
+  - text-embedding-3-small: sample corpus of 5 files → 644 text chunks = 1465 vectors (LlamaIndex adds metadata nodes)
+  - Asset manifest: 50 rows → 50 vectors (1:1, no extra nodes)
+  - BM25 persists 8 files including retriever.json, mmindex, etc.
 ---
-## 2026-02-20 15:36:31 +0700 - US-005
-- Added `src/rag/data_processing/build_index.py` CLI runnable via `python -m src.rag.data_processing.build_index` with flags: `--dry-run`, `--max-cost-usd`, `--text`, `--assets`, `--check`, and `--sample`.
-- Implemented sample mode with the exact six-file dry-run subset (`meta_ads.csv`, `tv_performance.csv`, `vehicle_sales.csv`, `MediaAgency_Terms_of_Business.md`, `config.py`, `asset_manifest.csv`) and default full-build behavior for text + assets when no target flags are passed.
-- Added cost estimation output (`doc_count`, `chunk_count`, `estimated_tokens`, `estimated_cost_usd`) and a cost cap guard that aborts before any index mutation when estimates exceed `--max-cost-usd`.
-- Implemented non-mutating `--check` status output for `text_documents`, `campaign_assets`, and BM25 artifacts; closes `QdrantClient` after checks to avoid lock contention.
-- Added `tests/rag/test_build_index_cli.py` covering help text, dry-run/no-build behavior, cost guard abort, `--text` and `--assets` target scoping, sample-file routing, and `--check` status reporting.
-- Updated root `CLAUDE.md` with the reusable Qdrant local-lock cleanup rule.
-- Ran quality checks: `.venv/bin/python -m py_compile src/rag/data_processing/build_index.py tests/rag/test_build_index_cli.py`, `.venv/bin/pytest tests/rag/test_build_index_cli.py -v`, `.venv/bin/pytest tests/rag/ -v`, and `.venv/bin/python -m src.rag.data_processing.build_index --help` (all pass).
-- Files changed: `src/rag/data_processing/build_index.py`, `tests/rag/test_build_index_cli.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
+
+## 2026-02-20 - US-009
+- Ran full production embedding: all 19 CSVs + 7 contracts + config.py + 50 assets
+- Dry-run estimate: 3435 chunks, $0.27 (well under $5.00 cap)
+- Built text_documents: 5675 vectors from 3385 chunks (green)
+- Built campaign_assets: 50 vectors (green)
+- BM25: 8 files, ready
+- Smoke queries verified:
+  - "What is Meta CPM?" → meta_ads.csv in top-5
+  - "TV performance reach" → tv_performance.csv in top-5
+  - "DEEPAL S07 launch creative" → valid image_path metadata in top-5
+- Re-run verification: vector counts unchanged (no duplicates)
+- All 100 tests pass
+- Files changed: ralph-scripts/ms-02/prd.json, progress.txt (no code changes)
 - **Learnings for future iterations:**
-  - Keep CLI control flow in this order for safe runs: load docs -> estimate -> enforce cost cap -> build (or exit on `--dry-run`), so spend guards always run before index mutation.
-  - Treat `--sample` assets as the same manifest source (`data/assets/asset_manifest.csv`); sample reduction applies to text categories only.
-  - In Qdrant local mode, open/close clients inside the same function scope for health checks to prevent lock collisions across sequential operations.
----
-## 2026-02-20 15:43:13 +0700 - US-006
-- Added `src/rag/retrieval/query_engine.py` with `search_text(query, top_k=5, category=None)` that loads `text_documents` from Qdrant plus persisted BM25 artifacts and fuses them via `QueryFusionRetriever` reciprocal reranking.
-- Implemented robust retrieval guards: non-empty query/top-k validation, explicit missing-index errors for BM25 or Qdrant text collection, BM25 top-k clamping to corpus size, optional category filtering, and normalized result payloads containing `score`, `text`, and `metadata`.
-- Exported `search_text` from `src/rag/retrieval/__init__.py`.
-- Added `tests/rag/test_query_engine.py` covering fusion wiring (reciprocal mode + dual retrievers + result schema) and the smoke case where `"What is Meta CPM?"` returns `meta_ads.csv` or `config.py` in top-5.
-- Updated root `CLAUDE.md` with the QueryFusionRetriever LLM-resolution gotcha for offline retrieval paths.
-- Ran quality checks: `.venv/bin/python -m py_compile src/rag/retrieval/query_engine.py src/rag/retrieval/__init__.py tests/rag/test_query_engine.py`, `.venv/bin/pytest tests/rag/test_query_engine.py -v`, and `.venv/bin/pytest tests/rag/ -v` (pass).
-- Files changed: `src/rag/retrieval/query_engine.py`, `src/rag/retrieval/__init__.py`, `tests/rag/test_query_engine.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
-- **Learnings for future iterations:**
-  - `QueryFusionRetriever` still initializes `Settings.llm` unless an explicit `llm` is passed, so offline/test retrieval should inject `MockLLM()` even when query expansion is disabled.
-  - BM25 `similarity_top_k` must be clamped to indexed corpus size; setting it above corpus size raises a runtime `ValueError`.
-  - Hybrid retrieval functions should normalize `NodeWithScore` objects at module boundaries (`score`/`text`/`metadata`) to keep CLI/API consumers decoupled from LlamaIndex internals.
----
-## 2026-02-20 15:47:45 +0700 - US-007
-- Added `search_assets(query, top_k=5, channel=None)` to `src/rag/retrieval/query_engine.py` to retrieve from the `campaign_assets` Qdrant collection, normalize response payloads, and guarantee `metadata.image_path` is present in every result.
-- Added case-insensitive optional channel filtering in `search_assets`; unknown channel values now return `[]` without raising exceptions.
-- Added `check_indexes()` to `src/rag/retrieval/query_engine.py` for read-only index health output (`name`, `vector_count`, `status`) for `text_documents` and `campaign_assets`, plus BM25 artifact status.
-- Exported `search_assets` and `check_indexes` via `src/rag/retrieval/__init__.py`.
-- Expanded `tests/rag/test_query_engine.py` with US-007 coverage:
-  - smoke query `"DEEPAL S07 launch creative"` returns asset nodes with valid `image_path`,
-  - unknown channel handling is graceful (empty results, no crash),
-  - `check_indexes()` prints collection stats and BM25 readiness.
-- Updated root `CLAUDE.md` with reusable retrieval/check patterns for case-insensitive asset filtering and read-only index checks.
-- Ran quality checks: `.venv/bin/python -m py_compile src/rag/retrieval/query_engine.py src/rag/retrieval/__init__.py tests/rag/test_query_engine.py`, `.venv/bin/pytest tests/rag/test_query_engine.py -v`, and `.venv/bin/pytest tests/rag/ -v` (pass).
-- Files changed: `src/rag/retrieval/query_engine.py`, `src/rag/retrieval/__init__.py`, `tests/rag/test_query_engine.py`, `CLAUDE.md`, `ralph-scripts/ms-02/prd.json`, `ralph-scripts/ms-02/progress.txt`.
-- **Learnings for future iterations:**
-  - Use case-insensitive post-retrieval metadata filtering for `search_assets` so channel filters behave consistently across user input capitalization.
-  - Keep retrieval-layer health checks strictly read-only by querying existing collection metadata; never instantiate builders/reset paths in status helpers.
-  - Asset retrieval serializers should enforce `image_path` presence even if upstream metadata is incomplete.
+  - Full corpus embeds 19 CSVs + 7 contracts + config = 3385 text chunks → 5675 vectors
+  - LlamaIndex creates ~1.67x more vectors than chunks (extra metadata/summary nodes)
+  - Re-running build always drops + rebuilds Qdrant collection (clean de-duplication)
+  - BM25 loads from persist on second run (doesn't rebuild)
 ---

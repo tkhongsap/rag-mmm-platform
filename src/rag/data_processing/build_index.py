@@ -9,8 +9,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
+from dotenv import load_dotenv
 from llama_index.core import Document
 from qdrant_client import QdrantClient
+
+load_dotenv()
 
 from src.rag.data_processing.ingest import (
     load_all_text_documents,

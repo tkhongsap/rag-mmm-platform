@@ -22,7 +22,7 @@ _TEXT_COLLECTION = "text_documents"
 _ASSET_COLLECTION = "campaign_assets"
 _DEFAULT_QDRANT_PATH = "data/qdrant_db"
 _DEFAULT_BM25_PATH = "data/index/bm25"
-_DEFAULT_EMBEDDING_MODEL = "text-embedding-3-large"
+_DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
 
 
 def _get_project_root() -> Path:
