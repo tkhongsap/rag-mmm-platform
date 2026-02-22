@@ -88,3 +88,13 @@
   - When removing a tool, check prompts.py and rag_router.py allowed_tools lists — they list MCP tools by name
   - `search_data` with `category` param covers all channel-filtering use cases
 ---
+
+## 2026-02-22 - US-002, US-003, US-004, US-005 (verification pass)
+- Verified existing implementations meet all acceptance criteria after filter_by_channel removal
+- US-002: prompts.py has 3 constants, 187 lines, correct tool references (2 tools, no filter_by_channel)
+- US-003: rag_router.py has session handling, fallback, 160 lines, allowed_tools cleaned up
+- US-004: main.py endpoint uses ask_with_routing with session_id, lazy import, 400 on empty
+- US-005: Query Decomposition section (~62 lines) with 3 patterns, 3 examples, "When NOT to Decompose"
+- All 101 tests pass
+- No files changed (implementations already correct from previous iteration)
+---
