@@ -19,7 +19,7 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Import pattern: from claude_agent_sdk import tool, create_sdk_mcp_server. Use simple type mapping for input_schema: {'query': str, 'top_k': int, 'category': str}. See docs/agent-sdk/03_python-reference.md for @tool examples."
     },
     {

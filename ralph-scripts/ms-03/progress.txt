@@ -5,7 +5,7 @@
 - `os.environ.pop("CLAUDECODE", None)` required before SDK imports when running inside Claude Code session
 - query_engine.py functions are synchronous (search_text, search_assets) — call directly from async tools
 - Python binary is `python3` (not `python`) in this environment; use `.venv/bin/activate` for venv
-- Existing tests: 100 tests in tests/ — run with `python -m pytest tests/ -v`
+- Existing tests: 101 tests in tests/ — run with `python -m pytest tests/ -v`
 
 ---
 
@@ -76,4 +76,15 @@
   - Query decomposition is entirely prompt-driven — no code changes in router needed
   - Keep worked examples concrete (show actual tool call parameters) for best agent behavior
   - Always include negative examples ("when NOT to do X") to prevent over-application
+---
+
+## 2026-02-22 - US-001 (iteration 2)
+- Removed redundant `filter_by_channel` tool — it was just `search_data(category=channel)`
+- Simplified from 3 MCP tools to 2: search_data, search_assets
+- Cleaned up all references in tools.py, __init__.py, prompts.py, rag_router.py
+- 101 tests pass after cleanup
+- Files changed: `src/platform/api/agents/tools.py`, `src/platform/api/agents/__init__.py`, `src/platform/api/agents/prompts.py`, `src/platform/api/agents/rag_router.py`
+- **Learnings for future iterations:**
+  - When removing a tool, check prompts.py and rag_router.py allowed_tools lists — they list MCP tools by name
+  - `search_data` with `category` param covers all channel-filtering use cases
 ---
