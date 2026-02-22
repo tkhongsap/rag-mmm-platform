@@ -9,18 +9,17 @@
       "description": "As a developer, I want MCP tools wrapping query_engine.py functions so the Claude agent can invoke LlamaIndex retrieval via structured tool calls.",
       "acceptanceCriteria": [
         "src/platform/api/agents/__init__.py exists with docstring and __all__ list",
-        "src/platform/api/agents/tools.py exists with three @tool-decorated async functions: search_data, search_assets, filter_by_channel",
+        "src/platform/api/agents/tools.py exists with two @tool-decorated async functions: search_data, search_assets",
         "search_data tool accepts {query: str, top_k: int, category: str} and calls query_engine.search_text(query, top_k, category)",
         "search_assets tool accepts {query: str, top_k: int, channel: str} and calls query_engine.search_assets(query, top_k, channel)",
-        "filter_by_channel tool accepts {query: str, channel: str} and calls query_engine.search_text(query, category=channel)",
         "Each tool returns {content: [{type: 'text', text: json-serialized results}]} on success",
         "Each tool returns {content: [{type: 'text', text: error message}], isError: true} when underlying function raises",
-        "create_sdk_mcp_server('rag-tools', tools=[search_data, search_assets, filter_by_channel]) exported as rag_mcp_server",
+        "create_sdk_mcp_server('rag-tools', tools=[search_data, search_assets]) exported as rag_mcp_server",
         "query_engine imports are lazy (inside tool function bodies) to avoid startup overhead",
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Import pattern: from claude_agent_sdk import tool, create_sdk_mcp_server. Use simple type mapping for input_schema: {'query': str, 'top_k': int, 'category': str}. See docs/agent-sdk/03_python-reference.md for @tool examples."
     },
     {
@@ -40,7 +39,7 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "These are string constants only — no functions. RAG_AGENT_PROMPT should be detailed enough that the agent knows which tool to call. Reference data categories from data/generators/config.py."
     },
     {
@@ -65,7 +64,7 @@
         "Typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Import ORCHESTRATOR_PROMPT and RAG_AGENT_PROMPT from .prompts. Import rag_mcp_server from .tools. Import ask_marketing_question from ..rag_agent for fallback. Use uuid.uuid4() for session IDs. See docs/agent-sdk/03_python-reference.md for ClaudeSDKClient + AgentDefinition examples."
     },
     {
@@ -83,7 +82,7 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Modify src/platform/api/main.py. Keep the lazy import pattern matching existing code. The history field in ChatRequest can remain for backward compatibility but is no longer used."
     },
     {
@@ -101,7 +100,7 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Prompt-only change — append decomposition instructions to existing RAG_AGENT_PROMPT in prompts.py. No rag_router.py changes needed since decomposition is entirely prompt-driven."
     }
   ]
