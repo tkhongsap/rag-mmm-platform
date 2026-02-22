@@ -379,17 +379,16 @@ def data_datasets() -> list:
 class ChatRequest(BaseModel):
     message: str
     history: list = []
+    session_id: str | None = None
 
 
 @app.post("/api/rag/chat")
 async def rag_chat(req: ChatRequest) -> dict:
-    """Answer a marketing question by reading project data files via Agent SDK."""
+    """Answer a marketing question via agent routing with session continuity."""
     if not req.message.strip():
         raise HTTPException(status_code=400, detail="message is required")
-    try:
-        from .rag_agent import ask_marketing_question
 
-        reply = await ask_marketing_question(req.message)
-        return {"reply": reply}
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    from .agents.rag_router import ask_with_routing
+
+    result = await ask_with_routing(req.message, req.session_id)
+    return result

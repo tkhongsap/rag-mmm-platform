@@ -1,0 +1,107 @@
+{
+  "project": "rag-mmm-platform",
+  "branchName": "ralph/ms3-agent-orchestration",
+  "description": "MS-3 — Agent Orchestration: MCP tools wrapping LlamaIndex retrieval, prompt-driven routing via Claude Agent SDK, session continuity, graceful fallback, and query decomposition for complex questions.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Create agents package with MCP tool wrappers",
+      "description": "As a developer, I want MCP tools wrapping query_engine.py functions so the Claude agent can invoke LlamaIndex retrieval via structured tool calls.",
+      "acceptanceCriteria": [
+        "src/platform/api/agents/__init__.py exists with docstring and __all__ list",
+        "src/platform/api/agents/tools.py exists with two @tool-decorated async functions: search_data, search_assets",
+        "search_data tool accepts {query: str, top_k: int, category: str} and calls query_engine.search_text(query, top_k, category)",
+        "search_assets tool accepts {query: str, top_k: int, channel: str} and calls query_engine.search_assets(query, top_k, channel)",
+        "Each tool returns {content: [{type: 'text', text: json-serialized results}]} on success",
+        "Each tool returns {content: [{type: 'text', text: error message}], isError: true} when underlying function raises",
+        "create_sdk_mcp_server('rag-tools', tools=[search_data, search_assets]) exported as rag_mcp_server",
+        "query_engine imports are lazy (inside tool function bodies) to avoid startup overhead",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Import pattern: from claude_agent_sdk import tool, create_sdk_mcp_server. Use simple type mapping for input_schema: {'query': str, 'top_k': int, 'category': str}. See docs/agent-sdk/03_python-reference.md for @tool examples."
+    },
+    {
+      "id": "US-002",
+      "title": "Create agent prompt templates",
+      "description": "As a system designer, I want structured prompt templates for the orchestrator and RAG agent so routing and response behavior is consistent.",
+      "acceptanceCriteria": [
+        "src/platform/api/agents/prompts.py exists with three string constants: ORCHESTRATOR_PROMPT, RAG_AGENT_PROMPT, MMM_AGENT_PROMPT",
+        "ORCHESTRATOR_PROMPT contains intent classification rules mapping data/search/find/show queries to rag-analyst",
+        "ORCHESTRATOR_PROMPT documents MMM handoff as placeholder with 'NOT YET IMPLEMENTED — MS-4b' comment",
+        "RAG_AGENT_PROMPT describes agent role as marketing data analyst for DEEPAL/AVATR UK launch",
+        "RAG_AGENT_PROMPT lists all data sources: ~19 CSVs (6 digital, 4 traditional, 5 sales pipeline, 4 external), 7 contracts, campaign assets",
+        "RAG_AGENT_PROMPT instructs agent to use search_data for text/data queries and search_assets for creative/image queries",
+        "RAG_AGENT_PROMPT instructs agent to cite source files and use category filters (digital_media, traditional_media, sales_pipeline, external)",
+        "MMM_AGENT_PROMPT is a short placeholder string (~5 lines) marked as MS-4b",
+        "File is under 300 lines",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "These are string constants only — no functions. RAG_AGENT_PROMPT should be detailed enough that the agent knows which tool to call. Reference data categories from data/generators/config.py."
+    },
+    {
+      "id": "US-003",
+      "title": "Create RAG router with session handling and fallback",
+      "description": "As a platform engineer, I want an ask_with_routing function that routes queries through Claude Agent SDK with session continuity and graceful fallback when Qdrant is unavailable.",
+      "acceptanceCriteria": [
+        "src/platform/api/agents/rag_router.py exists",
+        "Module-level _sessions dict maps session_id (str) to ClaudeSDKClient instances",
+        "ask_with_routing(question: str, session_id: str | None = None) is an async function",
+        "When session_id is None, a new uuid4 session_id is generated",
+        "When session_id is provided and in _sessions, the existing ClaudeSDKClient is reused",
+        "When session_id is provided but not in _sessions, a new ClaudeSDKClient is created and stored",
+        "ClaudeSDKClient configured with system_prompt=ORCHESTRATOR_PROMPT, agents={'rag-analyst': AgentDefinition(...)}, mcp_servers={'rag-tools': rag_mcp_server}, allowed_tools including Task and mcp__rag-tools__* tools, permission_mode='bypassPermissions'",
+        "Function returns dict with keys: reply (str), sources (list), session_id (str), agent_used (str)",
+        "agent_used is 'rag-analyst' for normal routing, 'file-reader-fallback' when fallback is used",
+        "When SDK or MCP tool raises an exception, function falls back to rag_agent.ask_marketing_question(question) with agent_used='file-reader-fallback'",
+        "Fallback never returns HTTP 500 — always returns a valid response dict",
+        "Errors logged via logging.getLogger(__name__) without leaking stack traces to client",
+        "os.environ.pop('CLAUDECODE', None) called before SDK imports (matching rag_agent.py pattern)",
+        "File is under 220 lines",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "Import ORCHESTRATOR_PROMPT and RAG_AGENT_PROMPT from .prompts. Import rag_mcp_server from .tools. Import ask_marketing_question from ..rag_agent for fallback. Use uuid.uuid4() for session IDs. See docs/agent-sdk/03_python-reference.md for ClaudeSDKClient + AgentDefinition examples."
+    },
+    {
+      "id": "US-004",
+      "title": "Update chat endpoint for agent routing",
+      "description": "As an API consumer, I want POST /api/rag/chat to accept session_id and return structured responses with reply, sources, session_id, and agent_used.",
+      "acceptanceCriteria": [
+        "ChatRequest model in main.py adds optional field: session_id: str | None = None",
+        "POST /api/rag/chat calls ask_with_routing(req.message, req.session_id) instead of ask_marketing_question",
+        "Response dict contains four keys: reply (str), sources (list), session_id (str), agent_used (str)",
+        "Missing session_id in request results in new session_id in response",
+        "Provided session_id is echoed back in response for continuity",
+        "Existing error handling (empty message → 400) is preserved",
+        "Import of ask_with_routing is lazy (inside endpoint function) to avoid startup overhead",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "Modify src/platform/api/main.py. Keep the lazy import pattern matching existing code. The history field in ChatRequest can remain for backward compatibility but is no longer used."
+    },
+    {
+      "id": "US-005",
+      "title": "Add query decomposition instructions to RAG agent prompt",
+      "description": "As a user asking complex or comparative questions, I want the agent to decompose my query into sub-queries, execute each, and synthesize a combined answer.",
+      "acceptanceCriteria": [
+        "RAG_AGENT_PROMPT in prompts.py includes a 'Query Decomposition' section (~60-80 additional lines)",
+        "Decomposition section instructs agent to detect three patterns: comparative (multi-entity), multi-timeframe, and cross-category",
+        "Three worked examples included: (1) 'Compare Meta CPM vs Google CPC' → 2 searches with category filters, (2) 'How did TV spend change Q1 to Q3?' → date-filtered searches, (3) 'Which channel has best ROI across digital and traditional?' → search digital_media + traditional_media",
+        "Instructions tell agent to announce decomposition: 'Let me break this into parts...'",
+        "Instructions tell agent to synthesize sub-query results into combined answer with comparison table where applicable",
+        "Instructions tell agent to use simple single-tool calls for non-complex queries (no unnecessary decomposition)",
+        "prompts.py total file length remains under 350 lines",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "Prompt-only change — append decomposition instructions to existing RAG_AGENT_PROMPT in prompts.py. No rag_router.py changes needed since decomposition is entirely prompt-driven."
+    }
+  ]
+}

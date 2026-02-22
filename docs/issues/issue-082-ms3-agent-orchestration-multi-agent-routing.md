@@ -2,7 +2,7 @@
 
 **State:** Open
 **Created:** 2026-02-19T09:55:06Z
-**Updated:** 2026-02-19T09:55:06Z
+**Updated:** 2026-02-22T00:00:00Z
 **Labels:** —
 **Assignees:** —
 **Source:** https://github.com/tkhongsap/rag-mmm-platform/issues/82
@@ -11,7 +11,7 @@
 
 ## Objective
 
-Build the Claude Agent SDK orchestration layer with MCP tools that bridge to LlamaIndex retrieval, RAG-first routing, and session continuity. This milestone is **RAG-only** — MMM routing is added in MS-4b.
+Build the Claude Agent SDK orchestration layer with MCP tools that bridge to LlamaIndex retrieval, RAG-first routing, query decomposition for complex questions, and session continuity. This milestone is **RAG-only** — MMM routing is added in MS-4b.
 
 ## Current State
 
@@ -28,6 +28,7 @@ Build the Claude Agent SDK orchestration layer with MCP tools that bridge to Lla
 | 3 | Session continuity works across requests | Second request with `session_id` references context from first |
 | 4 | RAG chat API returns structured response | `POST /api/rag/chat` → `{reply, sources, session_id, agent_used}` |
 | 5 | Graceful fallback when Qdrant index missing | Agent falls back to file reading, no crash |
+| 6 | Complex queries are decomposed and answered correctly | "Compare Meta CPM vs Google CPC across Q3 and Q4" → agent breaks into sub-queries, searches each, synthesizes combined answer |
 
 > **Note**: Asset HTTP endpoints (`GET /api/assets/search`, `GET /api/assets/image/{path}`) are in MS-5, not here. MS-3 focuses on the agent/MCP layer only.
 
@@ -39,6 +40,11 @@ Build the Claude Agent SDK orchestration layer with MCP tools that bridge to Lla
 - [ ] **3.4** Create `src/platform/api/agents/rag_router.py` (~160 lines) — `ask_with_routing(question, session_id)` using `ClaudeSDKClient`. Defines `rag-analyst` subagent with all 3 MCP tools. Routes "find/show/compare" queries to RAG agent. Returns `{reply, sources, session_id, agent_used}`.
 - [ ] **3.5** Update `src/platform/api/main.py` — Modify `POST /api/rag/chat` to accept `session_id`, call `rag_router.ask_with_routing`, return `{reply, sources, session_id, agent_used}`
 - [ ] **3.6** Keep `rag_agent.py` as fallback reference (do not delete)
+- [ ] **3.7** Add query decomposition to RAG agent prompt and routing logic (~80 lines in `prompts.py` + `rag_router.py`) — When the agent detects a complex or comparative question (multi-entity, multi-timeframe, or multi-metric), it decomposes into sub-queries, executes each via the appropriate MCP tool with targeted filters (category, channel), and synthesizes a combined answer. This is prompt-driven (no separate planner infrastructure). Include explicit examples in the agent prompt:
+  - **Comparative**: "Compare Meta CPM vs Google CPC" → 2 searches (one per platform) → merged comparison
+  - **Multi-timeframe**: "How did TV spend change Q1 to Q3?" → date-filtered searches per period → trend summary
+  - **Cross-category**: "Which channel has best ROI across digital and traditional?" → search digital_media + traditional_media → ranked answer
+  - Agent should state when it's decomposing ("Let me break this into parts...") for transparency
 
 ## Deliverables
 
@@ -46,8 +52,8 @@ Build the Claude Agent SDK orchestration layer with MCP tools that bridge to Lla
 |------|------|-----------|
 | `src/platform/api/agents/__init__.py` | New | ~5 |
 | `src/platform/api/agents/tools.py` | New | ~120 |
-| `src/platform/api/agents/prompts.py` | New | ~250 |
-| `src/platform/api/agents/rag_router.py` | New | ~160 |
+| `src/platform/api/agents/prompts.py` | New | ~330 |
+| `src/platform/api/agents/rag_router.py` | New | ~200 |
 | `src/platform/api/main.py` | Modify | +40 |
 
 ## Verification
@@ -55,10 +61,15 @@ Build the Claude Agent SDK orchestration layer with MCP tools that bridge to Lla
 ```bash
 uvicorn src.platform.api.main:app --reload --port 8000
 
-# RAG query
+# Simple RAG query
 curl -s -X POST http://localhost:8000/api/rag/chat \
   -H 'Content-Type: application/json' \
   -d '{"message":"What is our Meta CPM benchmark?"}' | python -m json.tool
+
+# Complex query (decomposition)
+curl -s -X POST http://localhost:8000/api/rag/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"Compare Meta CPM vs Google CPC in Q3 and Q4"}' | python -m json.tool
 
 # Session continuity
 SESSION=$(curl -s -X POST http://localhost:8000/api/rag/chat \
@@ -71,7 +82,7 @@ curl -s -X POST http://localhost:8000/api/rag/chat \
 
 ## Dependencies
 
-- **MS-2** (#81) — Qdrant indices and `query_engine.py` must be operational (though fallback works without them).
+- **MS-2** (#81) — ✅ Completed. Qdrant indices and `query_engine.py` are operational (though fallback works without them).
 
 ---
 📋 Reference: [`docs/blueprint/milestones.md`](docs/blueprint/milestones.md) · [`docs/blueprint/team-execution-plan.md`](docs/blueprint/team-execution-plan.md)

@@ -1,0 +1,100 @@
+## Codebase Patterns
+- Agent SDK imports: `from claude_agent_sdk import tool, create_sdk_mcp_server` for MCP tools; `ClaudeSDKClient, AgentDefinition` for router
+- MCP tool naming: `mcp__<server-name>__<tool-name>` — e.g. `mcp__rag-tools__search_data`
+- Lazy imports inside tool/endpoint bodies to avoid startup overhead (matches rag_agent.py pattern)
+- `os.environ.pop("CLAUDECODE", None)` required before SDK imports when running inside Claude Code session
+- query_engine.py functions are synchronous (search_text, search_assets) — call directly from async tools
+- Python binary is `python3` (not `python`) in this environment; use `.venv/bin/activate` for venv
+- Existing tests: 101 tests in tests/ — run with `python -m pytest tests/ -v`
+
+---
+
+## 2026-02-22 - US-001
+- Implemented MCP tool wrappers in `src/platform/api/agents/` package
+- Created `__init__.py` with docstring and `__all__` list exporting search_data, search_assets, filter_by_channel, rag_mcp_server
+- Created `tools.py` with three `@tool`-decorated async functions wrapping query_engine.py
+- Each tool uses lazy imports, returns JSON-serialized results on success, error dict with isError on failure
+- Registered all tools via `create_sdk_mcp_server("rag-tools")` exported as `rag_mcp_server`
+- Files changed: `src/platform/api/agents/__init__.py`, `src/platform/api/agents/tools.py`
+- **Learnings for future iterations:**
+  - `@tool` decorator uses simple type mapping `{"query": str, "top_k": int}` — no Pydantic models needed
+  - Tool functions receive `args: dict[str, Any]` — use `args.get()` for optional params with defaults
+  - `create_sdk_mcp_server` takes a `tools=` list of decorated functions, returns `McpSdkServerConfig`
+  - query_engine.search_text and search_assets are synchronous — no `await` needed when calling them
+---
+
+## 2026-02-22 - US-002
+- Created `src/platform/api/agents/prompts.py` with three string constants (127 lines)
+- ORCHESTRATOR_PROMPT: intent classification routing rag-analyst vs mmm-analyst (placeholder)
+- RAG_AGENT_PROMPT: detailed data source catalog, tool usage instructions, response guidelines
+- MMM_AGENT_PROMPT: 5-line placeholder marked as MS-4b
+- Files changed: `src/platform/api/agents/prompts.py`
+- **Learnings for future iterations:**
+  - Data categories for retrieval filters: digital_media, traditional_media, sales_pipeline, external, contracts, config, assets
+  - Categories are defined in `src/rag/data_processing/ingest.py:_categorize()` — keep in sync with prompts
+  - Asset channels: meta, google, tv, ooh, youtube, tiktok, linkedin, dv360, print, radio
+---
+
+## 2026-02-22 - US-003
+- Created `src/platform/api/agents/rag_router.py` (161 lines)
+- Implements `ask_with_routing(question, session_id)` async function
+- Session management via `_sessions` dict mapping session_id → ClaudeSDKClient
+- Configures rag-analyst subagent with AgentDefinition + MCP tools
+- Two-layer fallback: SDK error → rag_agent.ask_marketing_question → static error message
+- Returns dict with reply, sources, session_id, agent_used keys
+- Updated `__init__.py` to export prompt constants
+- Files changed: `src/platform/api/agents/rag_router.py`, `src/platform/api/agents/__init__.py`
+- **Learnings for future iterations:**
+  - ClaudeSDKClient requires `await client.connect()` before queries — use separate create helper
+  - `receive_response()` yields messages until ResultMessage; collect text from AssistantMessage+TextBlock
+  - Pop broken sessions from `_sessions` on exception to avoid stale client reuse
+  - Project root detection: walk up from __file__ looking for requirements.txt + data/ dir
+---
+
+## 2026-02-22 - US-004
+- Modified `src/platform/api/main.py` to use ask_with_routing instead of ask_marketing_question
+- Added `session_id: str | None = None` to ChatRequest model
+- Endpoint now returns structured dict: reply, sources, session_id, agent_used
+- Lazy import of `ask_with_routing` inside endpoint body
+- Updated `tests/integration/test_rag_chat_api.py` — 6 tests (was 5), mock target now points to router
+- Added test for session_id echo-back and fallback response format
+- Files changed: `src/platform/api/main.py`, `tests/integration/test_rag_chat_api.py`
+- **Learnings for future iterations:**
+  - Tests mock at `src.platform.api.agents.rag_router.ask_with_routing` (full module path)
+  - Router never raises HTTP 500 — all errors become valid response dicts with agent_used="file-reader-fallback"
+  - ChatRequest.history kept for backward compat but no longer used by routing
+---
+
+## 2026-02-22 - US-005
+- Appended Query Decomposition section (~63 lines) to RAG_AGENT_PROMPT in prompts.py
+- Covers three decomposition patterns: comparative (multi-entity), multi-timeframe, cross-category
+- Three worked examples with concrete tool calls and synthesis output
+- Includes "When NOT to Decompose" section to prevent over-decomposition
+- Total file length: 190 lines (under 350 limit)
+- Files changed: `src/platform/api/agents/prompts.py`
+- **Learnings for future iterations:**
+  - Query decomposition is entirely prompt-driven — no code changes in router needed
+  - Keep worked examples concrete (show actual tool call parameters) for best agent behavior
+  - Always include negative examples ("when NOT to do X") to prevent over-application
+---
+
+## 2026-02-22 - US-001 (iteration 2)
+- Removed redundant `filter_by_channel` tool — it was just `search_data(category=channel)`
+- Simplified from 3 MCP tools to 2: search_data, search_assets
+- Cleaned up all references in tools.py, __init__.py, prompts.py, rag_router.py
+- 101 tests pass after cleanup
+- Files changed: `src/platform/api/agents/tools.py`, `src/platform/api/agents/__init__.py`, `src/platform/api/agents/prompts.py`, `src/platform/api/agents/rag_router.py`
+- **Learnings for future iterations:**
+  - When removing a tool, check prompts.py and rag_router.py allowed_tools lists — they list MCP tools by name
+  - `search_data` with `category` param covers all channel-filtering use cases
+---
+
+## 2026-02-22 - US-002, US-003, US-004, US-005 (verification pass)
+- Verified existing implementations meet all acceptance criteria after filter_by_channel removal
+- US-002: prompts.py has 3 constants, 187 lines, correct tool references (2 tools, no filter_by_channel)
+- US-003: rag_router.py has session handling, fallback, 160 lines, allowed_tools cleaned up
+- US-004: main.py endpoint uses ask_with_routing with session_id, lazy import, 400 on empty
+- US-005: Query Decomposition section (~62 lines) with 3 patterns, 3 examples, "When NOT to Decompose"
+- All 101 tests pass
+- No files changed (implementations already correct from previous iteration)
+---
