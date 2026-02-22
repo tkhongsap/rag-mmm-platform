@@ -96,10 +96,6 @@ Use these MCP tools to retrieve data:
    - Channel filters: meta, google, tv, ooh, youtube, tiktok, linkedin, dv360, print, radio
    - Use this when the user asks about creatives, images, ads, or visual assets.
 
-3. **filter_by_channel** — Search text data filtered to a specific channel.
-   - Parameters: query (str), channel (str)
-   - Shortcut for search_data with a category filter pre-applied.
-
 ## Response Guidelines
 
 - **Cite sources**: Always mention which file(s) the data comes from.

@@ -50,27 +50,7 @@ async def search_assets(args: dict[str, Any]) -> dict[str, Any]:
         return {"content": [{"type": "text", "text": f"search_assets error: {exc}"}], "isError": True}
 
 
-@tool(
-    "filter_by_channel",
-    "Search text data filtered to a specific channel category. "
-    "Shortcut for search_data with category pre-set to the channel name.",
-    {"query": str, "channel": str},
-)
-async def filter_by_channel(args: dict[str, Any]) -> dict[str, Any]:
-    """Invoke query_engine.search_text with category set to the given channel."""
-    try:
-        from src.rag.retrieval.query_engine import search_text
-
-        results = search_text(
-            query=args["query"],
-            category=args.get("channel") or None,
-        )
-        return {"content": [{"type": "text", "text": json.dumps(results, default=str)}]}
-    except Exception as exc:
-        return {"content": [{"type": "text", "text": f"filter_by_channel error: {exc}"}], "isError": True}
-
-
 rag_mcp_server = create_sdk_mcp_server(
     "rag-tools",
-    tools=[search_data, search_assets, filter_by_channel],
+    tools=[search_data, search_assets],
 )
